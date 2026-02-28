@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.env
+.env.local
+venv/
+Agent/Models/
+local_agent/Agent/Models/
+.DS_Store

@@ -1,0 +1,213 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// Role: ADMIN | CLIENT | VENDOR | CUSTOMER
+// Platform: AMAZON | FLIPKART | MYNTRA
+// ProductStatus: DRAFT | ACTIVE | FILLED | COMPLETED | ARCHIVED
+// OrderStatus: SUBMITTED | VALIDATING | VALIDATED | REJECTED
+// ReviewStatus: SUBMITTED | UNDER_REVIEW | APPROVED | CORRECTION_REQUIRED
+// RefundStatus: PENDING | PROCESSING | REFUNDED | FAILED
+// InvoiceStatus: GENERATED | PAID | OVERDUE
+// NotificationType: REVIEW_REMINDER | REFUND_REMINDER | CORRECTION | GENERAL
+// NotificationChannel: DASHBOARD | WHATSAPP | EMAIL
+
+model User {
+  id                    String   @id @default(uuid())
+  role                  String   @default("CUSTOMER")
+  name                  String
+  password_hash         String?
+  mobile                String   @unique
+  email                 String?  @unique
+  ecommerce_profile_url String?
+  encrypted_bank_data   String?
+  vendor_id             String?
+  vendor                Vendor?  @relation(fields: [vendor_id], references: [id])
+  created_at            DateTime @default(now())
+  updated_at            DateTime @updatedAt
+
+  orders          Order[]
+  refunds         Refund[]
+  notifications   Notification[]
+  managed_vendors Vendor[] @relation("ManagedBy")
+  client_profile  Client?
+  audit_logs      AuditLog[]
+
+  tickets         Ticket[]  @relation("CustomerTickets")
+  messages        Message[] @relation("SenderMessages")
+
+  @@index([role])
+  @@index([mobile])
+}
+
+model Vendor {
+  id               String   @id @default(uuid())
+  user_id          String   @unique
+  user             User     @relation("ManagedBy", fields: [user_id], references: [id])
+  incentive_points Int      @default(0)
+  payout_threshold Int      @default(2000)
+  agreement_url    String?
+  status           String   @default("active")
+  created_at       DateTime @default(now())
+
+  assigned_users User[]
+}
+
+model Client {
+  id           String   @id @default(uuid())
+  user_id      String   @unique
+  user         User     @relation(fields: [user_id], references: [id])
+  company_name String
+  created_at   DateTime @default(now())
+
+  products Product[]
+  invoices Invoice[]
+}
+
+model Product {
+  id            String   @id @default(uuid())
+  client_id     String
+  client        Client   @relation(fields: [client_id], references: [id])
+  brand         String
+  product_name  String
+  product_image String?
+  product_link  String
+  platform      String   // AMAZON | FLIPKART | MYNTRA
+  refund_amount Float
+  total_slots   Int
+  filled_slots  Int      @default(0)
+  daily_limit   Int      @default(100)
+  deadline      DateTime
+  instructions  String
+  is_public     Boolean  @default(true)
+  status        String   @default("DRAFT")
+  wa_target             String?  @default("all_customers")
+  wa_custom_phones      String?
+  wa_template           String?
+  wa_schedule_frequency String?  @default("NONE") // NONE, ONCE_A_WEEK, TWICE_A_WEEK, DAILY
+  wa_schedule_days      String?  // e.g., MONDAY, THURSDAY
+  created_at            DateTime @default(now())
+
+  orders   Order[]
+  invoices Invoice[]
+}
+
+model Order {
+  id                           String   @id @default(uuid())
+  order_id                     String   @unique
+  user_id                      String
+  user                         User     @relation(fields: [user_id], references: [id])
+  product_id                   String
+  product                      Product  @relation(fields: [product_id], references: [id])
+  amount                       Float
+  screenshot_url               String
+  screenshot_hash              String?
+  status                       String   @default("SUBMITTED")
+  order_date                   DateTime @default(now())
+  delivery_date                DateTime?
+  delivery_screenshot_url      String?
+  return_window_screenshot_url String?
+  created_at                   DateTime @default(now())
+  updated_at                   DateTime @updatedAt
+
+  review Review?
+  refund Refund?
+}
+
+model Review {
+  id                String   @id @default(uuid())
+  order_id          String   @unique
+  order             Order    @relation(fields: [order_id], references: [id])
+  screenshot_url    String
+  review_url        String?
+  screenshot_hash   String?
+  rating            Int
+  review_date       DateTime
+  approval_status   String   @default("SUBMITTED")
+  correction_reason String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+}
+
+model Refund {
+  id             String    @id @default(uuid())
+  order_id       String    @unique
+  order          Order     @relation(fields: [order_id], references: [id])
+  user_id        String
+  user           User      @relation(fields: [user_id], references: [id])
+  amount         Float
+  status         String    @default("PENDING")
+  processed_date DateTime?
+  batch_id       String?
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
+}
+
+model Invoice {
+  id                 String   @id @default(uuid())
+  client_id          String
+  client             Client   @relation(fields: [client_id], references: [id])
+  product_id         String
+  product            Product  @relation(fields: [product_id], references: [id])
+  base_amount        Float
+  additional_charges Float    @default(0)
+  total_amount       Float
+  status             String   @default("GENERATED")
+  due_date           DateTime
+  payment_link       String?
+  created_at         DateTime @default(now())
+  updated_at         DateTime @updatedAt
+}
+
+model Notification {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation(fields: [user_id], references: [id])
+  type       String   // REVIEW_REMINDER | REFUND_REMINDER | CORRECTION | GENERAL
+  title      String
+  message    String
+  channel    String   @default("DASHBOARD")
+  is_read    Boolean  @default(false)
+  sent_at    DateTime @default(now())
+  created_at DateTime @default(now())
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  admin_id    String
+  admin       User     @relation(fields: [admin_id], references: [id])
+  action      String
+  entity_type String
+  entity_id   String
+  changes     String?
+  created_at  DateTime @default(now())
+}
+
+model Ticket {
+  id         String   @id @default(uuid())
+  user_id    String
+  user       User     @relation("CustomerTickets", fields: [user_id], references: [id])
+  order_id   String?
+  status     String   @default("OPEN") // OPEN | RESOLVED
+  subject    String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  messages   Message[]
+}
+
+model Message {
+  id         String   @id @default(uuid())
+  ticket_id  String
+  ticket     Ticket   @relation(fields: [ticket_id], references: [id])
+  sender_id  String
+  sender     User     @relation("SenderMessages", fields: [sender_id], references: [id])
+  text       String
+  is_admin   Boolean  @default(false)
+  created_at DateTime @default(now())
+}
