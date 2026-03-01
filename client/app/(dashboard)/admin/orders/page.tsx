@@ -16,7 +16,7 @@ export default function AdminOrders() {
     const fetchOrders = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/orders", {
+            const res = await fetch(`${API_URL}/api/orders`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {

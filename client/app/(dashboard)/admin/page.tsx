@@ -32,8 +32,8 @@ export default function AdminDashboard() {
             const headers = { Authorization: `Bearer ${token}` };
 
             const [ordersRes, productsRes] = await Promise.all([
-                fetch(`${API_URL}/api/orders", { headers }),
-                fetch(`${API_URL}/api/products", { headers })
+                fetch(`${API_URL}/api/orders`, { headers }),
+                fetch(`${API_URL}/api/products`, { headers })
             ]);
 
             if (ordersRes.ok && productsRes.ok) {

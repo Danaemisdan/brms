@@ -29,7 +29,7 @@ export default function CustomerPaymentInfo() {
     const fetchProfile = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/users/profile", {
+            const res = await fetch(`${API_URL}/api/users/profile`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {

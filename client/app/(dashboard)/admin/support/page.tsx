@@ -32,7 +32,7 @@ export default function AdminSupport() {
     const fetchThreads = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/support", {
+            const res = await fetch(`${API_URL}/api/support`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {

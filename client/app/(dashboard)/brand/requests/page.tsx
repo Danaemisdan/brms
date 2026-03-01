@@ -16,7 +16,7 @@ export default function BrandRequests() {
     const fetchProducts = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/products", {
+            const res = await fetch(`${API_URL}/api/products`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {

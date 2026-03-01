@@ -37,7 +37,7 @@ export default function CustomerSupport() {
     const fetchThreads = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/support", {
+            const res = await fetch(`${API_URL}/api/support`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
@@ -57,7 +57,7 @@ export default function CustomerSupport() {
 
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/support", {
+            const res = await fetch(`${API_URL}/api/support`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -198,7 +198,7 @@ export default function AdminProducts() {
                 const formData = new FormData();
                 imageFiles.forEach(file => formData.append("images", file));
 
-                const uploadRes = await fetch(`${API_URL}/api/upload/products", {
+                const uploadRes = await fetch(`${API_URL}/api/upload/products`, {
                     method: "POST",
                     headers: { Authorization: `Bearer ${token}` },
                     body: formData
@@ -237,7 +237,7 @@ export default function AdminProducts() {
                 payload.product_image = "[]";
             }
 
-            const url = editingId ? `${API_URL}/api/products/${editingId}` : `${API_URL}/api/products";
+            const url = editingId ? `${API_URL}/api/products/${editingId}` : `${API_URL}/api/products`;
             const method = editingId ? "PUT" : "POST";
 
             const res = await fetch(url, {
@@ -275,7 +275,7 @@ export default function AdminProducts() {
             };
 
             // This endpoint will be created in the backend to communicate with the local agent
-            const res = await fetch(`${API_URL}/api/whatsapp/launch", {
+            const res = await fetch(`${API_URL}/api/whatsapp/launch`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -31,7 +31,7 @@ export default function BrandDashboard() {
     const fetchProducts = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/products", {
+            const res = await fetch(`${API_URL}/api/products`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
@@ -51,7 +51,7 @@ export default function BrandDashboard() {
 
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/products", {
+            const res = await fetch(`${API_URL}/api/products`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
