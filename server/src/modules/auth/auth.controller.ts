@@ -21,8 +21,8 @@ const registerSchema = z.object({
 });
 
 const loginSchema = z.object({
-    identifier: z.string().min(1, 'Mobile or Email is required'),
-    password: z.string().min(1, 'Password is required'),
+    identifier: z.string().trim().min(1, 'Mobile or Email is required'),
+    password: z.string().trim().min(1, 'Password is required'),
 });
 
 const refreshSchema = z.object({
@@ -231,6 +231,7 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response) => {
                 email: true,
                 role: true,
                 ecommerce_profile_url: true,
+                encrypted_bank_data: true,
                 created_at: true,
             },
         });
@@ -240,7 +241,29 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response) => {
             return;
         }
 
-        res.json({ user });
+        let paymentMethodString: string | null = null;
+        if (user.encrypted_bank_data) {
+            try {
+                // Same logic as in /api/users/profile to decode the AES encrypted text
+                const parsed = require('../../utils/encryption').decryptBankData(user.encrypted_bank_data);
+                paymentMethodString = parsed?.payment_method_string || null;
+            } catch {
+                paymentMethodString = null;
+            }
+        }
+
+        res.json({
+            user: {
+                id: user.id,
+                name: user.name,
+                mobile: user.mobile,
+                email: user.email,
+                role: user.role,
+                ecommerce_profile_url: user.ecommerce_profile_url,
+                created_at: user.created_at,
+                encrypted_bank_data: paymentMethodString
+            }
+        });
     } catch (error) {
         console.error('Get user error:', error);
         res.status(500).json({ error: 'Failed to get user data' });

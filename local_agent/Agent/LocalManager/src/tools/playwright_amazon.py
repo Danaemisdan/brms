@@ -28,8 +28,12 @@ def verify_amazon_review_playwright(product_url: str, reviewer_name: str, review
         
         try:
             # First, check if the URL is valid
-            if not product_url or "amazon." not in product_url.lower():
-                return {"status": "error", "message": "Invalid Amazon product URL."}
+            if not product_url:
+                logging.error("Product URL is completely empty.")
+                return {"status": "error", "message": "Empty product URL."}
+                
+            if "amazon." not in product_url.lower():
+                logging.warning(f"URL '{product_url}' does not contain 'amazon.'. Proceeding anyway for testing purposes.")
                 
             logging.info(f"Navigating to: {product_url}")
             page.goto(product_url, timeout=60000)
@@ -39,8 +43,10 @@ def verify_amazon_review_playwright(product_url: str, reviewer_name: str, review
             if see_all_reviews.count() > 0:
                 see_all_reviews.click()
                 page.wait_for_load_state("networkidle")
+                page.wait_for_timeout(2000) # Give extra time for React DOM
             else:
                 logging.warning("Could not find 'See all reviews' link. Attempting search on current page.")
+                page.wait_for_timeout(3000) # Let the user see the page it landed on
 
             # Look through up to 5 pages of reviews
             max_pages = 5

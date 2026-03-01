@@ -71,13 +71,15 @@ function CustomerSubmissionsContent() {
     useEffect(() => {
         if (!autoSubmitId) return;
 
+        // Give priority to locally fetched products if they exist
         const matched = products.find(p => p.id === autoSubmitId);
         if (matched) {
             setOrderForm(prev => ({ ...prev, productId: matched.id }));
             setSearchQuery(`${matched.product_name} (${matched.platform} - ₹${matched.refund_amount})`);
             setIsAddModalOpen(true);
-        } else {
-            // Might be an exclusive product not in the public list
+        } else if (products.length > 0) {
+            // Only attempt exclusive fetch AFTER the main products array has loaded
+            // to avoid race conditions where it fetches the campaign and then `products` reset it
             const fetchExclusive = async () => {
                 try {
                     const res = await fetch(`${API_URL}/api/products/${autoSubmitId}/campaign`);
@@ -97,7 +99,7 @@ function CustomerSubmissionsContent() {
             };
             fetchExclusive();
         }
-    }, [autoSubmitId]);
+    }, [autoSubmitId, products]);
 
     const fetchActiveProducts = async () => {
         try {

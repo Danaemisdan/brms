@@ -8,12 +8,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
+import { Eye, EyeOff } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
 
 export default function RegisterPage() {
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState("");
     const [formData, setFormData] = useState({
         name: "",
@@ -111,7 +113,20 @@ export default function RegisterPage() {
                         </div>
                         <div className="space-y-2">
                             <Label htmlFor="password" className="font-semibold text-gray-700">Password</Label>
-                            <Input id="password" type="password" placeholder="Create a password (min 6 characters)" value={formData.password} onChange={handleChange} required className="h-11" />
+                            <div className="relative">
+                                <Input id="password" type={showPassword ? "text" : "password"} placeholder="Create a password (min 6 characters)" value={formData.password} onChange={handleChange} required className="h-11 pr-10" />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                >
+                                    {showPassword ? (
+                                        <EyeOff className="h-5 w-5" aria-hidden="true" />
+                                    ) : (
+                                        <Eye className="h-5 w-5" aria-hidden="true" />
+                                    )}
+                                </button>
+                            </div>
                             {formData.password.length > 0 && formData.password.length < 6 && (
                                 <p className="text-xs text-red-500 font-medium">Password must be at least 6 characters long.</p>
                             )}

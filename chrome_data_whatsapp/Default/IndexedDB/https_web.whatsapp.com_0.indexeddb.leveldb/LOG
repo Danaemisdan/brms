@@ -1,0 +1,17 @@
+2026/03/02-00:39:18.859 752ac Reusing MANIFEST /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/MANIFEST-000001
+2026/03/02-00:39:18.859 752ac Recovering log #133
+2026/03/02-00:39:18.877 752ac Reusing old log /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/IndexedDB/https_web.whatsapp.com_0.indexeddb.leveldb/000133.log 
+2026/03/02-00:39:23.416 752af Level-0 table #143: started
+2026/03/02-00:39:23.439 752af Level-0 table #143: 1002103 bytes OK
+2026/03/02-00:39:23.444 752af Delete type=0 #133
+2026/03/02-00:39:23.449 752af Compacting 1@1 + 4@2 files
+2026/03/02-00:39:23.501 752af Generated table #144@1: 43941 keys, 2203211 bytes
+2026/03/02-00:39:23.548 752af Generated table #145@1: 40061 keys, 2204088 bytes
+2026/03/02-00:39:23.575 752af Generated table #146@1: 24970 keys, 1604546 bytes
+2026/03/02-00:39:23.575 752af Compacted 1@1 + 4@2 files => 6011845 bytes
+2026/03/02-00:39:23.583 752af compacted to: files[ 0 0 3 0 0 0 0 ]
+2026/03/02-00:39:23.583 752af Delete type=2 #138
+2026/03/02-00:39:23.583 752af Delete type=2 #139
+2026/03/02-00:39:23.583 752af Delete type=2 #140
+2026/03/02-00:39:23.583 752af Delete type=2 #143
+2026/03/02-00:39:23.583 752af Delete type=2 #137

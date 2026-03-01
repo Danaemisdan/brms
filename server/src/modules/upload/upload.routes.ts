@@ -27,19 +27,29 @@ const upload = multer({
     limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
 });
 
-// Upload up to 6 images
-router.post('/products', authMiddleware, roleGuard('ADMIN', 'VENDOR'), upload.array('images', 6), (req, res) => {
-    try {
-        if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
-            return res.status(400).json({ error: 'No files uploaded' });
+// Upload up to 6 images with proper error catching
+router.post('/products', authMiddleware, roleGuard('ADMIN', 'VENDOR'), (req, res) => {
+    upload.array('images', 6)(req, res, function (err) {
+        if (err instanceof multer.MulterError) {
+            console.error("Multer Parsing Error:", err);
+            return res.status(500).json({ error: err.message });
+        } else if (err) {
+            console.error("Unknown Upload Error:", err);
+            return res.status(500).json({ error: 'Failed to upload images' });
         }
 
-        const urls = req.files.map(file => `/uploads/products/${file.filename}`);
-        res.status(200).json({ urls });
-    } catch (error) {
-        console.error('Upload Error:', error);
-        res.status(500).json({ error: 'Failed to upload images' });
-    }
+        try {
+            if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+                return res.status(400).json({ error: 'No files uploaded' });
+            }
+
+            const urls = req.files.map((file: any) => `/uploads/products/${file.filename}`);
+            res.status(200).json({ urls });
+        } catch (error) {
+            console.error('Upload Error:', error);
+            res.status(500).json({ error: 'Failed to process images' });
+        }
+    });
 });
 
 export default router;

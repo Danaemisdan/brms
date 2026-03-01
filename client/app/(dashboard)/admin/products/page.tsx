@@ -43,6 +43,7 @@ export default function AdminProducts() {
     const [waTarget, setWaTarget] = useState("all_customers");
     const [customPhones, setCustomPhones] = useState("");
     const [isSendingWa, setIsSendingWa] = useState(false);
+    const [waScheduledAt, setWaScheduledAt] = useState("");
 
     // Image Upload State
     const [existingImages, setExistingImages] = useState<string[]>([]);
@@ -232,9 +233,9 @@ export default function AdminProducts() {
             };
 
             if (finalUrls.length > 0) {
-                payload.product_image = finalImageString;
+                payload.product_image = finalUrls.join(",");
             } else {
-                payload.product_image = "[]";
+                payload.product_image = "";
             }
 
             const url = editingId ? `${API_URL}/api/products/${editingId}` : `${API_URL}/api/products`;
@@ -271,7 +272,8 @@ export default function AdminProducts() {
                 product_id: selectedWaProduct.id,
                 template: waTemplate,
                 target: waTarget,
-                custom_phones: waTarget === "custom" ? customPhones : ""
+                custom_phones: waTarget === "custom" ? customPhones : "",
+                scheduled_at: waScheduledAt ? new Date(waScheduledAt).toISOString() : undefined
             };
 
             // This endpoint will be created in the backend to communicate with the local agent
@@ -567,6 +569,7 @@ export default function AdminProducts() {
                                         className="border-green-600 text-green-600 hover:bg-green-50"
                                         onClick={() => {
                                             setSelectedWaProduct(p);
+                                            setWaScheduledAt("");
                                             setIsWaModalOpen(true);
                                         }}
                                     >
@@ -625,6 +628,19 @@ export default function AdminProducts() {
                                 )}
 
                                 <div className="space-y-2">
+                                    <Label>Schedule Launch (Optional)</Label>
+                                    <Input
+                                        type="datetime-local"
+                                        value={waScheduledAt}
+                                        onChange={(e) => setWaScheduledAt(e.target.value)}
+                                        className="w-full"
+                                    />
+                                    <p className="text-xs text-gray-500">
+                                        Leave empty to launch immediately. Otherwise, the Agent will automatically blast messages at the selected date and time.
+                                    </p>
+                                </div>
+
+                                <div className="space-y-2">
                                     <Label>Message Template Variables</Label>
                                     <div className="flex flex-wrap gap-2 mb-2">
                                         {['product_name', 'platform', 'refund_amount', 'available_slots', 'product_link', 'deadline'].map(v => (
@@ -638,7 +654,7 @@ export default function AdminProducts() {
                                         ))}
                                     </div>
                                     <Textarea
-                                        className="min-h-[200px] font-mono whitespace-pre-wrap"
+                                        className="min-h-[200px] font-mono whitespace-pre-wrap break-all"
                                         value={waTemplate}
                                         onChange={(e) => setWaTemplate(e.target.value)}
                                     />

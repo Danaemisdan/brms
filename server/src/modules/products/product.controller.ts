@@ -164,7 +164,9 @@ export class ProductController {
 
             res.status(201).json({ message: "Campaign created successfully", product });
         } catch (error: any) {
-            console.error("Error creating campaign:", error);
+            console.error("🔴 ERROR CREATING PRODUCT START 🔴");
+            console.error(error);
+            console.error("🔴 ERROR CREATING PRODUCT END 🔴");
             res.status(500).json({ error: error.message || "Failed to create campaign." });
         }
     }

@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 export class WhatsAppController {
     static async launchCampaign(req: Request, res: Response) {
         try {
-            const { product_id, template, target = "all_customers", custom_phones = "" } = req.body;
+            const { product_id, template, target = "all_customers", custom_phones = "", scheduled_at } = req.body;
 
             const product = await prisma.product.findUnique({
                 where: { id: product_id }
@@ -50,6 +50,7 @@ export class WhatsAppController {
                     status: 'PENDING',
                     payload: JSON.stringify(payloadData),
                     dedupe_key: dedupeKey,
+                    available_at: scheduled_at ? new Date(scheduled_at) : undefined,
                 }
             });
 

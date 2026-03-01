@@ -64,7 +64,7 @@ def _run_vlm(image_path: str, prompt: str) -> Tuple[Optional[dict], str]:
         "-p", prompt,
     ]
     try:
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True, timeout=20)
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True, timeout=120)
         output = result.stdout.strip()
     except Exception as exc:
         return None, f"VLM execution failed: {exc}"

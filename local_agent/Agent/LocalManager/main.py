@@ -23,8 +23,13 @@ def main():
         verification_thread = threading.Thread(target=start_verification_polling_loop, daemon=True)
         verification_thread.start()
         
-        logging.info("Bot is polling...")
-        app.run_polling()
+        logging.info("Agent is polling BRMS queues indefinitely...")
+        
+        # We replace the Telegram polling with a simple infinite loop to keep threads alive
+        # since Telegram webhooks crash with conflict
+        import time
+        while True:
+            time.sleep(1)
     except Exception as e:
         logging.error(f"Failed to start bot: {e}")
 
