@@ -1,89 +1,133 @@
 import os
-import json
 import time
 import logging
+from typing import Any, Dict, List, Optional
+
+import requests
+from dotenv import load_dotenv
+
 from src.tools.playwright_whatsapp import send_whatsapp_message_playwright
 
-# The files are dumped into the root local_agent directory by the backend
-AGENT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../"))
+load_dotenv()
 
-def process_campaign_jobs():
-    while True:
-        try:
-            if not os.path.exists(AGENT_DIR):
-                time.sleep(10)
-                continue
+BRMS_API_URL = os.getenv("BRMS_API_URL", "http://localhost:5001").rstrip("/")
+AGENT_SECRET_KEY = os.getenv("AGENT_SECRET_KEY", "")
+WORKER_ID = os.getenv("AGENT_WHATSAPP_WORKER_ID", "whatsapp-campaign")
+POLL_SECONDS = int(os.getenv("WHATSAPP_POLL_SECONDS", "10"))
+RETRY_SECONDS = int(os.getenv("WHATSAPP_RETRY_SECONDS", "60"))
 
-            # Find all campaign_*.json files
-            for filename in os.listdir(AGENT_DIR):
-                if filename.startswith("campaign_") and filename.endswith(".json"):
-                    filepath = os.path.join(AGENT_DIR, filename)
-                    process_single_campaign(filepath)
-            
-        except Exception as e:
-            logging.error(f"Error checking for campaign jobs: {e}")
-        
-        # Check every 10 seconds
-        time.sleep(10)
+logger = logging.getLogger(__name__)
 
-def process_single_campaign(filepath: str):
-    logging.info(f"Picked up WhatsApp campaign command: {filepath}")
+def _headers() -> Dict[str, str]:
+    return {
+        "Authorization": f"Bearer {AGENT_SECRET_KEY}",
+        "Content-Type": "application/json",
+    }
+
+def _claim_campaign_task() -> Optional[Dict[str, Any]]:
+    if not AGENT_SECRET_KEY:
+        logger.error("AGENT_SECRET_KEY is missing. Cannot claim WhatsApp tasks.")
+        return None
+
     try:
-        with open(filepath, 'r') as f:
-            data = json.load(f)
-        
-        command = data.get("command")
-        if command != "BLAST_CAMPAIGN":
-            logging.warning(f"Unknown command {command} in {filepath}. Deleting.")
-            os.remove(filepath)
-            return
+        resp = requests.get(
+            f"{BRMS_API_URL}/api/refunds/tasks/next",
+            headers=_headers(),
+            params={"type": "WHATSAPP_BLAST", "worker_id": WORKER_ID},
+            timeout=15,
+        )
+        if resp.status_code != 200:
+            logger.error("Failed to claim WhatsApp task: %s", resp.text)
+            return None
+        return resp.json().get("task")
+    except Exception as exc:
+        logger.error("WhatsApp task claim request failed: %s", exc)
+        return None
 
-        message = data.get("message", "")
-        # The backend sets target ("all_customers", "verified_customers", "custom")
-        # and custom_phones ("comma-separated list")
-        target = data.get("target", "all_customers")
-        custom_phones = data.get("custom_phones", "")
+def _complete_task(task_id: str, status: str, result: Dict[str, Any], retry_after_seconds: Optional[int] = None) -> None:
+    payload: Dict[str, Any] = {"status": status, "result": result}
+    if retry_after_seconds is not None:
+        payload["retry_after_seconds"] = retry_after_seconds
 
-        targets = []
-        if target == "custom":
-            # Split by comma and clean up whitespace
-            raw_targets = custom_phones.split(",")
-            for t in raw_targets:
-                t = t.strip()
-                if t:
-                    targets.append(t)
-        else:
-            # Here you would typically fetch numbers from a DB or API based on 'all_customers'. 
-            # For now, as a placeholder since we don't have direct DB access from local agent,
-            # we will just warn user that only 'custom' is supported natively without API fetch.
-            logging.error(f"Target '{target}' is not fully implemented in local agent without /api/users endpoint. Ignoring.")
-            os.remove(filepath)
-            return
+    try:
+        resp = requests.post(
+            f"{BRMS_API_URL}/api/refunds/tasks/{task_id}/complete",
+            headers=_headers(),
+            json=payload,
+            timeout=15,
+        )
+        if resp.status_code != 200:
+            logger.error("Failed to complete WhatsApp task %s: %s", task_id, resp.text)
+    except Exception as exc:
+        logger.error("Complete WhatsApp task request failed (%s): %s", task_id, exc)
 
-        logging.info(f"Target audience parsed: {targets}")
+def _parse_recipients(payload: Dict[str, Any]) -> List[str]:
+    recipients = payload.get("recipients")
+    if isinstance(recipients, list):
+        clean = [str(item).strip() for item in recipients if str(item).strip()]
+        if clean:
+            return clean
 
-        # Send messages sequentially
-        for idx, contact in enumerate(targets):
-            logging.info(f"[{idx+1}/{len(targets)}] Sending to: {contact}")
-            result_json = send_whatsapp_message_playwright(
-                contact=contact,
-                message=message
-            )
-            logging.info(f"Result for {contact}: {result_json}")
-            # wait briefly between messages to avoid spam locks
+    custom_phones = str(payload.get("custom_phones", "")).strip()
+    if custom_phones:
+        return [item.strip() for item in custom_phones.split(",") if item.strip()]
+    return []
+
+def _process_campaign_task(task: Dict[str, Any]) -> None:
+    task_id = str(task.get("id", ""))
+    payload = task.get("payload") or {}
+    message = str(payload.get("message", "")).strip()
+    recipients = _parse_recipients(payload)
+
+    if not task_id or not message or not recipients:
+        logger.error("Invalid WHATSAPP_BLAST payload for task %s: %s", task_id, payload)
+        if task_id:
+            _complete_task(task_id, "FAILED", {"error": "Invalid WHATSAPP_BLAST payload", "payload": payload})
+        return
+
+    sent_results: List[Dict[str, Any]] = []
+    failed_count = 0
+
+    for idx, contact in enumerate(recipients):
+        logger.info("[%s/%s] Sending WhatsApp campaign message to: %s", idx + 1, len(recipients), contact)
+        try:
+            result_json = send_whatsapp_message_playwright(contact=contact, message=message)
+            sent_results.append({"contact": contact, "result": result_json})
+            if result_json.get("status") != "success":
+                failed_count += 1
+            logger.info("Send result for %s: %s", contact, result_json)
             time.sleep(5)
-            
-        logging.info(f"Finished processing campaign {filepath}. Deleting file.")
-        os.remove(filepath)
+        except Exception as exc:
+            failed_count += 1
+            sent_results.append({"contact": contact, "result": {"status": "error", "message": str(exc)}})
+            logger.error("Send error for %s: %s", contact, exc)
 
-    except json.JSONDecodeError:
-        logging.error(f"Invalid JSON in {filepath}. Deleting.")
-        os.remove(filepath)
-    except Exception as e:
-        logging.error(f"Failed to process campaign {filepath}: {e}")
+    if failed_count == 0:
+        _complete_task(task_id, "COMPLETED", {"results": sent_results, "failed_count": 0})
+        return
 
-def start_campaign_polling_loop():
-    logging.info("Starting BRMS WhatsApp Campaign Poller...")
+    if failed_count == len(recipients):
+        _complete_task(
+            task_id,
+            "PENDING",
+            {"results": sent_results, "failed_count": failed_count},
+            retry_after_seconds=RETRY_SECONDS,
+        )
+        return
+
+    _complete_task(task_id, "COMPLETED", {"results": sent_results, "failed_count": failed_count})
+
+def process_campaign_jobs() -> None:
+    while True:
+        task = _claim_campaign_task()
+        if not task:
+            time.sleep(POLL_SECONDS)
+            continue
+        logger.info("Claimed WhatsApp campaign task: %s", task.get("id"))
+        _process_campaign_task(task)
+
+def start_campaign_polling_loop() -> None:
+    logger.info("Starting BRMS WhatsApp Campaign Poller...")
     process_campaign_jobs()
 
 if __name__ == "__main__":

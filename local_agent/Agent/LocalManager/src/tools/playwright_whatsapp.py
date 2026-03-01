@@ -9,7 +9,11 @@ def send_whatsapp_message_playwright(contact: str, message: str) -> dict:
     Sends a WhatsApp message using a persistent stealth Chrome profile.
     Waits for the user to scan the QR code if logging in for the first time.
     """
-    profile_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../chrome_data"))
+    profile_dir = os.getenv(
+        "WHATSAPP_CHROME_PROFILE_DIR",
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../chrome_data_whatsapp")),
+    )
+    os.makedirs(profile_dir, exist_ok=True)
     
     with sync_playwright() as p:
         # Launch persistent context

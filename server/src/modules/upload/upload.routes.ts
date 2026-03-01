@@ -2,6 +2,8 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { authMiddleware } from '../../middleware/auth';
+import { roleGuard } from '../../middleware/roleGuard';
 
 const router = express.Router();
 
@@ -26,7 +28,7 @@ const upload = multer({
 });
 
 // Upload up to 6 images
-router.post('/products', upload.array('images', 6), (req, res) => {
+router.post('/products', authMiddleware, roleGuard('ADMIN', 'VENDOR'), upload.array('images', 6), (req, res) => {
     try {
         if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
             return res.status(400).json({ error: 'No files uploaded' });

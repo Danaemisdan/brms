@@ -9,6 +9,12 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
 
 export default function AdminRefunds() {
     const [refundRequests, setRefundRequests] = useState<any[]>([]);
+    const [queueStats, setQueueStats] = useState({
+        reviewPending: 0,
+        reviewInProgress: 0,
+        whatsappPending: 0,
+        whatsappInProgress: 0
+    });
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -18,14 +24,29 @@ export default function AdminRefunds() {
     const fetchRefunds = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/orders`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            if (res.ok) {
-                const data = await res.json();
+            const headers = { Authorization: `Bearer ${token}` };
+            const [ordersRes, statsRes] = await Promise.all([
+                fetch(`${API_URL}/api/orders`, { headers }),
+                fetch(`${API_URL}/api/refunds/tasks/stats`, { headers })
+            ]);
+
+            if (ordersRes.ok) {
+                const data = await ordersRes.json();
                 // Filter only orders that have an associated refund request
                 const refunds = data.orders.filter((o: any) => o.refund != null);
                 setRefundRequests(refunds);
+            }
+
+            if (statsRes.ok) {
+                const statsData = await statsRes.json();
+                const review = statsData?.stats?.REVIEW_VERIFY || {};
+                const whatsapp = statsData?.stats?.WHATSAPP_BLAST || {};
+                setQueueStats({
+                    reviewPending: review.PENDING || 0,
+                    reviewInProgress: review.IN_PROGRESS || 0,
+                    whatsappPending: whatsapp.PENDING || 0,
+                    whatsappInProgress: whatsapp.IN_PROGRESS || 0
+                });
             }
         } catch (error) {
             console.error("Failed to fetch refunds:");
@@ -66,6 +87,15 @@ export default function AdminRefunds() {
                 <h1 className="text-3xl font-bold tracking-tight">Refund Requests</h1>
                 <p className="text-gray-500">Review customer refund submissions and verify with the bot.</p>
             </div>
+
+            <Card className="p-5">
+                <CardTitle className="text-base">Local Agent Queue</CardTitle>
+                <CardDescription className="mt-1">
+                    Review Verify: {queueStats.reviewPending} pending, {queueStats.reviewInProgress} in progress
+                    {" · "}
+                    WhatsApp Blast: {queueStats.whatsappPending} pending, {queueStats.whatsappInProgress} in progress
+                </CardDescription>
+            </Card>
 
             <div className="space-y-4">
                 {isLoading ? (

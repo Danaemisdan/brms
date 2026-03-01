@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import * as fs from 'fs';
-import * as path from 'path';
+import { encryptBankData } from '../../utils/encryption';
 
 const prisma = new PrismaClient();
 
@@ -47,6 +46,7 @@ export class OrderController {
     static async getOrdersByMobile(req: Request, res: Response) {
         try {
             const { mobile } = req.params;
+            const userId = (req as any).user.userId;
 
             const user = await prisma.user.findUnique({
                 where: { mobile },
@@ -55,6 +55,10 @@ export class OrderController {
 
             if (!user) {
                 return res.json({ orders: [] });
+            }
+
+            if (user.id !== userId) {
+                return res.status(403).json({ error: "Unauthorized access to this mobile's orders." });
             }
 
             const orders = await prisma.order.findMany({
@@ -140,29 +144,26 @@ export class OrderController {
                 }
             });
 
-            // Update user's bank details/UPI
+            // Update user's bank details/UPI (encrypted at rest)
             await prisma.user.update({
                 where: { id: order.user_id },
-                data: { encrypted_bank_data: upi_id }
+                data: { encrypted_bank_data: encryptBankData({ payment_method_string: upi_id }) }
             });
 
-            // Trigger AI Agent for DOM Verification
-            const localAgentPath = path.resolve(__dirname, "../../../../local_agent");
-            if (!fs.existsSync(localAgentPath)) {
-                fs.mkdirSync(localAgentPath, { recursive: true });
-            }
-
-            const payloadData = {
-                timestamp: new Date().toISOString(),
-                command: "VERIFY_REVIEW",
-                review_id: review.id,
-                order_id: order.id,
-                product_url: order.product.product_link,
-                screenshot_url: review_screenshot
-            };
-
-            const payloadFile = path.join(localAgentPath, `verify_review_${review.id}.json`);
-            fs.writeFileSync(payloadFile, JSON.stringify(payloadData, null, 2));
+            // Queue local-agent verification task (claim/complete model).
+            await prisma.agentTask.create({
+                data: {
+                    task_type: 'REVIEW_VERIFY',
+                    status: 'PENDING',
+                    dedupe_key: `review:${review.id}`,
+                    payload: JSON.stringify({
+                        review_id: review.id,
+                        order_id: order.id,
+                        product_url: order.product.product_link,
+                        screenshot_data: review_screenshot,
+                    }),
+                },
+            });
 
             res.json({ message: "Refund claimed successfully! Review is pending AI verification." });
         } catch (error: any) {

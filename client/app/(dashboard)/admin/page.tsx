@@ -13,7 +13,11 @@ export default function AdminDashboard() {
         pendingRefunds: 0,
         totalCustomers: 0, // Using unique orders as a proxy for now
         totalRefunded: 0,
-        pendingProducts: 0
+        pendingProducts: 0,
+        reviewQueuePending: 0,
+        reviewQueueInProgress: 0,
+        whatsappQueuePending: 0,
+        whatsappQueueInProgress: 0
     });
 
     // Using pending products for the pending vendors list for now
@@ -31,17 +35,22 @@ export default function AdminDashboard() {
             const token = localStorage.getItem("token");
             const headers = { Authorization: `Bearer ${token}` };
 
-            const [ordersRes, productsRes] = await Promise.all([
+            const [ordersRes, productsRes, agentStatsRes] = await Promise.all([
                 fetch(`${API_URL}/api/orders`, { headers }),
-                fetch(`${API_URL}/api/products`, { headers })
+                fetch(`${API_URL}/api/products`, { headers }),
+                fetch(`${API_URL}/api/refunds/tasks/stats`, { headers })
             ]);
 
             if (ordersRes.ok && productsRes.ok) {
                 const ordersData = await ordersRes.json();
                 const productsData = await productsRes.json();
+                const agentStatsData = agentStatsRes.ok ? await agentStatsRes.json() : { stats: {} };
 
                 const orders = ordersData.orders || [];
                 const products = productsData.products || [];
+                const queueStats = agentStatsData.stats || {};
+                const reviewQueue = queueStats.REVIEW_VERIFY || {};
+                const whatsappQueue = queueStats.WHATSAPP_BLAST || {};
 
                 const pendingRefundsCount = orders.filter((o: any) => o.refund?.status === "PENDING").length;
                 const totalRefundAmount = orders.filter((o: any) => o.refund?.status === "REFUNDED").reduce((sum: number, o: any) => sum + o.refund.amount, 0);
@@ -54,7 +63,11 @@ export default function AdminDashboard() {
                     pendingRefunds: pendingRefundsCount,
                     totalCustomers: uniqueCustomers,
                     totalRefunded: totalRefundAmount,
-                    pendingProducts: draftProducts.length
+                    pendingProducts: draftProducts.length,
+                    reviewQueuePending: reviewQueue.PENDING || 0,
+                    reviewQueueInProgress: reviewQueue.IN_PROGRESS || 0,
+                    whatsappQueuePending: whatsappQueue.PENDING || 0,
+                    whatsappQueueInProgress: whatsappQueue.IN_PROGRESS || 0
                 });
 
                 setPendingRequests(draftProducts);
@@ -81,6 +94,8 @@ export default function AdminDashboard() {
         { label: "Pending Products", value: stats.pendingProducts },
         { label: "Total Customers", value: stats.totalCustomers },
         { label: "Pending Refunds", value: stats.pendingRefunds },
+        { label: "Review Queue", value: `${stats.reviewQueuePending}P / ${stats.reviewQueueInProgress}IP` },
+        { label: "WhatsApp Queue", value: `${stats.whatsappQueuePending}P / ${stats.whatsappQueueInProgress}IP` },
         { label: "Total Vendors", value: "1 (Admin)" },
         { label: "Total Refunded", value: `₹${stats.totalRefunded}` },
     ];
@@ -97,7 +112,7 @@ export default function AdminDashboard() {
             ) : (
                 <>
                     {/* Metrics */}
-                    <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-6">
+                    <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-8">
                         {metrics.map((m, i) => (
                             <Card key={i}>
                                 <CardHeader className="pb-2">

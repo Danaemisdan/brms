@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = "file:./dev.db"
+  url      = env("DATABASE_URL")
 }
 
 // Role: ADMIN | CLIENT | VENDOR | CUSTOMER
@@ -91,10 +91,28 @@ model Product {
   wa_template           String?
   wa_schedule_frequency String?  @default("NONE") // NONE, ONCE_A_WEEK, TWICE_A_WEEK, DAILY
   wa_schedule_days      String?  // e.g., MONDAY, THURSDAY
+  wa_last_sent_at       DateTime?
   created_at            DateTime @default(now())
 
   orders   Order[]
   invoices Invoice[]
+}
+
+model AgentTask {
+  id         String   @id @default(uuid())
+  task_type  String   // REVIEW_VERIFY | WHATSAPP_BLAST
+  status     String   @default("PENDING") // PENDING | IN_PROGRESS | COMPLETED | FAILED
+  payload    String
+  result     String?
+  dedupe_key String?  @unique
+  locked_by  String?
+  locked_at  DateTime?
+  attempts   Int      @default(0)
+  available_at DateTime @default(now())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  @@index([task_type, status, available_at])
 }
 
 model Order {

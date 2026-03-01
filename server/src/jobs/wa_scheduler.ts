@@ -1,7 +1,6 @@
 import cron from 'node-cron';
 import { PrismaClient } from '@prisma/client';
-import fs from 'fs';
-import path from 'path';
+import { resolveRecipients } from '../modules/whatsapp/targeting';
 
 const prisma = new PrismaClient();
 
@@ -24,13 +23,15 @@ export const startWhatsAppScheduler = () => {
                 }
             });
 
-            const localAgentPath = path.resolve(__dirname, "../../../local_agent");
-            if (!fs.existsSync(localAgentPath)) {
-                fs.mkdirSync(localAgentPath, { recursive: true });
-            }
-
             for (const product of products) {
                 let shouldSend = false;
+                const sentToday = product.wa_last_sent_at
+                    ? product.wa_last_sent_at.toDateString() === new Date().toDateString()
+                    : false;
+
+                if (sentToday) {
+                    continue;
+                }
 
                 if (product.wa_schedule_frequency === 'DAILY') {
                     shouldSend = true;
@@ -53,12 +54,39 @@ export const startWhatsAppScheduler = () => {
                         message: finalMessage,
                         command: "BLAST_CAMPAIGN",
                         target: product.wa_target || "all_customers",
-                        custom_phones: product.wa_custom_phones || ""
+                        custom_phones: product.wa_custom_phones || "",
+                        recipients: await resolveRecipients(
+                            prisma,
+                            product.wa_target || "all_customers",
+                            product.wa_custom_phones || ""
+                        ),
                     };
 
-                    const payloadFile = path.join(localAgentPath, `campaign_cron_${product.id}_${Date.now()}.json`);
-                    fs.writeFileSync(payloadFile, JSON.stringify(payloadData, null, 2));
-                    console.log(`✅ Scheduled campaign payload dropped for product: ${product.product_name}`);
+                    if (!Array.isArray(payloadData.recipients) || payloadData.recipients.length === 0) {
+                        console.log(`⚠️ Skipping scheduled campaign for ${product.product_name}: no recipients resolved.`);
+                        continue;
+                    }
+
+                    const dedupeKey = `whatsapp:schedule:${product.id}:${new Date().toISOString().slice(0, 10)}`;
+                    try {
+                        await prisma.agentTask.create({
+                            data: {
+                                task_type: 'WHATSAPP_BLAST',
+                                status: 'PENDING',
+                                payload: JSON.stringify(payloadData),
+                                dedupe_key: dedupeKey,
+                            },
+                        });
+                        await prisma.product.update({
+                            where: { id: product.id },
+                            data: { wa_last_sent_at: new Date() },
+                        });
+                        console.log(`✅ Scheduled campaign queued for product: ${product.product_name}`);
+                    } catch (err: any) {
+                        if (err?.code !== 'P2002') {
+                            throw err;
+                        }
+                    }
                 }
             }
         } catch (error) {

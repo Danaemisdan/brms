@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import fs from "fs";
-import path from "path";
+import { resolveRecipients } from "./targeting";
 
 const prisma = new PrismaClient();
 
@@ -27,29 +26,37 @@ export class WhatsAppController {
                 .replace(/{{product_link}}/g, product.product_link)
                 .replace(/{{deadline}}/g, new Date(product.deadline).toLocaleDateString());
 
-            // Dump payload into the local_agent folder for the user's WhatsApp bot script to pick up and process
-            const localAgentPath = path.resolve(__dirname, "../../../../../local_agent");
-
-            if (!fs.existsSync(localAgentPath)) {
-                fs.mkdirSync(localAgentPath, { recursive: true });
-            }
-
             const payloadData = {
                 timestamp: new Date().toISOString(),
                 product_id,
                 message: finalMessage,
                 command: "BLAST_CAMPAIGN",
                 target,
-                custom_phones
+                custom_phones,
+                recipients: await resolveRecipients(prisma, target, custom_phones),
             };
 
-            const payloadFile = path.join(localAgentPath, `campaign_${Date.now()}.json`);
-            fs.writeFileSync(payloadFile, JSON.stringify(payloadData, null, 2));
+            if (!Array.isArray(payloadData.recipients) || payloadData.recipients.length === 0) {
+                return res.status(400).json({ error: "No recipients found for the selected WhatsApp target." });
+            }
+
+            const dedupeKey = target === 'custom'
+                ? null
+                : `whatsapp:product:${product_id}:${new Date().toISOString().slice(0, 16)}`;
+
+            const task = await prisma.agentTask.create({
+                data: {
+                    task_type: 'WHATSAPP_BLAST',
+                    status: 'PENDING',
+                    payload: JSON.stringify(payloadData),
+                    dedupe_key: dedupeKey,
+                }
+            });
 
             res.status(200).json({
                 message: "Campaign queued for Local Agent successfully.",
                 finalMessage,
-                payloadFile
+                task_id: task.id
             });
         } catch (error) {
             console.error("Error launching WA campaign:", error);

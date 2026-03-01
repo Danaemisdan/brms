@@ -3,6 +3,8 @@ import { z } from 'zod';
 import prisma from '../../config/database';
 import bcrypt from 'bcrypt';
 import { authMiddleware, AuthRequest } from '../../middleware/auth';
+import { roleGuard } from '../../middleware/roleGuard';
+import { decryptBankData, encryptBankData } from '../../utils/encryption';
 
 const router = Router();
 
@@ -19,7 +21,7 @@ function firstValidationError(error: z.ZodError): string {
 
 // POST /api/users/brand
 // Admin only endpoint to create a new Brand (Vendor) user
-router.post('/brand', async (req: Request, res: Response) => {
+router.post('/brand', authMiddleware, roleGuard('ADMIN'), async (req: Request, res: Response) => {
     try {
         const parsed = createBrandSchema.safeParse(req.body);
         if (!parsed.success) {
@@ -85,7 +87,7 @@ router.post('/brand', async (req: Request, res: Response) => {
 
 // GET /api/users/brands
 // Retrieve list of brands for Admin table
-router.get('/brands', async (req: Request, res: Response) => {
+router.get('/brands', authMiddleware, roleGuard('ADMIN'), async (req: Request, res: Response) => {
     try {
         const brands = await prisma.user.findMany({
             where: { role: 'VENDOR' },
@@ -124,6 +126,16 @@ router.get('/profile', authMiddleware, async (req: AuthRequest, res: Response) =
             return;
         }
 
+        let paymentMethodString: string | null = null;
+        if (user.encrypted_bank_data) {
+            try {
+                const parsed = decryptBankData(user.encrypted_bank_data);
+                paymentMethodString = parsed?.payment_method_string || null;
+            } catch {
+                paymentMethodString = null;
+            }
+        }
+
         res.json({
             user: {
                 id: user.id,
@@ -131,7 +143,7 @@ router.get('/profile', authMiddleware, async (req: AuthRequest, res: Response) =
                 email: user.email,
                 mobile: user.mobile,
                 role: user.role,
-                encrypted_bank_data: user.encrypted_bank_data,
+                encrypted_bank_data: paymentMethodString,
             }
         });
     } catch (error) {
@@ -153,7 +165,7 @@ router.put('/bank-details', authMiddleware, async (req: AuthRequest, res: Respon
 
         await prisma.user.update({
             where: { id: req.user!.userId },
-            data: { encrypted_bank_data: payment_method_string }
+            data: { encrypted_bank_data: encryptBankData({ payment_method_string }) }
         });
 
         res.json({ message: 'Payment details updated successfully' });

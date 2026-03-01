@@ -8,7 +8,11 @@ def verify_amazon_review_playwright(product_url: str, reviewer_name: str, review
     """
     Uses a persistent stealth Chrome profile to check if a specific Amazon review exists.
     """
-    profile_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../chrome_data"))
+    profile_dir = os.getenv(
+        "AMAZON_CHROME_PROFILE_DIR",
+        os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../chrome_data_amazon")),
+    )
+    os.makedirs(profile_dir, exist_ok=True)
     
     with sync_playwright() as p:
         logging.info(f"Launching Stealth Chrome for Amazon search at {profile_dir}")

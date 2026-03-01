@@ -1,11 +1,15 @@
 import time
 import requests
 import logging
+import os
+from dotenv import load_dotenv
 from src.tools.macos_ui import _send_whatsapp_message
 
+load_dotenv()
+
 # BRMS Integration config
-BRMS_API_URL = "http://localhost:5001"
-AGENT_SECRET_KEY = "brms_local_agent_secret_2026"
+BRMS_API_URL = os.getenv("BRMS_API_URL", "http://localhost:5001").rstrip("/")
+AGENT_SECRET_KEY = os.getenv("AGENT_SECRET_KEY", "")
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +19,10 @@ def poll_brms_refunds():
     WhatsApp messages to the customers with their refund details.
     """
     logger.info("Checking BRMS for pending refunds...")
+    if not AGENT_SECRET_KEY:
+        logger.error("AGENT_SECRET_KEY is missing. Cannot poll refund queue.")
+        return
+
     headers = {
         "Authorization": f"Bearer {AGENT_SECRET_KEY}",
         "Content-Type": "application/json"
@@ -58,7 +66,7 @@ def poll_brms_refunds():
             # Construct the exact WhatsApp message to send
             message = (
                 f"Hi {name}, your refund of ₹{amount} for the '{product}' campaign "
-                f"ha been successfully processed to {payment_str}. "
+                f"has been successfully processed to {payment_str}. "
                 f"Thank you for participating!"
             )
 
