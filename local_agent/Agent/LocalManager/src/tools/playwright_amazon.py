@@ -122,3 +122,17 @@ def verify_amazon_review_playwright(product_url: str, reviewer_name: str, review
             return {"status": "error", "message": str(e)}
         finally:
             context.close()
+
+if __name__ == "__main__":
+    import sys
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+    if len(sys.argv) < 4:
+        print("Usage: python3 playwright_amazon.py <product_url> <reviewer_name> <review_text>")
+        sys.exit(1)
+    
+    url = sys.argv[1]
+    name = sys.argv[2]
+    text = sys.argv[3]
+    
+    result = verify_amazon_review_playwright(url, name, text)
+    print(f"\nFINAL RESULT: {result}")
