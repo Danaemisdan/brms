@@ -125,6 +125,9 @@ function LoginComponent() {
                         <div className="space-y-2">
                             <div className="flex items-center justify-between">
                                 <Label htmlFor="password" className="font-semibold text-gray-700">Password</Label>
+                                <Link href="/forgot-password" className="text-sm font-medium text-blue-600 hover:text-blue-500">
+                                    Forgot password?
+                                </Link>
                             </div>
                             <div className="relative">
                                 <Input
