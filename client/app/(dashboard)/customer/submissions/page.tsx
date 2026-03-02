@@ -148,7 +148,7 @@ function CustomerSubmissionsContent() {
 
         let initialMethod: "UPI" | "BANK" = "UPI";
         let initialUpi = "";
-        let initialBank = { accountName: "", accountNumber: "", ifsc: "" };
+        const initialBank = { accountName: "", accountNumber: "", ifsc: "" };
 
         if (userProfile?.encrypted_bank_data) {
             const bankStr = userProfile.encrypted_bank_data;
@@ -465,6 +465,10 @@ function CustomerSubmissionsContent() {
                         </div>
                         <div>
                             <Label>Order Screenshot <span className="text-red-500">*</span></Label>
+                            <p className="text-xs text-red-600 font-medium my-1.5 flex items-start gap-1 p-2 bg-red-50 rounded-md border border-red-100">
+                                <span className="text-red-600 mt-0.5">⚠️</span>
+                                Please upload a "Long Screenshot" that clearly shows the Total Order Value, Product Name, and Shipping Address. Small or cropped screenshots will be rejected.
+                            </p>
                             <div className="mt-2">
                                 <ImageUpload
                                     value={orderForm.screenshot}

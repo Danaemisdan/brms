@@ -66,7 +66,7 @@ function CustomerDashboardContent() {
         if (!imgStr) return [];
         try {
             const parsed = JSON.parse(imgStr);
-            let urls = Array.isArray(parsed) ? parsed : [parsed];
+            const urls = Array.isArray(parsed) ? parsed : [parsed];
             return urls.map(u => u.startsWith('/') ? `${API_URL}${u}` : u);
         } catch {
             return imgStr.startsWith('/') ? [`${API_URL}${imgStr}`] : [imgStr];
@@ -222,6 +222,10 @@ function CustomerDashboardContent() {
                             </div>
                             <div>
                                 <Label>Order Screenshot <span className="text-red-500">*</span></Label>
+                                <p className="text-xs text-red-600 font-medium my-1.5 flex items-start gap-1 p-2 bg-red-50 rounded-md border border-red-100">
+                                    <span className="text-red-600 mt-0.5">⚠️</span>
+                                    Please upload a "Long Screenshot" that clearly shows the Total Order Value, Product Name, and Shipping Address. Small or cropped screenshots will be rejected.
+                                </p>
                                 <div className="mt-2">
                                     <ImageUpload
                                         value={orderForm.screenshot}
