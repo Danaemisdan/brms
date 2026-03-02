@@ -1,5 +1,7 @@
 "use client";
 
+import { apiFetch } from "@/lib/apiFetch";
+
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -48,7 +50,7 @@ function CustomerDashboardContent() {
     const fetchPublicProducts = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/products`, {
+            const res = await apiFetch(`${API_URL}/api/products`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
@@ -99,7 +101,7 @@ function CustomerDashboardContent() {
             };
 
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/orders/submit`, {
+            const res = await apiFetch(`${API_URL}/api/orders/submit`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -207,7 +207,7 @@ router.post('/refresh', async (req: Request, res: Response) => {
             maxAge: 60 * 60 * 1000,
         });
 
-        res.json({ message: 'Token refreshed' });
+        res.json({ message: 'Token refreshed', token: newAccessToken });
     } catch (error) {
         console.error('Token refresh error:', error);
         res.status(500).json({ error: 'Token refresh failed' });

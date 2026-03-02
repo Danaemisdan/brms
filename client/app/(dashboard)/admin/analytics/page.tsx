@@ -1,5 +1,7 @@
 "use client";
 
+import { apiFetch } from "@/lib/apiFetch";
+
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from "recharts";
@@ -20,7 +22,7 @@ export default function AdminAnalytics() {
             const token = localStorage.getItem("token");
             if (!token) throw new Error("Unauthorized");
 
-            const res = await fetch(`${API_URL}/api/analytics/dashboard`, {
+            const res = await apiFetch(`${API_URL}/api/analytics/dashboard`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

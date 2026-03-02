@@ -1,5 +1,7 @@
 "use client";
 
+import { apiFetch } from "@/lib/apiFetch";
+
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -33,7 +35,7 @@ export default function BrandDashboard() {
     const fetchProducts = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/products`, {
+            const res = await apiFetch(`${API_URL}/api/products`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
@@ -53,7 +55,7 @@ export default function BrandDashboard() {
 
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/products`, {
+            const res = await apiFetch(`${API_URL}/api/products`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

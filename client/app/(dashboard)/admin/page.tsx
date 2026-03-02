@@ -1,5 +1,7 @@
 "use client";
 
+import { apiFetch } from "@/lib/apiFetch";
+
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -36,9 +38,9 @@ export default function AdminDashboard() {
             const headers = { Authorization: `Bearer ${token}` };
 
             const [ordersRes, productsRes, agentStatsRes] = await Promise.all([
-                fetch(`${API_URL}/api/orders`, { headers }),
-                fetch(`${API_URL}/api/products`, { headers }),
-                fetch(`${API_URL}/api/refunds/tasks/stats`, { headers })
+                apiFetch(`${API_URL}/api/orders`, { headers }),
+                apiFetch(`${API_URL}/api/products`, { headers }),
+                apiFetch(`${API_URL}/api/refunds/tasks/stats`, { headers })
             ]);
 
             if (ordersRes.ok && productsRes.ok) {
@@ -93,7 +95,7 @@ export default function AdminDashboard() {
             setIsLoading(true);
 
             if (action === "approve") {
-                const res = await fetch(`${API_URL}/api/products/${id}`, {
+                const res = await apiFetch(`${API_URL}/api/products/${id}`, {
                     method: "PUT",
                     headers: {
                         "Content-Type": "application/json",
@@ -110,7 +112,7 @@ export default function AdminDashboard() {
                     setIsLoading(false);
                 }
             } else if (action === "decline") {
-                const res = await fetch(`${API_URL}/api/products/${id}`, {
+                const res = await apiFetch(`${API_URL}/api/products/${id}`, {
                     method: "DELETE",
                     headers: {
                         Authorization: `Bearer ${token}`

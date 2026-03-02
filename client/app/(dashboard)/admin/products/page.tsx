@@ -1,5 +1,7 @@
 "use client";
 
+import { apiFetch } from "@/lib/apiFetch";
+
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -58,7 +60,7 @@ export default function AdminProducts() {
     const fetchProducts = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/products?t=${Date.now()}`, {
+            const res = await apiFetch(`${API_URL}/api/products?t=${Date.now()}`, {
                 headers: { Authorization: `Bearer ${token}` },
                 cache: 'no-store'
             });
@@ -148,7 +150,7 @@ export default function AdminProducts() {
     const executeDelete = async (id: string) => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/products/${id}`, {
+            const res = await apiFetch(`${API_URL}/api/products/${id}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -199,7 +201,7 @@ export default function AdminProducts() {
                 const formData = new FormData();
                 imageFiles.forEach(file => formData.append("images", file));
 
-                const uploadRes = await fetch(`${API_URL}/api/upload/products`, {
+                const uploadRes = await apiFetch(`${API_URL}/api/upload/products`, {
                     method: "POST",
                     headers: { Authorization: `Bearer ${token}` },
                     body: formData
@@ -277,7 +279,7 @@ export default function AdminProducts() {
             };
 
             // This endpoint will be created in the backend to communicate with the local agent
-            const res = await fetch(`${API_URL}/api/whatsapp/launch`, {
+            const res = await apiFetch(`${API_URL}/api/whatsapp/launch`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

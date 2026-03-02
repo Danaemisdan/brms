@@ -20,7 +20,7 @@ interface TokenPayload {
 }
 
 export function generateAccessToken(payload: TokenPayload): string {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h' });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
 }
 
 export function generateRefreshToken(payload: TokenPayload): string {

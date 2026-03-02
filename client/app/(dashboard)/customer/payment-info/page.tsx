@@ -29,7 +29,7 @@ export default function CustomerPaymentInfo() {
     const fetchProfile = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/users/profile`, {
+            const res = await apiFetch(`${API_URL}/api/users/profile`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
@@ -88,7 +88,7 @@ export default function CustomerPaymentInfo() {
             const data = new FormData();
             data.append('file', file);
 
-            const uploadRes = await fetch(`${API_URL}/api/upload`, {
+            const uploadRes = await apiFetch(`${API_URL}/api/upload`, {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${token}` },
                 body: data
@@ -137,7 +137,7 @@ export default function CustomerPaymentInfo() {
 
             const payment_method_string = parts.join(" | ");
 
-            const res = await fetch(`${API_URL}/api/users/bank-details`, {
+            const res = await apiFetch(`${API_URL}/api/users/bank-details`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

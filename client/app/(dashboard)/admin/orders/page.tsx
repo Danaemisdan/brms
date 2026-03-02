@@ -1,5 +1,7 @@
 "use client";
 
+import { apiFetch } from "@/lib/apiFetch";
+
 import { useEffect, useState } from "react";
 import { Card, CardTitle, CardDescription } from "@/components/ui/card";
 
@@ -16,7 +18,7 @@ export default function AdminOrders() {
     const fetchOrders = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/orders`, {
+            const res = await apiFetch(`${API_URL}/api/orders`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {

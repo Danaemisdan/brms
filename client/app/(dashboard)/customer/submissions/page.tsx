@@ -1,5 +1,7 @@
 "use client";
 
+import { apiFetch } from "@/lib/apiFetch";
+
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardTitle, CardDescription } from "@/components/ui/card";
@@ -56,7 +58,7 @@ function CustomerSubmissionsContent() {
         try {
             const token = localStorage.getItem("token");
             if (!token) return;
-            const res = await fetch(`${API_URL}/api/users/profile`, {
+            const res = await apiFetch(`${API_URL}/api/users/profile`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
@@ -82,7 +84,7 @@ function CustomerSubmissionsContent() {
             // to avoid race conditions where it fetches the campaign and then `products` reset it
             const fetchExclusive = async () => {
                 try {
-                    const res = await fetch(`${API_URL}/api/products/${autoSubmitId}/campaign`);
+                    const res = await apiFetch(`${API_URL}/api/products/${autoSubmitId}/campaign`);
                     if (res.ok) {
                         const data = await res.json();
                         if (data.product) {
@@ -104,7 +106,7 @@ function CustomerSubmissionsContent() {
     const fetchActiveProducts = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/products`, {
+            const res = await apiFetch(`${API_URL}/api/products`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
@@ -119,7 +121,7 @@ function CustomerSubmissionsContent() {
     const fetchMyOrders = async () => {
         try {
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/orders/my-orders`, {
+            const res = await apiFetch(`${API_URL}/api/orders/my-orders`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.ok) {
@@ -190,7 +192,7 @@ function CustomerSubmissionsContent() {
             const token = localStorage.getItem("token") || "";
             const payload = JSON.parse(atob(token.split('.')[1]));
 
-            const res = await fetch(`${API_URL}/api/orders/${activeOrder.id}/refund`, {
+            const res = await apiFetch(`${API_URL}/api/orders/${activeOrder.id}/refund`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -243,7 +245,7 @@ function CustomerSubmissionsContent() {
             };
 
             const token = localStorage.getItem("token");
-            const res = await fetch(`${API_URL}/api/orders/submit`, {
+            const res = await apiFetch(`${API_URL}/api/orders/submit`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

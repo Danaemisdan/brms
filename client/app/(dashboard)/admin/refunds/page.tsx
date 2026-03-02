@@ -1,5 +1,7 @@
 "use client";
 
+import { apiFetch } from "@/lib/apiFetch";
+
 import { useEffect, useState } from "react";
 import { Card, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,8 +30,8 @@ export default function AdminRefunds() {
             const token = localStorage.getItem("token");
             const headers = { Authorization: `Bearer ${token}` };
             const [ordersRes, statsRes] = await Promise.all([
-                fetch(`${API_URL}/api/orders`, { headers }),
-                fetch(`${API_URL}/api/refunds/tasks/stats`, { headers })
+                apiFetch(`${API_URL}/api/orders`, { headers }),
+                apiFetch(`${API_URL}/api/refunds/tasks/stats`, { headers })
             ]);
 
             if (ordersRes.ok) {
@@ -62,7 +64,7 @@ export default function AdminRefunds() {
             const token = localStorage.getItem("token");
             const status = action === "approved" ? "APPROVED" : action === "processed" ? "REFUNDED" : "FAILED";
 
-            const res = await fetch(`${API_URL}/api/orders/${id}/refund/status`, {
+            const res = await apiFetch(`${API_URL}/api/orders/${id}/refund/status`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
