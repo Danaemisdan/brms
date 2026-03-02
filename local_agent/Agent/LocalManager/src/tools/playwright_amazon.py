@@ -45,6 +45,11 @@ def verify_amazon_review_playwright(product_url: str, reviewer_name: str, review
                 logging.error("Product URL is empty.")
                 return {"status": "error", "message": "Empty product URL."}
 
+            # Normalize URL — prepend https:// if no protocol is present
+            if not product_url.startswith("http://") and not product_url.startswith("https://"):
+                product_url = "https://" + product_url
+                logging.info(f"Prepended https:// to URL → {product_url}")
+
             if "amazon." not in product_url.lower():
                 logging.warning(f"URL '{product_url}' does not contain 'amazon.'. Proceeding anyway.")
 

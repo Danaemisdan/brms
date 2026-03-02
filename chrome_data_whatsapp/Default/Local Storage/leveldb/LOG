@@ -1,3 +1,5 @@
-2026/03/03-02:27:56.601 10a3d Reusing MANIFEST /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Local Storage/leveldb/MANIFEST-000001
-2026/03/03-02:27:56.603 10a3d Recovering log #3
-2026/03/03-02:27:56.604 10a3d Reusing old log /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Local Storage/leveldb/000003.log 
+2026/03/03-02:29:49.712 117d1 Reusing MANIFEST /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Local Storage/leveldb/MANIFEST-000001
+2026/03/03-02:29:49.715 117d1 Recovering log #3
+2026/03/03-02:29:49.715 117d1 Level-0 table #3: started
+2026/03/03-02:29:49.730 117d1 Level-0 table #3: 19383 bytes OK
+2026/03/03-02:29:49.735 117d1 Delete type=0 #3
