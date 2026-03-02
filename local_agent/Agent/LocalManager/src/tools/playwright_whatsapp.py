@@ -21,6 +21,7 @@ def send_whatsapp_message_playwright(contact: str, message: str) -> dict:
         context = p.chromium.launch_persistent_context(
             user_data_dir=profile_dir,
             headless=False, # Keep visible for QR scan and WhatsApp stability
+            channel="chrome",
             viewport={'width': 1280, 'height': 800},
             args=['--disable-blink-features=AutomationControlled']
         )

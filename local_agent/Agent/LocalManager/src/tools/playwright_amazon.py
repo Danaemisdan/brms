@@ -19,6 +19,7 @@ def verify_amazon_review_playwright(product_url: str, reviewer_name: str, review
         context = p.chromium.launch_persistent_context(
             user_data_dir=profile_dir,
             headless=False, # Keep visible for captcha solving if required
+            channel="chrome",
             viewport={'width': 1280, 'height': 800},
             args=['--disable-blink-features=AutomationControlled']
         )
