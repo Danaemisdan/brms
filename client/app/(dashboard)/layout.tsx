@@ -12,12 +12,14 @@ const brandNav = [
 const customerNav = [
     { label: "Dashboard", href: "/customer" },
     { label: "Submission of Proof", href: "/customer/submissions" },
+    { label: "Payment Info", href: "/customer/payment-info" },
+    { label: "FAQ", href: "/customer/faq" },
     { label: "Support", href: "/customer/support" },
-    { label: "Payment Info", href: "/customer/payment-info" }
 ];
 
 const adminNav = [
     { label: "Dashboard", href: "/admin" },
+    { label: "Analytics", href: "/admin/analytics" },
     { label: "Products", href: "/admin/products" },
     { label: "Brands", href: "/admin/brands" },
     { label: "Orders", href: "/admin/orders" },
