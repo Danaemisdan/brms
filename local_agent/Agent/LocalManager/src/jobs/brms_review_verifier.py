@@ -168,8 +168,23 @@ def _process_task(task: Dict[str, Any]) -> None:
                     reviewer_name=reviewer_name,
                     review_text=review_text,
                 )
+                
+                v_status = verification_result.get("status")
+                attempts = int(task.get("attempts", 0))
+                
+                # 15-Day Rolling Verification Logic
+                if v_status in ["not_found", "error"] and attempts < 15:
+                    logger.warning(f"Amazon Verification {v_status} at attempt {attempts}/15. Delaying task for 24 hours.")
+                    _complete_task(
+                        task_id,
+                        "PENDING",
+                        {"error": verification_result.get("message", "Review not found on Amazon yet.")},
+                        retry_after_seconds=86400
+                    )
+                    return
+                
                 callback_payload = {
-                    "status": "APPROVED" if verification_result.get("status") == "success" else "REJECTED",
+                    "status": "APPROVED" if v_status == "success" else "REJECTED",
                     "reason": verification_result.get("message", ""),
                     "proof_image": verification_result.get("proof_image", ""),
                 }
