@@ -26,6 +26,9 @@ model User {
   email                 String?  @unique
   ecommerce_profile_url String?
   encrypted_bank_data   String?
+  poc_name              String?
+  website               String?
+  country               String?  @default("India")
   vendor_id             String?
   vendor                Vendor?  @relation(fields: [vendor_id], references: [id])
   created_at            DateTime @default(now())

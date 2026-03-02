@@ -48,7 +48,6 @@ router.post('/brand', authMiddleware, roleGuard('ADMIN'), async (req: Request, r
 
         const password_hash = await bcrypt.hash(password, 10);
 
-        // Run transaction to create User and Vendor profile
         const newBrandUser = await prisma.$transaction(async (tx) => {
             const user = await tx.user.create({
                 data: {
@@ -57,6 +56,9 @@ router.post('/brand', authMiddleware, roleGuard('ADMIN'), async (req: Request, r
                     email: email || null,
                     password_hash,
                     role: 'VENDOR',
+                    poc_name: req.body.poc_name || null,
+                    website: req.body.website || null,
+                    country: req.body.country || 'India',
                 }
             });
 
@@ -90,7 +92,7 @@ router.post('/brand', authMiddleware, roleGuard('ADMIN'), async (req: Request, r
 router.put('/brand/:id', authMiddleware, roleGuard('ADMIN'), async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { brand_name, mobile, email, password } = req.body;
+        const { brand_name, mobile, email, password, poc_name, website, country } = req.body;
 
         if (!brand_name || !mobile) {
             res.status(400).json({ error: 'Brand name and mobile are required' });
@@ -119,7 +121,10 @@ router.put('/brand/:id', authMiddleware, roleGuard('ADMIN'), async (req: Request
         let updateData: any = {
             name: brand_name,
             mobile: mobile,
-            email: email || null
+            email: email || null,
+            poc_name: poc_name || null,
+            website: website || null,
+            country: country || 'India',
         };
 
         if (password && password.trim().length >= 6) {
@@ -145,22 +150,31 @@ router.get('/brands', authMiddleware, roleGuard('ADMIN'), async (req: Request, r
     try {
         const brands = await prisma.user.findMany({
             where: { role: 'VENDOR' },
-            include: { managed_vendors: true },
+            include: {
+                vendor: true, // Include the related Vendor model for status
+                _count: {
+                    select: {
+                        orders: true // Count orders for the 'products' field
+                    }
+                }
+            },
             orderBy: { created_at: 'desc' }
         });
 
-        const formatted = brands.map(b => ({
-            id: b.id,
-            name: b.name,
-            mobile: b.mobile,
-            email: b.email,
-            status: b.managed_vendors?.[0]?.status || 'active',
-            // NOTE: prisma.user.products relation isn't direct for VENDORS in the schema.
-            // Products are linked to CLIENT. For now, just send a default or calculate properly.
-            products: 0
+        const formattedBrands = brands.map(brand => ({
+            id: brand.id,
+            name: brand.name,
+            email: brand.email,
+            mobile: brand.mobile,
+            poc_name: brand.poc_name,
+            website: brand.website,
+            country: brand.country,
+            registered_at: brand.created_at,
+            status: brand.vendor?.status || 'active',
+            products: brand._count.orders // Approximate as we don't have separate products table yet
         }));
 
-        res.json({ brands: formatted });
+        res.json({ brands: formattedBrands });
     } catch (error) {
         console.error('Fetch Brands Error:', error);
         res.status(500).json({ error: 'Failed to fetch brands' });
