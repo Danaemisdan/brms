@@ -17,8 +17,10 @@ interface Brand {
     poc_name: string | null;
     website: string | null;
     country: string | null;
+    category: string | null;
     products: number;
     status: string;
+    wallet_balance: number;
 }
 
 export default function AdminBrands() {
@@ -36,7 +38,8 @@ export default function AdminBrands() {
         password: "",
         poc_name: "",
         website: "",
-        country: "India"
+        country: "India",
+        category: ""
     });
 
     const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
@@ -48,7 +51,14 @@ export default function AdminBrands() {
         password: "",
         poc_name: "",
         website: "",
-        country: "India"
+        country: "India",
+        category: ""
+    });
+
+    const [walletBrand, setWalletBrand] = useState<Brand | null>(null);
+    const [walletData, setWalletData] = useState({
+        action: "add",
+        amount: ""
     });
 
     useEffect(() => {
@@ -111,7 +121,8 @@ export default function AdminBrands() {
             poc_name: brand.poc_name || "",
             website: brand.website || "",
             country: brand.country || "India",
-            password: "" // Keep empty, only send if they type a new one
+            category: brand.category || "",
+            password: ""
         });
         setError("");
     };
@@ -174,7 +185,51 @@ export default function AdminBrands() {
 
             toast.success("Brand added successfully.");
             setShowForm(false);
-            setFormData({ brand_name: "", country_code: "+91", mobile: "", email: "", password: "", poc_name: "", website: "", country: "India" });
+            setFormData({ brand_name: "", country_code: "+91", mobile: "", email: "", password: "", poc_name: "", website: "", country: "India", category: "" });
+            fetchBrands();
+        } catch (error) {
+            setError("Server error.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleWalletUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+        if (!walletBrand) return;
+        setIsSubmitting(true);
+
+        const amountNum = parseFloat(walletData.amount);
+        if (isNaN(amountNum) || amountNum <= 0) {
+            setError("Please enter a valid positive amount.");
+            setIsSubmitting(false);
+            return;
+        }
+
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${API_URL}/api/users/brand/${walletBrand.id}/wallet`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    amount: amountNum,
+                    action: walletData.action
+                }),
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+                setError(data.error || "Failed to update wallet");
+                setIsSubmitting(false);
+                return;
+            }
+
+            toast.success(data.message);
+            setWalletBrand(null);
             fetchBrands();
         } catch (error) {
             setError("Server error.");
@@ -247,6 +302,26 @@ export default function AdminBrands() {
                                     <option value="UAE">UAE</option>
                                     <option value="USA">USA</option>
                                     <option value="UK">UK</option>
+                                </select>
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Brand Category</Label>
+                                <select
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    value={formData.category}
+                                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                                >
+                                    <option value="">Select a category...</option>
+                                    <option value="Electronics">Electronics</option>
+                                    <option value="Fashion">Fashion</option>
+                                    <option value="Home & Kitchen">Home & Kitchen</option>
+                                    <option value="Health & Beauty">Health & Beauty</option>
+                                    <option value="Sports & Outdoors">Sports & Outdoors</option>
+                                    <option value="Toys & Games">Toys & Games</option>
+                                    <option value="Books">Books</option>
+                                    <option value="Automotive">Automotive</option>
+                                    <option value="Food & Grocery">Food & Grocery</option>
+                                    <option value="Other">Other</option>
                                 </select>
                             </div>
                             <div className="space-y-2">
@@ -331,6 +406,26 @@ export default function AdminBrands() {
                                         </select>
                                     </div>
                                     <div className="space-y-2">
+                                        <Label>Brand Category</Label>
+                                        <select
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                            value={editFormData.category}
+                                            onChange={(e) => setEditFormData({ ...editFormData, category: e.target.value })}
+                                        >
+                                            <option value="">Select a category...</option>
+                                            <option value="Electronics">Electronics</option>
+                                            <option value="Fashion">Fashion</option>
+                                            <option value="Home & Kitchen">Home & Kitchen</option>
+                                            <option value="Health & Beauty">Health & Beauty</option>
+                                            <option value="Sports & Outdoors">Sports & Outdoors</option>
+                                            <option value="Toys & Games">Toys & Games</option>
+                                            <option value="Books">Books</option>
+                                            <option value="Automotive">Automotive</option>
+                                            <option value="Food & Grocery">Food & Grocery</option>
+                                            <option value="Other">Other</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
                                         <Label htmlFor="edit_password">New Password (Optional)</Label>
                                         <Input id="edit_password" type="password" placeholder="Leave blank to keep current" value={editFormData.password} onChange={handleEditChange} minLength={6} />
                                     </div>
@@ -341,17 +436,67 @@ export default function AdminBrands() {
                                     </div>
                                 </form>
                             </Card>
+                        ) : walletBrand?.id === v.id ? (
+                            <Card key={`wallet-${v.id}`} className="p-6 border-green-500 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="font-semibold text-lg">Manage Wallet: {v.name}</h3>
+                                    <Button variant="ghost" size="sm" onClick={() => { setWalletBrand(null); setError(""); }}>Cancel</Button>
+                                </div>
+                                <div className="mb-4 bg-muted/50 p-4 rounded-md flex justify-between items-center">
+                                    <span className="text-muted-foreground font-medium">Current Balance:</span>
+                                    <span className="text-xl font-bold font-mono">₹{v.wallet_balance?.toLocaleString() || 0}</span>
+                                </div>
+                                {error && walletBrand?.id === v.id && (
+                                    <div className="mb-4 p-3 rounded-md bg-red-50 text-red-600 text-sm">{error}</div>
+                                )}
+                                <form onSubmit={handleWalletUpdate} className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="action">Action</Label>
+                                        <select
+                                            id="action"
+                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            value={walletData.action}
+                                            onChange={(e) => setWalletData({ ...walletData, action: e.target.value })}
+                                        >
+                                            <option value="add">Add Funds (+)</option>
+                                            <option value="remove">Remove Funds (-)</option>
+                                        </select>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="amount">Amount (₹)</Label>
+                                        <Input
+                                            id="amount"
+                                            type="number"
+                                            min="1"
+                                            placeholder="5000"
+                                            value={walletData.amount}
+                                            onChange={(e) => setWalletData({ ...walletData, amount: e.target.value })}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="flex items-end">
+                                        <Button type="submit" className={`w-full ${walletData.action === 'add' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`} disabled={isSubmitting || !walletData.amount}>
+                                            {isSubmitting ? "Processing..." : walletData.action === 'add' ? "Confirm Add" : "Confirm Remove"}
+                                        </Button>
+                                    </div>
+                                </form>
+                            </Card>
                         ) : (
                             <Card key={v.id} className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                                 <div>
                                     <h3 className="font-semibold text-lg">{v.name}</h3>
-                                    <p className="text-sm text-gray-500">{v.email || "No email"} • {v.mobile} • {v.products} products listed</p>
+                                    <p className="text-sm text-gray-500">{v.email || "No email"} • {v.mobile} • {v.products} products listed{v.category ? ` • ${v.category}` : ""}</p>
+                                    <div className="mt-1 px-2.5 py-0.5 max-w-fit rounded-full bg-green-50 text-green-700 border border-green-200 text-xs font-medium flex items-center gap-1.5">
+                                        <span>Wallet:</span>
+                                        <span className="font-mono font-bold">₹{v.wallet_balance?.toLocaleString() || 0}</span>
+                                    </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${v.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${v.status === 'active' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
                                         {v.status || "Active"}
                                     </span>
                                     <Button variant="outline" size="sm" onClick={() => handleEditClick(v)}>Edit</Button>
+                                    <Button variant="secondary" size="sm" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200" onClick={() => { setWalletBrand(v); setError(""); setWalletData({ action: 'add', amount: '' }); }}>Manage Wallet</Button>
                                 </div>
                             </Card>
                         )

@@ -18,6 +18,7 @@ const registerSchema = z.object({
     email: z.union([z.string().trim().email('Invalid email format'), z.literal('')]).optional(),
     password: z.string().min(6, 'Password must be at least 6 characters long'),
     ecommerce_profile_url: z.union([z.string().trim().url('Invalid e-commerce profile URL'), z.literal('')]).optional(),
+    category: z.string().optional(),
 });
 
 const loginSchema = z.object({

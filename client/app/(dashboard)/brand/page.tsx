@@ -21,7 +21,9 @@ export default function BrandDashboard() {
         ordersNeeded: "",
         productLink: "",
         productImage: "",
-        refundAmount: ""
+        refundAmount: "",
+        deliveryType: "ORIGINAL",
+        exchangeImage: ""
     });
 
     useEffect(() => {
@@ -69,7 +71,9 @@ export default function BrandDashboard() {
                     total_slots: Number(form.ordersNeeded) || 0,
                     daily_limit: 100,
                     deadline: new Date(new Date().getTime() + 30 * 24 * 60 * 60 * 1000).toISOString(), // +30 days defaults
-                    instructions: "Buy on platform, leave a review after delivery, and share your screenshot here."
+                    instructions: "Buy on platform, leave a review after delivery, and share your screenshot here.",
+                    delivery_type: form.deliveryType,
+                    exchange_image: form.exchangeImage
                 })
             });
 
@@ -78,7 +82,7 @@ export default function BrandDashboard() {
             }
 
             toast.success("Product request submitted! It will appear when Admin approves it.");
-            setForm({ brand: "", productName: "", platform: "AMAZON", ordersNeeded: "", productLink: "", productImage: "", refundAmount: "" });
+            setForm({ brand: "", productName: "", platform: "AMAZON", ordersNeeded: "", productLink: "", productImage: "", refundAmount: "", deliveryType: "ORIGINAL", exchangeImage: "" });
             fetchProducts();
         } catch (error) {
             toast.error("Error submitting request.");
@@ -133,7 +137,7 @@ export default function BrandDashboard() {
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="productImage">Image URL</Label>
+                                    <Label htmlFor="productImage">Main Product Image URL</Label>
                                     <Input id="productImage" type="url" placeholder="Optional image link" value={form.productImage} onChange={e => setForm({ ...form, productImage: e.target.value })} />
                                 </div>
                                 <div className="space-y-2">
@@ -141,7 +145,36 @@ export default function BrandDashboard() {
                                     <Input id="refundAmount" type="number" placeholder="1000" required value={form.refundAmount} onChange={e => setForm({ ...form, refundAmount: e.target.value })} />
                                 </div>
                             </div>
-                            <Button type="submit" className="w-full" disabled={isSubmitting}>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label>Vendor Delivery Type</Label>
+                                    <select
+                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                        value={form.deliveryType}
+                                        onChange={e => setForm({ ...form, deliveryType: e.target.value })}
+                                    >
+                                        <option value="ORIGINAL">Original Product</option>
+                                        <option value="EXCHANGE">Exchange Product</option>
+                                    </select>
+                                </div>
+
+                                {form.deliveryType === "EXCHANGE" && (
+                                    <div className="space-y-2">
+                                        <Label htmlFor="exchangeImage">Exchange Product Photo URL</Label>
+                                        <Input
+                                            id="exchangeImage"
+                                            type="url"
+                                            placeholder="Link to exchange item photo"
+                                            required={form.deliveryType === "EXCHANGE"}
+                                            value={form.exchangeImage}
+                                            onChange={e => setForm({ ...form, exchangeImage: e.target.value })}
+                                        />
+                                    </div>
+                                )}
+                            </div>
+
+                            <Button type="submit" className="w-full mt-4" disabled={isSubmitting}>
                                 {isSubmitting ? "Submitting..." : "Submit Request to Admin"}
                             </Button>
                         </form>

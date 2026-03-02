@@ -57,7 +57,7 @@ export default function ProductCampaignPage() {
         if (!imgStr) return [];
         try {
             const parsed = JSON.parse(imgStr);
-            let urls = Array.isArray(parsed) ? parsed : [parsed];
+            const urls = Array.isArray(parsed) ? parsed : [parsed];
             return urls.map(u => u.startsWith('/') ? `${API_URL}${u}` : u);
         } catch {
             return imgStr.startsWith('/') ? [`${API_URL}${imgStr}`] : [imgStr];

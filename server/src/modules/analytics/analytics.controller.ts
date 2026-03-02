@@ -1,0 +1,82 @@
+import { Request, Response } from "express";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export class AnalyticsController {
+    static async getDashboardStats(req: Request, res: Response) {
+        try {
+            // 1. Core KPIs
+            const totalUsers = await prisma.user.count({ where: { role: "CUSTOMER" } });
+            const totalBrands = await prisma.user.count({ where: { role: "VENDOR" } });
+
+            const activeProducts = await prisma.product.count({ where: { status: "ACTIVE" } });
+
+            const orders = await prisma.order.findMany({
+                include: { refund: true }
+            });
+
+            const totalOrders = orders.length;
+            const completedRefunds = orders.filter(o => o.refund?.status === "REFUNDED");
+            const totalRefundedAmount = completedRefunds.reduce((sum, o) => sum + (o.refund?.amount || 0), 0);
+
+            // 2. Recent Signups (last 30 days time-series)
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+            const recentUsers = await prisma.user.findMany({
+                where: {
+                    role: "CUSTOMER",
+                    created_at: { gte: thirtyDaysAgo }
+                },
+                select: { created_at: true }
+            });
+
+            // Aggregate signups by day
+            const signupsByDay = recentUsers.reduce((acc: any, user) => {
+                const date = user.created_at.toISOString().split('T')[0];
+                acc[date] = (acc[date] || 0) + 1;
+                return acc;
+            }, {});
+
+            const signupTrend = Object.entries(signupsByDay)
+                .map(([date, count]) => ({ date, signups: count }))
+                .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+            // 3. Product Performance (Top 5 by Order Volume)
+            const products = await prisma.product.findMany({
+                select: {
+                    id: true,
+                    product_name: true,
+                    _count: {
+                        select: { orders: true }
+                    }
+                },
+                orderBy: {
+                    orders: { _count: 'desc' }
+                },
+                take: 5
+            });
+
+            const topProducts = products.map(p => ({
+                name: p.product_name,
+                orders: p._count.orders
+            }));
+
+            res.json({
+                kpis: {
+                    totalUsers,
+                    totalBrands,
+                    activeProducts,
+                    totalOrders,
+                    totalRefundedAmount
+                },
+                signupTrend,
+                topProducts
+            });
+        } catch (error) {
+            console.error("Analytics Error:", error);
+            res.status(500).json({ error: "Failed to fetch analytics data" });
+        }
+    }
+}

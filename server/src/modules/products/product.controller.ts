@@ -54,6 +54,9 @@ export class ProductController {
 
             const products = await prisma.product.findMany({
                 where: whereClause,
+                include: {
+                    orders: true
+                },
                 orderBy: { created_at: 'desc' }
             });
             res.json({ products });
@@ -79,6 +82,8 @@ export class ProductController {
                 deadline,
                 instructions,
                 is_public,
+                delivery_type,
+                exchange_image,
                 wa_target,
                 wa_custom_phones,
                 wa_template,
@@ -122,13 +127,15 @@ export class ProductController {
                     product_image,
                     product_link,
                     platform,
-                    refund_amount: parseFloat(refund_amount),
-                    total_slots: parseInt(total_slots),
-                    daily_limit: parseInt(daily_limit || "100"),
+                    refund_amount: Number(refund_amount),
+                    total_slots: Number(total_slots),
+                    daily_limit: Number(daily_limit) || 100,
                     deadline: new Date(deadline),
                     instructions,
                     is_public: is_public !== undefined ? Boolean(is_public) : true,
                     status: initialStatus,
+                    delivery_type: delivery_type || "ORIGINAL", // Added
+                    exchange_image: exchange_image || null, // Added
                     wa_target: wa_target || "all_customers",
                     wa_custom_phones: wa_custom_phones || null,
                     wa_template: wa_template || null,

@@ -29,6 +29,7 @@ model User {
   poc_name              String?
   website               String?
   country               String?  @default("India")
+  category              String?
   vendor_id             String?
   vendor                Vendor?  @relation(fields: [vendor_id], references: [id])
   created_at            DateTime @default(now())
@@ -54,6 +55,7 @@ model Vendor {
   user             User     @relation("ManagedBy", fields: [user_id], references: [id])
   incentive_points Int      @default(0)
   payout_threshold Int      @default(2000)
+  wallet_balance   Float    @default(0)
   agreement_url    String?
   status           String   @default("active")
   created_at       DateTime @default(now())
@@ -89,6 +91,8 @@ model Product {
   instructions  String
   is_public     Boolean  @default(true)
   status        String   @default("DRAFT")
+  delivery_type String?  @default("ORIGINAL") // ORIGINAL | EXCHANGE
+  exchange_image String?
   wa_target             String?  @default("all_customers")
   wa_custom_phones      String?
   wa_template           String?

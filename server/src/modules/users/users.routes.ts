@@ -59,6 +59,7 @@ router.post('/brand', authMiddleware, roleGuard('ADMIN'), async (req: Request, r
                     poc_name: req.body.poc_name || null,
                     website: req.body.website || null,
                     country: req.body.country || 'India',
+                    category: req.body.category || null,
                 }
             });
 
@@ -125,6 +126,7 @@ router.put('/brand/:id', authMiddleware, roleGuard('ADMIN'), async (req: Request
             poc_name: poc_name || null,
             website: website || null,
             country: country || 'India',
+            category: req.body.category || null,
         };
 
         if (password && password.trim().length >= 6) {
@@ -141,6 +143,56 @@ router.put('/brand/:id', authMiddleware, roleGuard('ADMIN'), async (req: Request
     } catch (error) {
         console.error('Update Brand Error:', error);
         res.status(500).json({ error: 'Failed to update brand account' });
+    }
+});
+// Admin: Add or remove funds from a brand's wallet
+router.put('/brand/:id/wallet', authMiddleware, roleGuard('ADMIN'), async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { amount, action } = req.body; // action: 'add' or 'remove'
+
+        if (!amount || typeof amount !== 'number' || amount <= 0) {
+            res.status(400).json({ error: 'Valid positive amount is required' });
+            return;
+        }
+
+        if (action !== 'add' && action !== 'remove') {
+            res.status(400).json({ error: 'Action must be "add" or "remove"' });
+            return;
+        }
+
+        const vendor = await prisma.vendor.findUnique({
+            where: { user_id: id }
+        });
+
+        if (!vendor) {
+            res.status(404).json({ error: 'Brand profile not found' });
+            return;
+        }
+
+        let newBalance = vendor.wallet_balance;
+        if (action === 'add') {
+            newBalance += amount;
+        } else if (action === 'remove') {
+            if (newBalance < amount) {
+                res.status(400).json({ error: 'Insufficient wallet balance' });
+                return;
+            }
+            newBalance -= amount;
+        }
+
+        const updatedVendor = await prisma.vendor.update({
+            where: { user_id: id },
+            data: { wallet_balance: newBalance }
+        });
+
+        res.json({
+            message: `Successfully ${action === 'add' ? 'added funds to' : 'removed funds from'} wallet`,
+            wallet_balance: updatedVendor.wallet_balance
+        });
+    } catch (error) {
+        console.error('Update Wallet Error:', error);
+        res.status(500).json({ error: 'Failed to update wallet balance' });
     }
 });
 
@@ -169,9 +221,11 @@ router.get('/brands', authMiddleware, roleGuard('ADMIN'), async (req: Request, r
             poc_name: brand.poc_name,
             website: brand.website,
             country: brand.country,
+            category: brand.category,
             registered_at: brand.created_at,
             status: brand.vendor?.status || 'active',
-            products: brand._count.orders // Approximate as we don't have separate products table yet
+            wallet_balance: brand.vendor?.wallet_balance || 0,
+            products: brand._count.orders
         }));
 
         res.json({ brands: formattedBrands });

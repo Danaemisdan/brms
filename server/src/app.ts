@@ -13,6 +13,7 @@ import uploadRoutes from './modules/upload/upload.routes';
 import supportRoutes from './modules/support/support.routes';
 import whatsappRoutes from './modules/whatsapp/whatsapp.routes';
 import agentRoutes from './modules/refunds/agent.routes';
+import analyticsRoutes from './modules/analytics/analytics.routes';
 import { startWhatsAppScheduler } from './jobs/wa_scheduler';
 import path from 'path';
 
@@ -49,6 +50,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/refunds', agentRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Start Background Jobs
 startWhatsAppScheduler();
