@@ -56,7 +56,7 @@ export default function AdminDashboard() {
                 const totalRefundAmount = orders.filter((o: any) => o.refund?.status === "REFUNDED").reduce((sum: number, o: any) => sum + o.refund.amount, 0);
                 const uniqueCustomers = new Set(orders.map((o: any) => o.user_id)).size;
                 const activeProducts = products.filter((p: any) => p.status === "ACTIVE").length;
-                const draftProducts = products.filter((p: any) => p.status === "DRAFT");
+                const draftProducts = products.filter((p: any) => p.status === "REQUESTED" || p.status === "DRAFT");
 
                 setStats({
                     activeProducts,
@@ -85,8 +85,51 @@ export default function AdminDashboard() {
         }
     };
 
-    const handleAction = (id: number, action: string) => {
-        toast.info(`Product #${id} ${action}d. (To be implemented)`);
+    const handleAction = async (id: string, action: string) => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            setIsLoading(true);
+
+            if (action === "approve") {
+                const res = await fetch(`${API_URL}/api/products/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ status: "ACTIVE" })
+                });
+
+                if (res.ok) {
+                    toast.success(`Product #${id} approved and listed actively.`);
+                    fetchDashboardData();
+                } else {
+                    toast.error("Failed to approve product.");
+                    setIsLoading(false);
+                }
+            } else if (action === "decline") {
+                const res = await fetch(`${API_URL}/api/products/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+
+                if (res.ok) {
+                    toast.success(`Product #${id} deleted.`);
+                    fetchDashboardData();
+                } else {
+                    toast.error("Failed to delete product.");
+                    setIsLoading(false);
+                }
+            }
+        } catch (error) {
+            console.error("Action failed:", error);
+            toast.error("An error occurred during the product action request.");
+            setIsLoading(false);
+        }
     };
 
     const metrics = [

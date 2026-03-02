@@ -111,6 +111,9 @@ export class ProductController {
                 validClientId = defaultClient.id;
             }
 
+            const vendorUser: any = (req as any).user;
+            const initialStatus = vendorUser?.role === 'VENDOR' ? "REQUESTED" : "ACTIVE";
+
             const product = await prisma.product.create({
                 data: {
                     client_id: validClientId,
@@ -125,7 +128,7 @@ export class ProductController {
                     deadline: new Date(deadline),
                     instructions,
                     is_public: is_public !== undefined ? Boolean(is_public) : true,
-                    status: "ACTIVE",
+                    status: initialStatus,
                     wa_target: wa_target || "all_customers",
                     wa_custom_phones: wa_custom_phones || null,
                     wa_template: wa_template || null,
