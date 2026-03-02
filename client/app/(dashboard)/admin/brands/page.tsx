@@ -96,20 +96,13 @@ export default function AdminBrands() {
 
     const handleEditChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { id, value } = e.target;
-        if (id === "edit_mobile") {
+        // Strip the "edit_" prefix to get the actual field name
+        // e.g. id="edit_brand_name" → key="brand_name", id="edit_mobile" → key="mobile"
+        const key = id.startsWith("edit_") ? id.slice(5) : id;
+        if (key === "mobile") {
             setEditFormData({ ...editFormData, mobile: value.replace(/\D/g, "") });
-        } else if (id === "edit_brand_name") {
-            setEditFormData({ ...editFormData, brand_name: value });
-        } else if (id === "edit_email") {
-            setEditFormData({ ...editFormData, email: value });
-        } else if (id === "edit_password") {
-            setEditFormData({ ...editFormData, password: value });
-        } else if (id === "edit_poc_name") {
-            setEditFormData({ ...editFormData, poc_name: value });
-        } else if (id === "edit_website") {
-            setEditFormData({ ...editFormData, website: value });
-        } else if (id === "edit_country") {
-            setEditFormData({ ...editFormData, country: value });
+        } else {
+            setEditFormData({ ...editFormData, [key]: value });
         }
     };
 

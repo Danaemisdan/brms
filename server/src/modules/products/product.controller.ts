@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import fs from "fs";
-import path from "path";
+import { resolveRecipients } from "../whatsapp/targeting";
 
 const prisma = new PrismaClient();
 
@@ -146,30 +145,48 @@ export class ProductController {
 
             // Auto-launch WhatsApp Campaign if template is provided and schedule is NONE
             if (wa_template && (!wa_schedule_frequency || wa_schedule_frequency === "NONE")) {
-                const finalMessage = wa_template
-                    .replace(/{{product_name}}/g, product.product_name)
-                    .replace(/{{platform}}/g, product.platform)
-                    .replace(/{{refund_amount}}/g, product.refund_amount.toString())
-                    .replace(/{{available_slots}}/g, (product.total_slots - product.filled_slots).toString())
-                    .replace(/{{product_link}}/g, product.product_link)
-                    .replace(/{{deadline}}/g, new Date(product.deadline).toLocaleDateString());
+                try {
+                    const finalMessage = wa_template
+                        .replace(/{{product_name}}/g, product.product_name)
+                        .replace(/{{platform}}/g, product.platform)
+                        .replace(/{{refund_amount}}/g, product.refund_amount.toString())
+                        .replace(/{{available_slots}}/g, (product.total_slots - product.filled_slots).toString())
+                        .replace(/{{product_link}}/g, product.product_link)
+                        .replace(/{{deadline}}/g, new Date(product.deadline).toLocaleDateString());
 
-                const localAgentPath = path.resolve(__dirname, "../../../../../local_agent");
-                if (!fs.existsSync(localAgentPath)) {
-                    fs.mkdirSync(localAgentPath, { recursive: true });
+                    const target = wa_target || "all_customers";
+                    const customPhones = wa_custom_phones || "";
+                    const recipients = await resolveRecipients(prisma, target, customPhones);
+
+                    if (Array.isArray(recipients) && recipients.length > 0) {
+                        const dedupeKey = target === 'custom'
+                            ? null
+                            : `whatsapp:product:${product.id}:${new Date().toISOString().slice(0, 16)}`;
+
+                        await prisma.agentTask.create({
+                            data: {
+                                task_type: 'WHATSAPP_BLAST',
+                                status: 'PENDING',
+                                payload: JSON.stringify({
+                                    timestamp: new Date().toISOString(),
+                                    product_id: product.id,
+                                    message: finalMessage,
+                                    command: "BLAST_CAMPAIGN",
+                                    target,
+                                    custom_phones: customPhones,
+                                    recipients,
+                                }),
+                                dedupe_key: dedupeKey,
+                            }
+                        });
+                        console.log(`📤 Auto-queued WhatsApp blast for product: ${product.product_name} (${recipients.length} recipients)`);
+                    } else {
+                        console.warn(`⚠️ WhatsApp blast skipped for ${product.product_name}: no recipients resolved.`);
+                    }
+                } catch (waErr) {
+                    // Non-fatal: product was created, just log the WA failure
+                    console.error("WhatsApp auto-blast error (non-fatal):", waErr);
                 }
-
-                const payloadData = {
-                    timestamp: new Date().toISOString(),
-                    product_id: product.id,
-                    message: finalMessage,
-                    command: "BLAST_CAMPAIGN",
-                    target: wa_target || "all_customers",
-                    custom_phones: wa_custom_phones || ""
-                };
-
-                const payloadFile = path.join(localAgentPath, `campaign_${Date.now()}.json`);
-                fs.writeFileSync(payloadFile, JSON.stringify(payloadData, null, 2));
             }
 
             res.status(201).json({ message: "Campaign created successfully", product });

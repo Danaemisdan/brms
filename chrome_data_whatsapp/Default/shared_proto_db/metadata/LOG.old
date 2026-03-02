@@ -1,2 +1,3 @@
-2026/03/02-00:36:59.441 748dc Creating DB /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/shared_proto_db/metadata since it was missing.
-2026/03/02-00:36:59.448 748dc Reusing MANIFEST /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/shared_proto_db/metadata/MANIFEST-000001
+2026/03/03-02:24:44.653 f5aa Reusing MANIFEST /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/shared_proto_db/metadata/MANIFEST-000001
+2026/03/03-02:24:44.653 f5aa Recovering log #3
+2026/03/03-02:24:44.654 f5aa Reusing old log /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/shared_proto_db/metadata/000003.log 
