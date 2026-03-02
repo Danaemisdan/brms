@@ -32,6 +32,14 @@ export default function AdminBrands() {
         password: ""
     });
 
+    const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
+    const [editFormData, setEditFormData] = useState({
+        brand_name: "",
+        mobile: "",
+        email: "",
+        password: ""
+    });
+
     useEffect(() => {
         fetchBrands();
     }, []);
@@ -60,6 +68,64 @@ export default function AdminBrands() {
             setFormData({ ...formData, [id]: value.replace(/\D/g, "") });
         } else {
             setFormData({ ...formData, [id]: value });
+        }
+    };
+
+    const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { id, value } = e.target;
+        if (id === "edit_mobile") {
+            setEditFormData({ ...editFormData, mobile: value.replace(/\D/g, "") });
+        } else if (id === "edit_brand_name") {
+            setEditFormData({ ...editFormData, brand_name: value });
+        } else if (id === "edit_email") {
+            setEditFormData({ ...editFormData, email: value });
+        } else if (id === "edit_password") {
+            setEditFormData({ ...editFormData, password: value });
+        }
+    };
+
+    const handleEditClick = (brand: Brand) => {
+        setEditingBrand(brand);
+        setEditFormData({
+            brand_name: brand.name,
+            mobile: brand.mobile,
+            email: brand.email || "",
+            password: "" // Keep empty, only send if they type a new one
+        });
+        setError("");
+    };
+
+    const handleUpdate = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+        if (!editingBrand) return;
+        setIsSubmitting(true);
+
+        try {
+            const token = localStorage.getItem("token");
+            const res = await fetch(`${API_URL}/api/users/brand/${editingBrand.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(editFormData),
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+                setError(data.error || "Failed to update brand");
+                setIsSubmitting(false);
+                return;
+            }
+
+            toast.success("Brand updated successfully.");
+            setEditingBrand(null);
+            fetchBrands();
+        } catch (error) {
+            setError("Server error.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -110,7 +176,7 @@ export default function AdminBrands() {
                 <Card>
                     <CardHeader><CardTitle>New Brand</CardTitle></CardHeader>
                     <CardContent>
-                        {error && (
+                        {error && !editingBrand && (
                             <div className="mb-4 p-3 rounded-md bg-red-50 text-red-600 text-sm">{error}</div>
                         )}
                         <form onSubmit={handleAdd} className="grid gap-4 md:grid-cols-2">
@@ -149,18 +215,53 @@ export default function AdminBrands() {
                     </Card>
                 ) : (
                     brands.map((v) => (
-                        <Card key={v.id} className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                            <div>
-                                <h3 className="font-semibold text-lg">{v.name}</h3>
-                                <p className="text-sm text-gray-500">{v.email || "No email"} • {v.mobile} • {v.products} products listed</p>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <span className={`px-2 py-1 text-xs font-semibold rounded-full ${v.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                                    {v.status || "Active"}
-                                </span>
-                                <Button variant="outline" size="sm">Edit</Button>
-                            </div>
-                        </Card>
+                        editingBrand?.id === v.id ? (
+                            <Card key={v.id} className="p-6 border-blue-500 shadow-sm">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="font-semibold text-lg">Edit Brand: {v.name}</h3>
+                                    <Button variant="ghost" size="sm" onClick={() => { setEditingBrand(null); setError(""); }}>Cancel</Button>
+                                </div>
+                                {error && editingBrand?.id === v.id && (
+                                    <div className="mb-4 p-3 rounded-md bg-red-50 text-red-600 text-sm">{error}</div>
+                                )}
+                                <form onSubmit={handleUpdate} className="grid gap-4 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="edit_brand_name">Brand Name</Label>
+                                        <Input id="edit_brand_name" value={editFormData.brand_name} onChange={handleEditChange} required />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="edit_mobile">Mobile</Label>
+                                        <Input id="edit_mobile" maxLength={10} value={editFormData.mobile} onChange={handleEditChange} required />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="edit_email">Email</Label>
+                                        <Input id="edit_email" type="email" value={editFormData.email} onChange={handleEditChange} />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="edit_password">New Password (Optional)</Label>
+                                        <Input id="edit_password" type="password" placeholder="Leave blank to keep current" value={editFormData.password} onChange={handleEditChange} minLength={6} />
+                                    </div>
+                                    <div className="md:col-span-2 flex justify-end">
+                                        <Button type="submit" disabled={isSubmitting || !editFormData.brand_name || editFormData.mobile.length !== 10}>
+                                            {isSubmitting ? "Saving..." : "Save Changes"}
+                                        </Button>
+                                    </div>
+                                </form>
+                            </Card>
+                        ) : (
+                            <Card key={v.id} className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                                <div>
+                                    <h3 className="font-semibold text-lg">{v.name}</h3>
+                                    <p className="text-sm text-gray-500">{v.email || "No email"} • {v.mobile} • {v.products} products listed</p>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${v.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                        {v.status || "Active"}
+                                    </span>
+                                    <Button variant="outline" size="sm" onClick={() => handleEditClick(v)}>Edit</Button>
+                                </div>
+                            </Card>
+                        )
                     ))
                 )}
             </div>

@@ -85,6 +85,60 @@ router.post('/brand', authMiddleware, roleGuard('ADMIN'), async (req: Request, r
     }
 });
 
+// PUT /api/users/brand/:id
+// Admin: Edit a brand account
+router.put('/brand/:id', authMiddleware, roleGuard('ADMIN'), async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { brand_name, mobile, email, password } = req.body;
+
+        if (!brand_name || !mobile) {
+            res.status(400).json({ error: 'Brand name and mobile are required' });
+            return;
+        }
+
+        // Check for duplicates
+        if (email) {
+            const existingEmail = await prisma.user.findFirst({
+                where: { email, AND: { id: { not: id } } }
+            });
+            if (existingEmail) {
+                res.status(400).json({ error: 'Email already in use by another account' });
+                return;
+            }
+        }
+
+        const existingMobile = await prisma.user.findFirst({
+            where: { mobile, AND: { id: { not: id } } }
+        });
+        if (existingMobile) {
+            res.status(400).json({ error: 'Mobile already in use by another account' });
+            return;
+        }
+
+        let updateData: any = {
+            name: brand_name,
+            mobile: mobile,
+            email: email || null
+        };
+
+        if (password && password.trim().length >= 6) {
+            const bcrypt = require('bcrypt');
+            updateData.password_hash = await bcrypt.hash(password, 10);
+        }
+
+        await prisma.user.update({
+            where: { id },
+            data: updateData
+        });
+
+        res.json({ message: 'Brand updated successfully' });
+    } catch (error) {
+        console.error('Update Brand Error:', error);
+        res.status(500).json({ error: 'Failed to update brand account' });
+    }
+});
+
 // GET /api/users/brands
 // Retrieve list of brands for Admin table
 router.get('/brands', authMiddleware, roleGuard('ADMIN'), async (req: Request, res: Response) => {
