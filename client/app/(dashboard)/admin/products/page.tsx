@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import { MultiImageDropzone } from "@/components/ui/multi-image-dropzone";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageCircle } from "lucide-react";
+import { MessageCircle, Search, Filter } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
 
@@ -52,6 +52,9 @@ export default function AdminProducts() {
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [products, setProducts] = useState<any[]>([]);
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("ALL");
 
     useEffect(() => {
         fetchProducts();

@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { isDateMatch, DateFilterType } from "@/lib/dateUtils";
 import Link from "next/link";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/ui/image-upload";
@@ -21,6 +22,11 @@ function CustomerSubmissionsContent() {
     const [orders, setOrders] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [userProfile, setUserProfile] = useState<any>(null);
+
+    // Filtering State
+    const [searchTermFilter, setSearchTermFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState("ALL");
+    const [dateFilter, setDateFilter] = useState<DateFilterType>("ALL");
 
     // Active products for selection
     const [products, setProducts] = useState<any[]>([]);
@@ -282,12 +288,63 @@ function CustomerSubmissionsContent() {
             </div>
 
             <div className="space-y-4">
+                <div className="flex flex-col md:flex-row gap-4 mb-4">
+                    <div className="flex-1">
+                        <Input
+                            placeholder="Search by product name or order ID..."
+                            value={searchTermFilter}
+                            onChange={(e) => setSearchTermFilter(e.target.value)}
+                        />
+                    </div>
+                    <select
+                        className="flex h-10 w-full md:w-[160px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                    >
+                        <option value="ALL">All Statuses</option>
+                        <option value="SUBMITTED">Submitted</option>
+                        <option value="VERIFIED">Verified</option>
+                        <option value="REJECTED">Rejected</option>
+                        <option value="REFUNDED">Refunded</option>
+                    </select>
+                    <select
+                        className="flex h-10 w-full md:w-[150px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                        value={dateFilter}
+                        onChange={(e) => setDateFilter(e.target.value as DateFilterType)}
+                    >
+                        <option value="ALL">All Time</option>
+                        <option value="TODAY">Today</option>
+                        <option value="YESTERDAY">Yesterday</option>
+                        <option value="LAST_7_DAYS">Last 7 Days</option>
+                        <option value="LAST_30_DAYS">Last 30 Days</option>
+                    </select>
+                </div>
+
                 {isLoading ? (
                     <p className="text-center text-gray-500 py-8">Loading submissions...</p>
-                ) : orders.length === 0 ? (
-                    <p className="text-center text-gray-500 py-8">You haven't submitted any orders yet.</p>
-                ) : (
-                    orders.map((req) => (
+                ) : (() => {
+                    const filteredOrders = orders.filter((req) => {
+                        const searchStr = searchTermFilter.toLowerCase();
+                        const matchesSearch =
+                            req.productName?.toLowerCase().includes(searchStr) ||
+                            req.order_id?.toLowerCase().includes(searchStr);
+
+                        // Adjust status filtering because `req.status` combines order and refund statuses contextually 
+                        let matchesStatus = true;
+                        if (statusFilter !== "ALL") {
+                            matchesStatus = req.status === statusFilter;
+                        }
+
+                        const matchesDate = isDateMatch(req.created_at, dateFilter);
+
+                        return matchesSearch && matchesStatus && matchesDate;
+                    });
+
+                    if (filteredOrders.length === 0) {
+                        return <p className="text-center text-gray-500 py-8">{orders.length === 0 ? "You haven't submitted any orders yet." : "No submissions found matching filters."}</p>;
+                    }
+
+                    return filteredOrders.map((req) => (
                         <Card key={req.id} className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-blue-100 shadow-sm">
                             <div className="space-y-2">
                                 <CardTitle className="text-lg">{req.productName}</CardTitle>
@@ -329,8 +386,8 @@ function CustomerSubmissionsContent() {
                                 )}
                             </div>
                         </Card>
-                    ))
-                )}
+                    ));
+                })()}
             </div>
 
             <Dialog open={isRefundModalOpen} onOpenChange={setIsRefundModalOpen}>

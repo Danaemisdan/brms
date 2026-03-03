@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Search } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
 
@@ -31,6 +32,7 @@ export default function AdminBrands() {
     const [isLoading, setIsLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
 
     const [formData, setFormData] = useState({
         brand_name: "",
@@ -334,14 +336,40 @@ export default function AdminBrands() {
             )}
 
             <div className="space-y-4">
+                {!showForm && (
+                    <Card className="p-4 mb-2">
+                        <div className="relative">
+                            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                            <Input
+                                placeholder="Search brands by name, POC, email, or mobile..."
+                                className="pl-9"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
+                    </Card>
+                )}
+
                 {isLoading ? (
                     <div className="text-center py-8 text-gray-500">Loading brands...</div>
                 ) : brands.length === 0 ? (
                     <Card className="p-8 text-center text-gray-500">
                         No brands added yet. Click "Add New Brand" to get started.
                     </Card>
-                ) : (
-                    brands.map((v) => (
+                ) : (() => {
+                    const filteredBrands = brands.filter(v => {
+                        const searchStr = searchTerm.toLowerCase();
+                        return v.name.toLowerCase().includes(searchStr) ||
+                            (v.poc_name && v.poc_name.toLowerCase().includes(searchStr)) ||
+                            (v.email && v.email.toLowerCase().includes(searchStr)) ||
+                            v.mobile.includes(searchTerm);
+                    });
+
+                    if (filteredBrands.length === 0) {
+                        return <Card className="p-8 text-center text-gray-500">No brands found matching your search.</Card>;
+                    }
+
+                    return filteredBrands.map((v) => (
                         editingBrand?.id === v.id ? (
                             <Card key={v.id} className="p-6 border-blue-500 shadow-sm">
                                 <div className="flex items-center justify-between mb-4">
@@ -495,8 +523,8 @@ export default function AdminBrands() {
                                 </div>
                             </Card>
                         )
-                    ))
-                )}
+                    ));
+                })()}
             </div>
         </div>
     );

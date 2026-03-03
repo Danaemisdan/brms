@@ -74,8 +74,17 @@ export default function AdminDashboard() {
 
                 setPendingRequests(draftProducts);
 
-                const recent = orders.filter((o: any) => o.status === "SUBMITTED").slice(0, 5);
-                const refunds = orders.filter((o: any) => o.refund?.status === "PENDING").slice(0, 5);
+                // Filter for "Today"
+                const today = new Date().toISOString().split('T')[0];
+                const isToday = (dateString: string) => dateString && dateString.split('T')[0] === today;
+
+                const recent = orders
+                    .filter((o: any) => o.status === "SUBMITTED" && (isToday(o.created_at) || isToday(o.order_date)))
+                    .slice(0, 5);
+
+                const refunds = orders
+                    .filter((o: any) => o.refund?.status === "PENDING" && (isToday(o.created_at) || isToday(o.order_date) || isToday(o.refund?.created_at)))
+                    .slice(0, 5);
 
                 setRecentOrders(recent);
                 setPendingRefundOrders(refunds);
