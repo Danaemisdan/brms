@@ -20,6 +20,10 @@ export default function AdminProducts() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
 
+    // Filter states
+    const [searchTermFilter, setSearchTermFilter] = useState("");
+    const [statusFilter, setStatusFilter] = useState("ALL");
+
     // Form State
     const [form, setForm] = useState({
         product_name: "",
@@ -53,8 +57,9 @@ export default function AdminProducts() {
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [products, setProducts] = useState<any[]>([]);
 
-    const [searchTerm, setSearchTerm] = useState("");
-    const [statusFilter, setStatusFilter] = useState("ALL");
+    const [isWaLoading, setIsWaLoading] = useState(false);
+
+    // Filters
 
     useEffect(() => {
         fetchProducts();
@@ -547,10 +552,43 @@ export default function AdminProducts() {
 
             {!showForm && (
                 <div className="space-y-4">
-                    {products.length === 0 ? (
-                        <p className="text-gray-500 text-center py-8">No products listed yet.</p>
-                    ) : (
-                        products.map((p) => (
+                    <div className="flex flex-col md:flex-row gap-4 mb-4">
+                        <div className="relative flex-1">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                            <Input
+                                placeholder="Search products by name or brand..."
+                                value={searchTermFilter}
+                                onChange={(e) => setSearchTermFilter(e.target.value)}
+                                className="pl-9"
+                            />
+                        </div>
+                        <select
+                            className="flex h-10 w-full md:w-[200px] rounded-md border border-input bg-background px-3 py-2 text-sm"
+                            value={statusFilter}
+                            onChange={(e) => setStatusFilter(e.target.value)}
+                        >
+                            <option value="ALL">All Statuses</option>
+                            <option value="ACTIVE">Active</option>
+                            <option value="REQUESTED">Requested</option>
+                            <option value="REJECTED">Rejected</option>
+                        </select>
+                    </div>
+
+                    {(() => {
+                        const filteredProducts = products.filter(p => {
+                            const searchStr = searchTermFilter.toLowerCase();
+                            const matchesSearch = p.product_name?.toLowerCase().includes(searchStr) ||
+                                p.brand?.brand_name?.toLowerCase().includes(searchStr);
+
+                            const matchesStatus = statusFilter === "ALL" || p.status === statusFilter;
+                            return matchesSearch && matchesStatus;
+                        });
+
+                        if (filteredProducts.length === 0) {
+                            return <p className="text-gray-500 text-center py-8">{products.length === 0 ? "No products listed yet." : "No products found matching your filters."}</p>;
+                        }
+
+                        return filteredProducts.map((p) => (
                             <Card key={p.id} className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                                 <div className="flex items-center gap-4">
                                     {(() => {
@@ -622,8 +660,8 @@ export default function AdminProducts() {
                                     )}
                                 </div>
                             </Card>
-                        ))
-                    )}
+                        ));
+                    })()}
                 </div>
             )}
 

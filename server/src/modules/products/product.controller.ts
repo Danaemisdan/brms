@@ -249,14 +249,17 @@ export class ProductController {
         }
     }
 
-    // ADMIN: Delete a campaign (Product) and all associated orders
+    // ADMIN: Delete a campaign (Product) and all associated orders/invoices
     static async deleteCampaign(req: Request, res: Response) {
         try {
             const { id } = req.params;
 
-            // Use a transaction to delete all associated orders first, then the product
+            // Use a transaction to delete all associated orders and invoices first, then the product
             await prisma.$transaction([
                 prisma.order.deleteMany({
+                    where: { product_id: id }
+                }),
+                prisma.invoice.deleteMany({
                     where: { product_id: id }
                 }),
                 prisma.product.delete({
@@ -264,10 +267,10 @@ export class ProductController {
                 })
             ]);
 
-            res.json({ message: "Campaign and all associated orders deleted successfully" });
+            res.json({ message: "Campaign and all associated items deleted successfully" });
         } catch (error) {
             console.error("Error deleting campaign:", error);
-            res.status(500).json({ error: "Failed to delete campaign." });
+            res.status(500).json({ error: "Failed to delete campaign due to an internal constraint." });
         }
     }
 
