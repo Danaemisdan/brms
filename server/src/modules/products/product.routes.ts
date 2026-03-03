@@ -30,6 +30,13 @@ router.put(
     ProductController.updateCampaign
 );
 
+router.put(
+    "/:id/status",
+    authMiddleware,
+    roleGuard("ADMIN"),
+    ProductController.updateCampaignStatus
+);
+
 router.delete(
     "/:id",
     authMiddleware,

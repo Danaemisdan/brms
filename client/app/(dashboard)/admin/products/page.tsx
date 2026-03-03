@@ -168,6 +168,31 @@ export default function AdminProducts() {
         }
     };
 
+    const handleStatusUpdate = async (id: string, status: "ACTIVE" | "REJECTED") => {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await apiFetch(`${API_URL}/api/products/${id}/status`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ status })
+            });
+
+            const data = await res.json();
+            if (res.ok) {
+                toast.success(status === "ACTIVE" ? "Product accepted & active" : "Product declined");
+                fetchProducts();
+            } else {
+                toast.error(data.error || "Failed to update status");
+            }
+        } catch (error) {
+            console.error("Failed to update status", error);
+            toast.error("Server error while updating status");
+        }
+    };
+
     const handleDelete = (id: string) => {
         toast("Are you sure you want to delete this product?", {
             action: {
@@ -565,20 +590,33 @@ export default function AdminProducts() {
                                     <span className={`px-2 py-1 text-xs font-semibold rounded-full ${p.status === "ACTIVE" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-500"}`}>
                                         {p.status}
                                     </span>
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="border-green-600 text-green-600 hover:bg-green-50"
-                                        onClick={() => {
-                                            setSelectedWaProduct(p);
-                                            setWaScheduledAt("");
-                                            setIsWaModalOpen(true);
-                                        }}
-                                    >
-                                        <MessageCircle className="w-4 h-4 mr-1" /> WhatsApp
-                                    </Button>
-                                    <Button variant="outline" size="sm" onClick={() => handleEditClick(p)}>Edit</Button>
-                                    <Button variant="destructive" size="sm" onClick={() => handleDelete(p.id)}>Delete</Button>
+                                    {p.status === "REQUESTED" ? (
+                                        <>
+                                            <Button variant="outline" size="sm" className="border-green-600 text-green-600 hover:bg-green-50" onClick={() => handleStatusUpdate(p.id, "ACTIVE")}>
+                                                Accept
+                                            </Button>
+                                            <Button variant="outline" size="sm" className="border-red-500 text-red-500 hover:bg-red-50" onClick={() => handleStatusUpdate(p.id, "REJECTED")}>
+                                                Decline
+                                            </Button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                className="border-green-600 text-green-600 hover:bg-green-50"
+                                                onClick={() => {
+                                                    setSelectedWaProduct(p);
+                                                    setWaScheduledAt("");
+                                                    setIsWaModalOpen(true);
+                                                }}
+                                            >
+                                                <MessageCircle className="w-4 h-4 mr-1" /> WhatsApp
+                                            </Button>
+                                            <Button variant="outline" size="sm" onClick={() => handleEditClick(p)}>Edit</Button>
+                                            <Button variant="destructive" size="sm" onClick={() => handleDelete(p.id)}>Delete</Button>
+                                        </>
+                                    )}
                                 </div>
                             </Card>
                         ))

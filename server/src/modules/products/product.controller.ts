@@ -270,4 +270,60 @@ export class ProductController {
             res.status(500).json({ error: "Failed to delete campaign." });
         }
     }
+
+    // ADMIN: Update campaign status (Accept/Decline requested products)
+    static async updateCampaignStatus(req: Request, res: Response) {
+        try {
+            const { id } = req.params;
+            const { status } = req.body; // Expects "ACTIVE" or "REJECTED"
+
+            if (!["ACTIVE", "REJECTED"].includes(status)) {
+                return res.status(400).json({ error: "Invalid status. Must be ACTIVE or REJECTED." });
+            }
+
+            // Update the product and fetch related client/user info for WhatsApp notification
+            const product = await prisma.product.update({
+                where: { id },
+                data: { status },
+                include: {
+                    client: {
+                        include: {
+                            user: true
+                        }
+                    }
+                }
+            });
+
+            // Queue a WhatsApp notification to the Brand
+            const brandMobile = product.client?.user?.mobile;
+            if (brandMobile) {
+                const message = status === "ACTIVE"
+                    ? `✅ *Product Approved*\n\nYour product request for *${product.product_name}* has been approved and is now active on the BRMS platform!`
+                    : `❌ *Product Declined*\n\nYour product request for *${product.product_name}* has been declined by the administrator.`;
+
+                await prisma.agentTask.create({
+                    data: {
+                        task_type: 'WHATSAPP_BLAST',
+                        status: 'PENDING',
+                        payload: JSON.stringify({
+                            timestamp: new Date().toISOString(),
+                            product_id: product.id,
+                            message,
+                            command: "BLAST_CAMPAIGN",
+                            target: "custom",
+                            custom_phones: brandMobile,
+                            recipients: [brandMobile],
+                        }),
+                        dedupe_key: `whatsapp:status_update:${product.id}:${status}`,
+                    }
+                });
+                console.log(`📤 Auto-queued WhatsApp notification for brand ${brandMobile} (Status: ${status})`);
+            }
+
+            res.json({ message: `Campaign marked as ${status}`, product });
+        } catch (error) {
+            console.error("Error updating campaign status:", error);
+            res.status(500).json({ error: "Failed to update campaign status." });
+        }
+    }
 }
