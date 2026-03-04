@@ -13,8 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Search, Filter } from "lucide-react";
 
-const RAW_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
-const API_URL = RAW_API_URL.endsWith('/') ? RAW_API_URL.slice(0, -1) : RAW_API_URL;
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001").replace(/\/+$/, "");
 
 export default function AdminProducts() {
     const [showForm, setShowForm] = useState(false);
@@ -245,7 +244,10 @@ export default function AdminProducts() {
             const token = localStorage.getItem("token");
 
             // 1. Combine existing images and upload new images
-            let finalUrls: string[] = [...existingImages];
+            // Strip API_URL prefix to ensure we strictly save relative paths to DB
+            let finalUrls: string[] = existingImages.map(img =>
+                img.startsWith(API_URL) ? img.substring(API_URL.length) : img
+            );
 
             if (imageFiles.length > 0) {
                 const formData = new FormData();
@@ -264,8 +266,9 @@ export default function AdminProducts() {
 
             const finalImageString = JSON.stringify(finalUrls);
 
-            // 2. Upload WhatsApp Attachment if any
-            let finalWaUrl = waExistingImage;
+            // 2. Upload WhatsApp Attachment
+            // Strip API_URL prefix from WA image as well
+            let finalWaUrl = waExistingImage.startsWith(API_URL) ? waExistingImage.substring(API_URL.length) : waExistingImage;
             if (waImageFile) {
                 const waFormData = new FormData();
                 waFormData.append("images", waImageFile);
@@ -692,7 +695,8 @@ export default function AdminProducts() {
                                             } catch {
                                                 firstImg = p.product_image;
                                             }
-                                        } else if (firstImg && !firstImg.startsWith('http') && !firstImg.startsWith('data:')) {
+                                        }
+                                        if (firstImg && !firstImg.startsWith('http') && !firstImg.startsWith('data:')) {
                                             // Some seed images might just be filenames "image.jpg"
                                             // or were saved as relative without a leading slash. Try fetching from uploads.
                                             firstImg = firstImg.startsWith('/') ? `${API_URL}${firstImg}` : `${API_URL}/uploads/${firstImg}`;

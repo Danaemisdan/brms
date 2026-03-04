@@ -69,9 +69,12 @@ def send_whatsapp_message_batch_playwright(contacts: list[str], message: str, at
                             logging.warning(f"Attach menu click failed: {e}")
                             
                         try:
-                            file_input = page.locator("input[type='file']").first
+                            # EXTREMELY IMPORTANT: WhatsApp has multiple hidden file inputs (Document, Image, etc)
+                            # If we just pick the first one, it uploads as a Document, which doesn't have an image caption box!
+                            # We MUST strictly filter for the one that accepts images.
+                            file_input = page.locator("input[type='file'][accept*='image']").first
                             file_input.set_input_files(attachment_path)
-                            logging.info("Set input files successfully!")
+                            logging.info("Set input files successfully as Image/Video!")
                         except Exception as e:
                             logging.error(f"Failed to set input files: {e}")
                             
