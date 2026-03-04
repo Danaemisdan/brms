@@ -13,7 +13,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Search, Filter } from "lucide-react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+const RAW_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+const API_URL = RAW_API_URL.endsWith('/') ? RAW_API_URL.slice(0, -1) : RAW_API_URL;
 
 export default function AdminProducts() {
     const [showForm, setShowForm] = useState(false);
@@ -419,7 +420,7 @@ export default function AdminProducts() {
                                                 }
                                                 return (
                                                     <div key={`exist-${idx}`} className="relative group shrink-0">
-                                                        <img src={displaySrc} alt={`Existing ${idx + 1}`} className="h-20 w-20 object-cover rounded shadow-sm border border-gray-200" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                                                        <img src={displaySrc} alt={`Existing ${idx + 1}`} className="h-20 w-20 object-cover rounded shadow-sm border border-gray-200" />
                                                         <button
                                                             type="button"
                                                             onClick={() => removeExistingImage(idx)}

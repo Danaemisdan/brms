@@ -56,13 +56,26 @@ def send_whatsapp_message_playwright(contact: str, message: str, attachment_path
             
             if attachment_path and os.path.exists(attachment_path):
                 logging.info(f"Attaching file: {attachment_path}")
-                # Click the + icon (attach)
-                page.locator("span[data-icon='plus']").last.click()
-                time.sleep(1)
                 
-                # Upload the file into the hidden input
-                file_input = page.locator("input[accept*='image/*']").first
-                file_input.set_input_files(attachment_path)
+                # Dump DOM to file for debugging WhatsApp layout changes
+                with open("wa_dom_dump.html", "w", encoding="utf-8") as f:
+                    f.write(page.content())
+                
+                # Now try clicking the exact aria-label='Attach' button found in the DOM dump
+                try:
+                    attach_btn = page.locator("button[aria-label='Attach']").first
+                    attach_btn.click(timeout=5000)
+                    time.sleep(1)
+                except Exception as e:
+                    logging.warning(f"Attach menu click failed: {e}")
+                    
+                try:
+                    file_input = page.locator("input[type='file']").first
+                    file_input.set_input_files(attachment_path)
+                    logging.info("Set input files successfully!")
+                except Exception as e:
+                    logging.error(f"Failed to set input files: {e}")
+                    
                 time.sleep(3) # Wait for image preview to load
                 
                 logging.info("Typing message as caption...")

@@ -9,7 +9,8 @@
  * You do NOT need to pass Authorization headers manually — they are injected.
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+const RAW_API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+const API_URL = RAW_API_URL.endsWith('/') ? RAW_API_URL.slice(0, -1) : RAW_API_URL;
 
 function getToken(): string | null {
     if (typeof window === "undefined") return null;
