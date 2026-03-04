@@ -47,11 +47,14 @@ export async function apiFetch(
 ): Promise<Response> {
     const token = getToken();
 
-    // Always inject Authorization header
+    // Default headers, do not force application/json if body is FormData
     const headers: Record<string, string> = {
-        "Content-Type": "application/json",
         ...(options.headers as Record<string, string> || {}),
     };
+
+    if (!(options.body instanceof FormData) && !headers["Content-Type"]) {
+        headers["Content-Type"] = "application/json";
+    }
     if (token) {
         headers["Authorization"] = `Bearer ${token}`;
     }
