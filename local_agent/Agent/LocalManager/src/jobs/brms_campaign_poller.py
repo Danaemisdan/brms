@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 import requests
 from dotenv import load_dotenv
 
-from src.tools.playwright_whatsapp import send_whatsapp_message_playwright
+from src.tools.playwright_whatsapp import send_whatsapp_message_batch_playwright
 
 load_dotenv()
 
@@ -110,19 +110,32 @@ def _process_campaign_task(task: Dict[str, Any]) -> None:
     sent_results: List[Dict[str, Any]] = []
     failed_count = 0
 
-    for idx, contact in enumerate(recipients):
-        logger.info("[%s/%s] Sending WhatsApp campaign message to: %s", idx + 1, len(recipients), contact)
-        try:
-            result_json = send_whatsapp_message_playwright(contact=contact, message=message, attachment_path=attachment_path)
-            sent_results.append({"contact": contact, "result": result_json})
-            if result_json.get("status") != "success":
+    logger.info("Sending batch message to %s recipients via Playwright...", len(recipients))
+    
+    # Hand over the entire recipients list to the Playwright script
+    # This prevents Chrome from constantly opening and closing
+    batch_results = []
+    failed_count = 0
+    
+    try:
+        batch_results = send_whatsapp_message_batch_playwright(
+            contacts=recipients,
+            message=message,
+            attachment_path=attachment_path
+        )
+        for r in batch_results:
+            sent_results.append({"contact": r["contact"], "result": r})
+            if r.get("status") != "success":
                 failed_count += 1
-            logger.info("Send result for %s: %s", contact, result_json)
-            time.sleep(5)
-        except Exception as exc:
-            failed_count += 1
-            sent_results.append({"contact": contact, "result": {"status": "error", "message": str(exc)}})
-            logger.error("Send error for %s: %s", contact, exc)
+                logger.error("Send error for %s: %s", r["contact"], r)
+            else:
+                logger.info("Send result for %s: %s", r["contact"], r)
+                
+    except Exception as exc:
+        logger.error("Critical failure during batch send: %s", exc)
+        failed_count = len(recipients)
+        batch_results = [{"contact": c, "status": "error", "message": str(exc)} for c in recipients]
+        sent_results.extend(batch_results)
 
     if failed_count == 0:
         _complete_task(task_id, "COMPLETED", {"results": sent_results, "failed_count": 0})
