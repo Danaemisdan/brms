@@ -75,26 +75,53 @@ def send_whatsapp_message_batch_playwright(contacts: list[str], message: str, at
                         except Exception as e:
                             logging.error(f"Failed to set input files: {e}")
                             
-                        time.sleep(3) # Wait for image preview to load
+                    # Wait for image preview to load, allowing the caption box to render
+                    if attachment_path and os.path.exists(attachment_path):
+                        time.sleep(3)
                         
-                        logging.info("Typing message as caption...")
-                        caption_box = page.locator("div[contenteditable='true'][data-tab='10'], div[contenteditable='true'][data-lexical-editor='true']").last
-                        caption_box.wait_for(timeout=10000)
-                        caption_box.click()
+                    logging.info("Typing message...")
+                    
+                    # Instead of relying on `.last` or `.first`, find the actively available text box.
+                    # On attachment screen: usually multiple contenteditables, the active one is for caption.
+                    # On normal screen: usually one for search, one for chat.
+                    text_boxes = page.locator("div[contenteditable='true'][role='textbox']")
+                    text_boxes.wait_for(timeout=10000)
+                    
+                    # Iterate backwards to find the chat/caption box (it's always after search at the bottom of the DOM)
+                    box_count = text_boxes.count()
+                    target_box = None
+                    for i in range(box_count - 1, -1, -1):
+                        box = text_boxes.nth(i)
+                        if box.is_visible():
+                            target_box = box
+                            break
+                    
+                    if not target_box:
+                        logging.warning("Could not find a visible text box. Attempting fallback click on document center.")
+                        page.mouse.click(640, 700) # Generic click in the chat area
                         page.keyboard.insert_text(message)
-                        time.sleep(1)
-                        page.keyboard.press("Enter")
                     else:
-                        # normal sending
-                        logging.info("Locating chat input...")
-                        chat_box = page.locator("div[contenteditable='true'][data-tab='10'], div[title='Type a message'], div[contenteditable='true'][data-lexical-editor='true']").first
-                        chat_box.wait_for(timeout=10000)
-                        chat_box.click()
-                        
-                        logging.info("Typing message...")
-                        page.keyboard.insert_text(message)
-                        time.sleep(1)
-                        page.keyboard.press("Enter")
+                        try:
+                            # Use force=True because WhatsApp's translucent overlay sometimes intercepts clicks
+                            target_box.click(force=True, timeout=5000)
+                            page.keyboard.insert_text(message)
+                        except Exception as e:
+                            logging.warning(f"Normal click failed, forcing focus: {e}")
+                            target_box.focus()
+                            page.keyboard.insert_text(message)
+
+                    time.sleep(1)
+                    # Hit Enter. If that fails (sometimes WhatsApp intercepts it), click the Send button
+                    page.keyboard.press("Enter")
+                    
+                    time.sleep(1)
+                    try:
+                        send_btn = page.locator("span[data-icon='send'], button[aria-label='Send']").first
+                        if send_btn.is_visible(timeout=2000):
+                            logging.info("Enter key didn't send. Clicking 'Send' button explicitly.")
+                            send_btn.click(force=True)
+                    except Exception:
+                        pass
                     
                     logging.info(f"Message sent successfully to {contact}!")
                     time.sleep(2) # A brief wait for the message to propagate over network
