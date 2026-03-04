@@ -60,71 +60,65 @@ def send_whatsapp_message_batch_playwright(contacts: list[str], message: str, at
                     if attachment_path and os.path.exists(attachment_path):
                         logging.info(f"Attaching file: {attachment_path}")
                         
-                        # Now try clicking the exact aria-label='Attach' button found in the DOM dump
+                        # Open attachment menu. Using the generic "+" icon or paperclip
                         try:
-                            attach_btn = page.locator("button[aria-label='Attach']").first
+                            # WhatsApp changed to a '+' icon (aria-label="Attach" or similar)
+                            attach_btn = page.locator("button[aria-label='Attach'], span[data-icon='plus']").first
                             attach_btn.click(timeout=5000)
                             time.sleep(1)
-                        except Exception as e:
-                            logging.warning(f"Attach menu click failed: {e}")
                             
-                        try:
-                            # EXTREMELY IMPORTANT: WhatsApp has multiple hidden file inputs (Document, Image, etc)
-                            # If we just pick the first one, it uploads as a Document, which doesn't have an image caption box!
-                            # We MUST strictly filter for the one that accepts images.
-                            file_input = page.locator("input[type='file'][accept*='image']").first
-                            file_input.set_input_files(attachment_path)
-                            logging.info("Set input files successfully as Image/Video!")
-                        except Exception as e:
-                            logging.error(f"Failed to set input files: {e}")
+                            # Click "Photos & videos" in the menu to trigger the native file dialog
+                            with page.expect_file_chooser(timeout=10000) as fc_info:
+                                page.locator("text=Photos & videos").last.click()
+                                
+                            fc_info.value.set_files(attachment_path)
+                            logging.info("Selected file via 'Photos & videos' menu successfully!")
                             
-                    # Wait for image preview to load, allowing the caption box to render
-                    if attachment_path and os.path.exists(attachment_path):
+                        except Exception as e:
+                            logging.error(f"Failed to use native attachment menu: {e}")
+                            
+                        # Wait for image preview to load
                         time.sleep(3)
                         
-                    logging.info("Typing message...")
-                    
-                    # Instead of relying on `.last` or `.first`, find the actively available text box.
-                    # On attachment screen: usually multiple contenteditables, the active one is for caption.
-                    # On normal screen: usually one for search, one for chat.
-                    text_boxes = page.locator("div[contenteditable='true'][role='textbox']")
-                    text_boxes.wait_for(timeout=10000)
-                    
-                    # Iterate backwards to find the chat/caption box (it's always after search at the bottom of the DOM)
-                    box_count = text_boxes.count()
-                    target_box = None
-                    for i in range(box_count - 1, -1, -1):
-                        box = text_boxes.nth(i)
-                        if box.is_visible():
-                            target_box = box
-                            break
-                    
-                    if not target_box:
-                        logging.warning("Could not find a visible text box. Attempting fallback click on document center.")
-                        page.mouse.click(640, 700) # Generic click in the chat area
+                        logging.info("Typing message as caption...")
                         page.keyboard.insert_text(message)
-                    else:
+                        time.sleep(1)
+                        
+                        # Hit Enter to send
+                        page.keyboard.press("Enter")
+                        time.sleep(1)
+                        
+                        # Fallback explicit send button if Enter gets trapped
                         try:
-                            # Use force=True because WhatsApp's translucent overlay sometimes intercepts clicks
-                            target_box.click(force=True, timeout=5000)
-                            page.keyboard.insert_text(message)
-                        except Exception as e:
-                            logging.warning(f"Normal click failed, forcing focus: {e}")
-                            target_box.focus()
-                            page.keyboard.insert_text(message)
-
-                    time.sleep(1)
-                    # Hit Enter. If that fails (sometimes WhatsApp intercepts it), click the Send button
-                    page.keyboard.press("Enter")
-                    
-                    time.sleep(1)
-                    try:
-                        send_btn = page.locator("span[data-icon='send'], button[aria-label='Send']").first
-                        if send_btn.is_visible(timeout=2000):
-                            logging.info("Enter key didn't send. Clicking 'Send' button explicitly.")
-                            send_btn.click(force=True)
-                    except Exception:
-                        pass
+                            send_btn = page.locator("span[data-icon='send'], button[aria-label='Send']").first
+                            if send_btn.is_visible(timeout=2000):
+                                send_btn.click(force=True)
+                        except Exception:
+                            pass
+                            
+                    else:
+                        # Normal text-only sending
+                        logging.info("Typing message...")
+                        
+                        # Find the chat box and click it to ensure focus
+                        try:
+                            chat_box = page.locator("div[contenteditable='true'][role='textbox']").last
+                            chat_box.click(force=True, timeout=5000)
+                        except Exception:
+                            pass
+                            
+                        page.keyboard.insert_text(message)
+                        time.sleep(1)
+                        
+                        page.keyboard.press("Enter")
+                        time.sleep(1)
+                        
+                        try:
+                            send_btn = page.locator("span[data-icon='send'], button[aria-label='Send']").first
+                            if send_btn.is_visible(timeout=2000):
+                                send_btn.click(force=True)
+                        except Exception:
+                            pass
                     
                     logging.info(f"Message sent successfully to {contact}!")
                     time.sleep(2) # A brief wait for the message to propagate over network
