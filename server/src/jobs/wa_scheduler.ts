@@ -7,37 +7,42 @@ const prisma = new PrismaClient();
 export const startWhatsAppScheduler = () => {
     console.log("📅 WhatsApp Campaign Scheduler initialized (Runs daily at 09:00 AM)");
 
-    // Run daily at 09:00 AM
-    cron.schedule('0 9 * * *', async () => {
-        console.log("⏳ Running Daily WhatsApp Campaign Scheduler Job...");
-
+    // Run every minute to check for precise time matches
+    cron.schedule('* * * * *', async () => {
         try {
-            const todayName = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase(); // e.g., MONDAY
+            const now = new Date();
+            const currentHours = now.getHours().toString().padStart(2, '0');
+            const currentMinutes = now.getMinutes().toString().padStart(2, '0');
+            const currentTimeStr = `${currentHours}:${currentMinutes}`;
 
             // Find all active products that have a schedule configured
             const products = await prisma.product.findMany({
                 where: {
                     status: 'ACTIVE',
                     wa_template: { not: null },
-                    wa_schedule_frequency: { in: ['DAILY', 'ONCE_A_WEEK', 'TWICE_A_WEEK'] }
+                    wa_times_per_day: { gt: 0 }
                 }
             });
 
             for (const product of products) {
+                // Check if current date is within start and end dates (inclusive, timezone considered via Date objects)
+                if (product.wa_start_date) {
+                    const startDate = new Date(product.wa_start_date);
+                    startDate.setHours(0, 0, 0, 0);
+                    if (now < startDate) continue;
+                }
+
+                if (product.wa_end_date) {
+                    const endDate = new Date(product.wa_end_date);
+                    endDate.setHours(23, 59, 59, 999);
+                    if (now > endDate) continue;
+                }
+
+                // Check if the current time matches any of the configured times
                 let shouldSend = false;
-                const sentToday = product.wa_last_sent_at
-                    ? product.wa_last_sent_at.toDateString() === new Date().toDateString()
-                    : false;
-
-                if (sentToday) {
-                    continue;
-                }
-
-                if (product.wa_schedule_frequency === 'DAILY') {
-                    shouldSend = true;
-                } else if (product.wa_schedule_days && product.wa_schedule_days.toUpperCase().includes(todayName)) {
-                    shouldSend = true;
-                }
+                if (product.wa_time_1 === currentTimeStr) shouldSend = true;
+                if (product.wa_time_2 === currentTimeStr) shouldSend = true;
+                if (product.wa_time_3 === currentTimeStr) shouldSend = true;
 
                 if (shouldSend) {
                     const finalMessage = product.wa_template!
@@ -55,6 +60,7 @@ export const startWhatsAppScheduler = () => {
                         command: "BLAST_CAMPAIGN",
                         target: product.wa_target || "all_customers",
                         custom_phones: product.wa_custom_phones || "",
+                        attachment_url: product.wa_attachment_url || null,
                         recipients: await resolveRecipients(
                             prisma,
                             product.wa_target || "all_customers",
@@ -67,7 +73,7 @@ export const startWhatsAppScheduler = () => {
                         continue;
                     }
 
-                    const dedupeKey = `whatsapp:schedule:${product.id}:${new Date().toISOString().slice(0, 10)}`;
+                    const dedupeKey = `whatsapp:schedule:${product.id}:${now.toISOString().slice(0, 16)}`; // Unique per minute
                     try {
                         await prisma.agentTask.create({
                             data: {
