@@ -564,7 +564,17 @@ export default function AdminProducts() {
                                                 }}
                                             />
                                             {waExistingImage && !waImageFile && (
-                                                <img src={getImageUrl(waExistingImage)} alt="Attachment" className="h-10 w-10 object-cover rounded border" />
+                                                <div className="relative group shrink-0">
+                                                    <img src={getImageUrl(waExistingImage)} alt="Attachment" className="h-10 w-10 object-cover rounded border shadow-sm" />
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setWaExistingImage("")}
+                                                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-[10px] opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                                                        title="Remove Attachment"
+                                                    >
+                                                        ×
+                                                    </button>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
