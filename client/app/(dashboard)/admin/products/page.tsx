@@ -15,6 +15,14 @@ import { MessageCircle, Search, Filter } from "lucide-react";
 
 const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001").replace(/\/+$/, "");
 
+// Helper to safely display images regardless of relative/absolute DB storage
+const getImageUrl = (src: string) => {
+    if (!src) return "";
+    if (src.startsWith('http') || src.startsWith('data:')) return src;
+    const cleanSrc = src.startsWith('/') ? src : `/uploads/${src}`;
+    return `${API_URL}${cleanSrc}`;
+};
+
 export default function AdminProducts() {
     const [showForm, setShowForm] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -159,11 +167,11 @@ export default function AdminProducts() {
         try {
             const parsed = JSON.parse(product.product_image);
             const imgs = Array.isArray(parsed) ? parsed : [parsed];
-            setExistingImages(imgs.map(img => img.startsWith('/') ? `${API_URL}${img}` : img));
+            setExistingImages(imgs);
         } catch {
             const img = product.product_image;
             if (img) {
-                setExistingImages([img.startsWith('/') ? `${API_URL}${img}` : img]);
+                setExistingImages([img]);
             } else {
                 setExistingImages([]);
             }
@@ -417,10 +425,7 @@ export default function AdminProducts() {
                                         <p className="text-xs text-gray-500">Current Images:</p>
                                         <div className="flex gap-2 overflow-x-auto p-2 bg-gray-50 rounded border">
                                             {existingImages.map((src, idx) => {
-                                                let displaySrc = src;
-                                                if (src && !src.startsWith('http') && !src.startsWith('data:')) {
-                                                    displaySrc = src.startsWith('/') ? `${API_URL}${src}` : `${API_URL}/uploads/${src}`;
-                                                }
+                                                const displaySrc = getImageUrl(src);
                                                 return (
                                                     <div key={`exist-${idx}`} className="relative group shrink-0">
                                                         <img src={displaySrc} alt={`Existing ${idx + 1}`} className="h-20 w-20 object-cover rounded shadow-sm border border-gray-200" />
@@ -559,7 +564,7 @@ export default function AdminProducts() {
                                                 }}
                                             />
                                             {waExistingImage && !waImageFile && (
-                                                <img src={waExistingImage.startsWith('/') ? `${API_URL}${waExistingImage}` : waExistingImage} alt="Attachment" className="h-10 w-10 object-cover rounded border" />
+                                                <img src={getImageUrl(waExistingImage)} alt="Attachment" className="h-10 w-10 object-cover rounded border" />
                                             )}
                                         </div>
                                     </div>
@@ -696,16 +701,13 @@ export default function AdminProducts() {
                                                 firstImg = p.product_image;
                                             }
                                         }
-                                        if (firstImg && !firstImg.startsWith('http') && !firstImg.startsWith('data:')) {
-                                            // Some seed images might just be filenames "image.jpg"
-                                            // or were saved as relative without a leading slash. Try fetching from uploads.
-                                            firstImg = firstImg.startsWith('/') ? `${API_URL}${firstImg}` : `${API_URL}/uploads/${firstImg}`;
-                                        }
-                                        return firstImg ? (
+                                        const displaySrc = getImageUrl(firstImg);
+
+                                        return displaySrc ? (
                                             <img
-                                                src={firstImg}
+                                                src={displaySrc}
                                                 alt={p.product_name}
-                                                className="h-16 w-16 object-cover rounded border"
+                                                className="h-16 w-16 object-cover rounded border bg-gray-50"
                                                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
                                             />
                                         ) : null;
