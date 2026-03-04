@@ -4,7 +4,7 @@ import logging
 from playwright.sync_api import sync_playwright
 from playwright_stealth import Stealth
 
-def send_whatsapp_message_playwright(contact: str, message: str) -> dict:
+def send_whatsapp_message_playwright(contact: str, message: str, attachment_path: str = None) -> dict:
     """
     Sends a WhatsApp message using a persistent stealth Chrome profile.
     Waits for the user to scan the QR code if logging in for the first time.
@@ -54,16 +54,37 @@ def send_whatsapp_message_playwright(contact: str, message: str) -> dict:
             page.keyboard.press("Enter")
             time.sleep(2)
             
-            # Locate the chat input box
-            logging.info("Locating chat input...")
-            chat_box = page.locator("div[contenteditable='true'][data-tab='10'], div[title='Type a message']").first
-            chat_box.wait_for(timeout=10000)
-            chat_box.click()
-            
-            logging.info("Typing message...")
-            page.keyboard.insert_text(message)
-            time.sleep(1)
-            page.keyboard.press("Enter")
+            if attachment_path and os.path.exists(attachment_path):
+                logging.info(f"Attaching file: {attachment_path}")
+                # Click the + icon (attach)
+                page.locator("span[data-icon='plus']").last.click()
+                time.sleep(1)
+                
+                # Upload the file into the hidden input
+                file_input = page.locator("input[accept*='image/*']").first
+                file_input.set_input_files(attachment_path)
+                time.sleep(3) # Wait for image preview to load
+                
+                logging.info("Typing message as caption...")
+                # In the attachment preview, there is a caption box, but it is typically still accessible by typing directly 
+                # or finding the new contenteditable textbox
+                caption_box = page.locator("div[contenteditable='true'][data-tab='10'], div[contenteditable='true'][data-lexical-editor='true']").last
+                caption_box.wait_for(timeout=10000)
+                caption_box.click()
+                page.keyboard.insert_text(message)
+                time.sleep(1)
+                page.keyboard.press("Enter")
+            else:
+                # normal sending
+                logging.info("Locating chat input...")
+                chat_box = page.locator("div[contenteditable='true'][data-tab='10'], div[title='Type a message'], div[contenteditable='true'][data-lexical-editor='true']").first
+                chat_box.wait_for(timeout=10000)
+                chat_box.click()
+                
+                logging.info("Typing message...")
+                page.keyboard.insert_text(message)
+                time.sleep(1)
+                page.keyboard.press("Enter")
             
             logging.info(f"Message sent successfully to {contact}!")
             time.sleep(3) # A brief wait for the message to propagate over network

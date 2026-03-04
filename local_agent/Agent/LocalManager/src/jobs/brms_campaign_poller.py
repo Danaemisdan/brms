@@ -85,13 +85,35 @@ def _process_campaign_task(task: Dict[str, Any]) -> None:
             _complete_task(task_id, "FAILED", {"error": "Invalid WHATSAPP_BLAST payload", "payload": payload})
         return
 
+    attachment_url = str(payload.get("attachment_url", "")).strip()
+    attachment_path = None
+    if attachment_url and attachment_url.lower() != "none" and attachment_url.lower() != "null":
+        import requests
+        import tempfile
+        import os
+        try:
+            # Prepend API_URL if it is a relative path
+            if attachment_url.startswith("/"):
+                base_url = os.getenv("API_URL", "http://localhost:5001").rstrip("/")
+                attachment_url = f"{base_url}{attachment_url}"
+            resp = requests.get(attachment_url, timeout=10)
+            if resp.status_code == 200:
+                ext = attachment_url.split(".")[-1]
+                if "?" in ext: ext = ext.split("?")[0]
+                fd, path = tempfile.mkstemp(suffix=f".{ext}")
+                with os.fdopen(fd, 'wb') as f:
+                    f.write(resp.content)
+                attachment_path = path
+        except Exception as e:
+            logger.error("Failed to download attachment %s: %s", attachment_url, e)
+
     sent_results: List[Dict[str, Any]] = []
     failed_count = 0
 
     for idx, contact in enumerate(recipients):
         logger.info("[%s/%s] Sending WhatsApp campaign message to: %s", idx + 1, len(recipients), contact)
         try:
-            result_json = send_whatsapp_message_playwright(contact=contact, message=message)
+            result_json = send_whatsapp_message_playwright(contact=contact, message=message, attachment_path=attachment_path)
             sent_results.append({"contact": contact, "result": result_json})
             if result_json.get("status") != "success":
                 failed_count += 1
@@ -116,6 +138,13 @@ def _process_campaign_task(task: Dict[str, Any]) -> None:
         return
 
     _complete_task(task_id, "COMPLETED", {"results": sent_results, "failed_count": failed_count})
+
+    # Clean up temp attachment file
+    if attachment_path and os.path.exists(attachment_path):
+        try:
+            os.remove(attachment_path)
+        except Exception as e:
+            logger.warning("Could not delete temp attachment %s: %s", attachment_path, e)
 
 def process_campaign_jobs() -> None:
     while True:

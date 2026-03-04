@@ -555,7 +555,7 @@ export default function AdminProducts() {
                                                 }}
                                             />
                                             {waExistingImage && !waImageFile && (
-                                                <img src={waExistingImage} alt="Attachment" className="h-10 w-10 object-cover rounded border" />
+                                                <img src={waExistingImage.startsWith('/') ? `${API_URL}${waExistingImage}` : waExistingImage} alt="Attachment" className="h-10 w-10 object-cover rounded border" />
                                             )}
                                         </div>
                                     </div>
@@ -779,7 +779,7 @@ export default function AdminProducts() {
                                     {selectedWaProduct.wa_attachment_url && (
                                         <div className="mt-2">
                                             <p className="text-xs text-gray-500 mb-1">Attachment:</p>
-                                            <img src={selectedWaProduct.wa_attachment_url} alt="Attachment" className="h-20 w-20 object-cover rounded border" />
+                                            <img src={selectedWaProduct.wa_attachment_url.startsWith('/') ? `${API_URL}${selectedWaProduct.wa_attachment_url}` : selectedWaProduct.wa_attachment_url} alt="Attachment" className="h-20 w-20 object-cover rounded border" />
                                         </div>
                                     )}
                                 </div>
