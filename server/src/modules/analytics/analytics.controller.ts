@@ -39,6 +39,12 @@ export class AnalyticsController {
                 return acc;
             }, {});
 
+            // Ensure we have at least 2 points for the chart to render a line properly
+            const thirtyDaysAgoDate = thirtyDaysAgo.toISOString().split('T')[0];
+            const todayDate = new Date().toISOString().split('T')[0];
+            if (!signupsByDay[thirtyDaysAgoDate]) signupsByDay[thirtyDaysAgoDate] = 0;
+            if (!signupsByDay[todayDate]) signupsByDay[todayDate] = 0;
+
             const signupTrend = Object.entries(signupsByDay)
                 .map(([date, count]) => ({ date, signups: count }))
                 .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
