@@ -36,8 +36,12 @@ export default function AdminProducts() {
         wa_target: "all_customers",
         wa_custom_phones: "",
         wa_template: "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
-        wa_schedule_frequency: "NONE",
-        wa_schedule_days: ""
+        wa_start_date: "",
+        wa_end_date: "",
+        wa_times_per_day: "1",
+        wa_time_1: "09:00",
+        wa_time_2: "",
+        wa_time_3: ""
     });
 
     // WhatsApp Campaign State
@@ -56,6 +60,10 @@ export default function AdminProducts() {
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [products, setProducts] = useState<any[]>([]);
+
+    // WA Image Attachment State
+    const [waImageFile, setWaImageFile] = useState<File | null>(null);
+    const [waExistingImage, setWaExistingImage] = useState<string>("");
 
     const [isWaLoading, setIsWaLoading] = useState(false);
 
@@ -114,11 +122,13 @@ export default function AdminProducts() {
         setForm({
             product_name: "", product_link: "", platform: "AMAZON", refund_amount: "", deadline: "", total_slots: "", is_public: true,
             wa_target: "all_customers", wa_custom_phones: "", wa_template: "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
-            wa_schedule_frequency: "NONE", wa_schedule_days: ""
+            wa_start_date: "", wa_end_date: "", wa_times_per_day: "1", wa_time_1: "09:00", wa_time_2: "", wa_time_3: ""
         });
         setExistingImages([]);
         setImageFiles([]);
         setImagePreviews([]);
+        setWaExistingImage("");
+        setWaImageFile(null);
         setShowForm(false);
     };
 
@@ -135,11 +145,17 @@ export default function AdminProducts() {
             wa_target: product.wa_target || "all_customers",
             wa_custom_phones: product.wa_custom_phones || "",
             wa_template: product.wa_template || "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
-            wa_schedule_frequency: product.wa_schedule_frequency || "NONE",
-            wa_schedule_days: product.wa_schedule_days || ""
+            wa_start_date: product.wa_start_date ? new Date(product.wa_start_date).toISOString().split('T')[0] : "",
+            wa_end_date: product.wa_end_date ? new Date(product.wa_end_date).toISOString().split('T')[0] : "",
+            wa_times_per_day: product.wa_times_per_day ? String(product.wa_times_per_day) : "1",
+            wa_time_1: product.wa_time_1 || "09:00",
+            wa_time_2: product.wa_time_2 || "",
+            wa_time_3: product.wa_time_3 || ""
         });
         setImageFiles([]);
         setImagePreviews([]);
+        setWaImageFile(null);
+        setWaExistingImage(product.wa_attachment_url || "");
         try {
             const parsed = JSON.parse(product.product_image);
             const imgs = Array.isArray(parsed) ? parsed : [parsed];
@@ -247,7 +263,25 @@ export default function AdminProducts() {
 
             const finalImageString = JSON.stringify(finalUrls);
 
-            // 2. Submit Product Form
+            // 2. Upload WhatsApp Attachment if any
+            let finalWaUrl = waExistingImage;
+            if (waImageFile) {
+                const waFormData = new FormData();
+                waFormData.append("images", waImageFile);
+
+                const waUploadRes = await apiFetch(`${API_URL}/api/upload/products`, {
+                    method: "POST",
+                    headers: { Authorization: `Bearer ${token}` },
+                    body: waFormData
+                });
+
+                if (waUploadRes.ok) {
+                    const waUploadData = await waUploadRes.json();
+                    finalWaUrl = waUploadData.urls[0] || waExistingImage;
+                }
+            }
+
+            // 3. Submit Product Form
             const payload: any = {
                 client_id: "5d0b58cf-aa25-4088-8032-4dbd913a4be4",
                 brand: "Admin Added Brand",
@@ -263,12 +297,17 @@ export default function AdminProducts() {
                 wa_target: form.wa_target,
                 wa_custom_phones: form.wa_target === "custom" ? form.wa_custom_phones : "",
                 wa_template: form.wa_template,
-                wa_schedule_frequency: form.wa_schedule_frequency,
-                wa_schedule_days: form.wa_schedule_days
+                wa_attachment_url: finalWaUrl,
+                wa_start_date: form.wa_start_date || null,
+                wa_end_date: form.wa_end_date || null,
+                wa_times_per_day: form.wa_times_per_day || null,
+                wa_time_1: form.wa_time_1 || null,
+                wa_time_2: form.wa_time_2 || null,
+                wa_time_3: form.wa_time_3 || null
             };
 
             if (finalUrls.length > 0) {
-                payload.product_image = finalUrls.join(",");
+                payload.product_image = JSON.stringify(finalUrls);
             } else {
                 payload.product_image = "";
             }
@@ -472,29 +511,81 @@ export default function AdminProducts() {
                             </div>
 
                             <div className="space-y-4 md:col-span-2 p-4 bg-gray-50 border rounded-lg mt-2 mb-4">
-                                <h4 className="font-medium">Scheduling</h4>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <h4 className="font-medium">Scheduling & Automation</h4>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div className="space-y-2">
-                                        <Label>Schedule Frequency</Label>
+                                        <Label>Start Date (Optional)</Label>
+                                        <Input
+                                            type="date"
+                                            value={form.wa_start_date}
+                                            onChange={(e) => setForm({ ...form, wa_start_date: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>End Date (Optional)</Label>
+                                        <Input
+                                            type="date"
+                                            value={form.wa_end_date}
+                                            onChange={(e) => setForm({ ...form, wa_end_date: e.target.value })}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <Label>Times per Day</Label>
                                         <select
                                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                            value={form.wa_schedule_frequency}
-                                            onChange={(e) => setForm({ ...form, wa_schedule_frequency: e.target.value })}
+                                            value={form.wa_times_per_day}
+                                            onChange={(e) => setForm({ ...form, wa_times_per_day: e.target.value })}
                                         >
-                                            <option value="NONE">Don't Schedule (Send Once Immediately)</option>
-                                            <option value="DAILY">Daily</option>
-                                            <option value="ONCE_A_WEEK">Once a Week</option>
-                                            <option value="TWICE_A_WEEK">Twice a Week</option>
+                                            <option value="1">Once a day</option>
+                                            <option value="2">Twice a day</option>
+                                            <option value="3">Three times a day</option>
                                         </select>
                                     </div>
-
-                                    {form.wa_schedule_frequency !== "NONE" && form.wa_schedule_frequency !== "DAILY" && (
-                                        <div className="space-y-2">
-                                            <Label>Schedule Days</Label>
+                                    <div className="space-y-2 mt-auto">
+                                        <Label>Attachment Image</Label>
+                                        <div className="flex items-center gap-2">
                                             <Input
-                                                placeholder="e.g. MONDAY, THURSDAY"
-                                                value={form.wa_schedule_days}
-                                                onChange={(e) => setForm({ ...form, wa_schedule_days: e.target.value.toUpperCase() })}
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={(e) => {
+                                                    if (e.target.files && e.target.files[0]) {
+                                                        setWaImageFile(e.target.files[0]);
+                                                        setWaExistingImage("");
+                                                    }
+                                                }}
+                                            />
+                                            {waExistingImage && !waImageFile && (
+                                                <img src={waExistingImage} alt="Attachment" className="h-10 w-10 object-cover rounded border" />
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="space-y-2">
+                                        <Label>Time 1</Label>
+                                        <Input
+                                            type="time"
+                                            value={form.wa_time_1}
+                                            onChange={(e) => setForm({ ...form, wa_time_1: e.target.value })}
+                                        />
+                                    </div>
+                                    {Number(form.wa_times_per_day) >= 2 && (
+                                        <div className="space-y-2">
+                                            <Label>Time 2</Label>
+                                            <Input
+                                                type="time"
+                                                value={form.wa_time_2}
+                                                onChange={(e) => setForm({ ...form, wa_time_2: e.target.value })}
+                                            />
+                                        </div>
+                                    )}
+                                    {Number(form.wa_times_per_day) >= 3 && (
+                                        <div className="space-y-2">
+                                            <Label>Time 3</Label>
+                                            <Input
+                                                type="time"
+                                                value={form.wa_time_3}
+                                                onChange={(e) => setForm({ ...form, wa_time_3: e.target.value })}
                                             />
                                         </div>
                                     )}
@@ -536,7 +627,7 @@ export default function AdminProducts() {
                                     onChange={(e) => setForm({ ...form, wa_template: e.target.value })}
                                 />
                                 <p className="text-xs text-gray-500 mb-2">
-                                    Leave blank to disable auto-blasting. The local agent will replace these variables with actual product data and blast the message upon saving.
+                                    You can blast this natively via "Chat on WhatsApp" from the product list table. If dates are set, it will automatically fire in the background according to the times specified.
                                 </p>
                             </div>
 
@@ -680,67 +771,24 @@ export default function AdminProducts() {
                             </div>
 
                             <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label>Target Audience <span className="text-red-500">*</span></Label>
-                                    <select
-                                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                        value={waTarget}
-                                        onChange={(e) => setWaTarget(e.target.value)}
-                                    >
-                                        <option value="all_customers">All Registered Customers</option>
-                                        <option value="verified_customers">Verified Customers</option>
-                                        <option value="custom">Custom (Select specific groups or numbers)</option>
-                                    </select>
-                                </div>
-
-                                {waTarget === "custom" && (
-                                    <div className="space-y-2 p-4 bg-gray-50 border rounded-lg">
-                                        <Label>Phone Numbers or Group Names <span className="text-red-500">*</span></Label>
-                                        <Textarea
-                                            className="font-mono text-sm min-h-[80px]"
-                                            placeholder="e.g. 919876543210, +1 555-0100, Freebie Reviewers Group"
-                                            value={customPhones}
-                                            onChange={(e) => setCustomPhones(e.target.value)}
-                                        />
-                                        <p className="text-xs text-gray-500">
-                                            Enter comma-separated phone numbers or exact WhatsApp group names. The local agent will automatically search for and message each one.
-                                        </p>
+                                <div className="space-y-2 p-4 bg-gray-50 border rounded-lg">
+                                    <h4 className="font-medium text-sm text-gray-700">Message Preview</h4>
+                                    <div className="whitespace-pre-wrap font-mono text-sm bg-white p-3 border rounded text-gray-800">
+                                        {waTemplate}
                                     </div>
-                                )}
-
-                                <div className="space-y-2">
-                                    <Label>Schedule Launch (Optional)</Label>
-                                    <Input
-                                        type="datetime-local"
-                                        value={waScheduledAt}
-                                        onChange={(e) => setWaScheduledAt(e.target.value)}
-                                        className="w-full"
-                                    />
-                                    <p className="text-xs text-gray-500">
-                                        Leave empty to launch immediately. Otherwise, the Agent will automatically blast messages at the selected date and time.
-                                    </p>
+                                    {selectedWaProduct.wa_attachment_url && (
+                                        <div className="mt-2">
+                                            <p className="text-xs text-gray-500 mb-1">Attachment:</p>
+                                            <img src={selectedWaProduct.wa_attachment_url} alt="Attachment" className="h-20 w-20 object-cover rounded border" />
+                                        </div>
+                                    )}
                                 </div>
-
-                                <div className="space-y-2">
-                                    <Label>Message Template Variables</Label>
-                                    <div className="flex flex-wrap gap-2 mb-2">
-                                        {['product_name', 'platform', 'refund_amount', 'available_slots', 'product_link', 'deadline'].map(v => (
-                                            <button
-                                                key={v}
-                                                onClick={() => insertWaVariable(v)}
-                                                className="px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded text-xs border cursor-pointer font-mono"
-                                            >
-                                                {v}
-                                            </button>
-                                        ))}
-                                    </div>
-                                    <Textarea
-                                        className="min-h-[200px] font-mono whitespace-pre-wrap break-all"
-                                        value={waTemplate}
-                                        onChange={(e) => setWaTemplate(e.target.value)}
-                                    />
-                                    <p className="text-xs text-gray-500">
-                                        The local agent will replace these variables with actual product data and blast the message.
+                                <div className="p-4 bg-gray-50 border rounded-lg">
+                                    <h4 className="font-medium text-sm text-gray-700">Target Audience</h4>
+                                    <p className="text-sm mt-1">
+                                        {waTarget === "all_customers" ? "All Registered Customers" :
+                                            waTarget === "verified_customers" ? "Verified Customers" :
+                                                `Custom: ${customPhones || "None specified"}`}
                                     </p>
                                 </div>
                             </div>

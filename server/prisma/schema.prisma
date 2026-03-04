@@ -96,8 +96,13 @@ model Product {
   wa_target             String?  @default("all_customers")
   wa_custom_phones      String?
   wa_template           String?
-  wa_schedule_frequency String?  @default("NONE") // NONE, ONCE_A_WEEK, TWICE_A_WEEK, DAILY
-  wa_schedule_days      String?  // e.g., MONDAY, THURSDAY
+  wa_attachment_url     String?
+  wa_start_date         DateTime?
+  wa_end_date           DateTime?
+  wa_times_per_day      Int?
+  wa_time_1             String?
+  wa_time_2             String?
+  wa_time_3             String?
   wa_last_sent_at       DateTime?
   created_at            DateTime @default(now())
 

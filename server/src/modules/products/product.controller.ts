@@ -86,8 +86,13 @@ export class ProductController {
                 wa_target,
                 wa_custom_phones,
                 wa_template,
-                wa_schedule_frequency,
-                wa_schedule_days
+                wa_attachment_url,
+                wa_start_date,
+                wa_end_date,
+                wa_times_per_day,
+                wa_time_1,
+                wa_time_2,
+                wa_time_3
             } = req.body;
 
             // Ensure a valid client_id exists
@@ -138,56 +143,18 @@ export class ProductController {
                     wa_target: wa_target || "all_customers",
                     wa_custom_phones: wa_custom_phones || null,
                     wa_template: wa_template || null,
-                    wa_schedule_frequency: wa_schedule_frequency || "NONE",
-                    wa_schedule_days: wa_schedule_days || null
+                    wa_attachment_url: wa_attachment_url || null,
+                    wa_start_date: wa_start_date ? new Date(wa_start_date) : null,
+                    wa_end_date: wa_end_date ? new Date(wa_end_date) : null,
+                    wa_times_per_day: wa_times_per_day ? parseInt(wa_times_per_day) : null,
+                    wa_time_1: wa_time_1 || null,
+                    wa_time_2: wa_time_2 || null,
+                    wa_time_3: wa_time_3 || null
                 }
             });
 
-            // Auto-launch WhatsApp Campaign if template is provided and schedule is NONE
-            if (wa_template && (!wa_schedule_frequency || wa_schedule_frequency === "NONE")) {
-                try {
-                    const finalMessage = wa_template
-                        .replace(/{{product_name}}/g, product.product_name)
-                        .replace(/{{platform}}/g, product.platform)
-                        .replace(/{{refund_amount}}/g, product.refund_amount.toString())
-                        .replace(/{{available_slots}}/g, (product.total_slots - product.filled_slots).toString())
-                        .replace(/{{product_link}}/g, product.product_link)
-                        .replace(/{{deadline}}/g, new Date(product.deadline).toLocaleDateString());
-
-                    const target = wa_target || "all_customers";
-                    const customPhones = wa_custom_phones || "";
-                    const recipients = await resolveRecipients(prisma, target, customPhones);
-
-                    if (Array.isArray(recipients) && recipients.length > 0) {
-                        const dedupeKey = target === 'custom'
-                            ? null
-                            : `whatsapp:product:${product.id}:${new Date().toISOString().slice(0, 16)}`;
-
-                        await prisma.agentTask.create({
-                            data: {
-                                task_type: 'WHATSAPP_BLAST',
-                                status: 'PENDING',
-                                payload: JSON.stringify({
-                                    timestamp: new Date().toISOString(),
-                                    product_id: product.id,
-                                    message: finalMessage,
-                                    command: "BLAST_CAMPAIGN",
-                                    target,
-                                    custom_phones: customPhones,
-                                    recipients,
-                                }),
-                                dedupe_key: dedupeKey,
-                            }
-                        });
-                        console.log(`📤 Auto-queued WhatsApp blast for product: ${product.product_name} (${recipients.length} recipients)`);
-                    } else {
-                        console.warn(`⚠️ WhatsApp blast skipped for ${product.product_name}: no recipients resolved.`);
-                    }
-                } catch (waErr) {
-                    // Non-fatal: product was created, just log the WA failure
-                    console.error("WhatsApp auto-blast error (non-fatal):", waErr);
-                }
-            }
+            // User requested to use "Chat on WhatsApp" modal for immediate blasting,
+            // so we no longer auto-blast upon saving here.
 
             res.status(201).json({ message: "Campaign created successfully", product });
         } catch (error: any) {
@@ -216,8 +183,13 @@ export class ProductController {
                 wa_target,
                 wa_custom_phones,
                 wa_template,
-                wa_schedule_frequency,
-                wa_schedule_days
+                wa_attachment_url,
+                wa_start_date,
+                wa_end_date,
+                wa_times_per_day,
+                wa_time_1,
+                wa_time_2,
+                wa_time_3
             } = req.body;
 
             const product = await prisma.product.update({
@@ -237,8 +209,13 @@ export class ProductController {
                     wa_target: wa_target !== undefined ? wa_target : undefined,
                     wa_custom_phones: wa_custom_phones !== undefined ? wa_custom_phones : undefined,
                     wa_template: wa_template !== undefined ? wa_template : undefined,
-                    wa_schedule_frequency: wa_schedule_frequency !== undefined ? wa_schedule_frequency : undefined,
-                    wa_schedule_days: wa_schedule_days !== undefined ? wa_schedule_days : undefined
+                    wa_attachment_url: wa_attachment_url !== undefined ? wa_attachment_url : undefined,
+                    wa_start_date: wa_start_date ? new Date(wa_start_date) : (wa_start_date === null ? null : undefined),
+                    wa_end_date: wa_end_date ? new Date(wa_end_date) : (wa_end_date === null ? null : undefined),
+                    wa_times_per_day: wa_times_per_day !== undefined ? (wa_times_per_day === null ? null : parseInt(wa_times_per_day)) : undefined,
+                    wa_time_1: wa_time_1 !== undefined ? wa_time_1 : undefined,
+                    wa_time_2: wa_time_2 !== undefined ? wa_time_2 : undefined,
+                    wa_time_3: wa_time_3 !== undefined ? wa_time_3 : undefined
                 }
             });
 
