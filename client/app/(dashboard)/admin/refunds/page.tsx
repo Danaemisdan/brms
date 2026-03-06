@@ -203,9 +203,15 @@ export default function AdminRefunds() {
                                                     ₹{req.refund?.amount}
                                                 </TableCell>
                                                 <TableCell>
-                                                    <div className="max-w-[200px] text-xs font-mono bg-gray-100 p-1.5 rounded text-gray-700 truncate" title={req.user?.encrypted_bank_data || "N/A"}>
-                                                        {req.user?.encrypted_bank_data || "No Data"}
-                                                    </div>
+                                                    {req.refund?.qr_code_url ? (
+                                                        <a href={req.refund.qr_code_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded hover:bg-indigo-100 hover:text-indigo-800 transition-colors">
+                                                            <ExternalLink className="w-3.5 h-3.5" /> View QR Code
+                                                        </a>
+                                                    ) : (
+                                                        <div className="max-w-[200px] text-xs font-mono bg-gray-100 p-1.5 rounded text-gray-700 truncate" title={req.user?.encrypted_bank_data || "N/A"}>
+                                                            {req.user?.encrypted_bank_data || "No Data"}
+                                                        </div>
+                                                    )}
                                                 </TableCell>
                                                 <TableCell>
                                                     <div className="font-mono text-xs text-gray-600">{req.order_id}</div>

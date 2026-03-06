@@ -101,7 +101,7 @@ export class OrderController {
     static async claimRefund(req: Request, res: Response) {
         try {
             const { id } = req.params;
-            const { review_url, upi_id, review_screenshot } = req.body;
+            const { review_url, upi_id, review_screenshot, qr_code_url } = req.body;
             const userId = (req as any).user.userId;
 
             if (!review_screenshot) {
@@ -140,15 +140,18 @@ export class OrderController {
                     order_id: order.id,
                     user_id: order.user_id,
                     amount: order.product.refund_amount,
-                    status: "PENDING"
+                    status: "PENDING",
+                    qr_code_url: qr_code_url || null
                 }
             });
 
-            // Update user's bank details/UPI (encrypted at rest)
-            await prisma.user.update({
-                where: { id: order.user_id },
-                data: { encrypted_bank_data: encryptBankData({ payment_method_string: upi_id }) }
-            });
+            // Update user's bank details/UPI (encrypted at rest) if provided
+            if (upi_id || !qr_code_url) {
+                await prisma.user.update({
+                    where: { id: order.user_id },
+                    data: { encrypted_bank_data: encryptBankData({ payment_method_string: upi_id || "QR Code Provided" }) }
+                });
+            }
 
             // Queue local-agent verification task (claim/complete model).
             await prisma.agentTask.create({

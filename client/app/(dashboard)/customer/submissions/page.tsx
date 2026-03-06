@@ -35,8 +35,9 @@ function CustomerSubmissionsContent() {
     const [activeOrder, setActiveOrder] = useState<any>(null);
     const [reviewLink, setReviewLink] = useState("");
     const [reviewScreenshot, setReviewScreenshot] = useState("");
-    const [refundMethod, setRefundMethod] = useState<"UPI" | "BANK">("UPI");
+    const [refundMethod, setRefundMethod] = useState<"UPI" | "BANK" | "QR">("UPI");
     const [upiId, setUpiId] = useState("");
+    const [qrCodeUrl, setQrCodeUrl] = useState("");
     const [bankDetails, setBankDetails] = useState({ accountName: "", accountNumber: "", ifsc: "" });
 
     // Add New Modal State
@@ -207,7 +208,8 @@ function CustomerSubmissionsContent() {
                 body: JSON.stringify({
                     review_url: reviewLink,
                     review_screenshot: reviewScreenshot,
-                    upi_id: refundMethod === "UPI" ? upiId : `Bank AC: ${bankDetails.accountNumber}, IFSC: ${bankDetails.ifsc}, Name: ${bankDetails.accountName}`,
+                    upi_id: refundMethod === "UPI" ? upiId : refundMethod === "QR" ? "QR Code Provided" : `Bank AC: ${bankDetails.accountNumber}, IFSC: ${bankDetails.ifsc}, Name: ${bankDetails.accountName}`,
+                    qr_code_url: refundMethod === "QR" ? qrCodeUrl : "",
                     mobile: payload.mobile || ""
                 })
             });
@@ -431,6 +433,10 @@ function CustomerSubmissionsContent() {
                                         <input type="radio" className="w-4 h-4 text-blue-600" checked={refundMethod === "BANK"} onChange={() => setRefundMethod("BANK")} />
                                         <span className="text-sm">Bank Account</span>
                                     </label>
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" className="w-4 h-4 text-blue-600" checked={refundMethod === "QR"} onChange={() => setRefundMethod("QR")} />
+                                        <span className="text-sm">QR Code</span>
+                                    </label>
                                 </div>
                             </div>
 
@@ -438,6 +444,15 @@ function CustomerSubmissionsContent() {
                                 <div className="space-y-1">
                                     <Label>UPI ID <span className="text-red-500">*</span></Label>
                                     <Input required placeholder="Enter UPI ID (e.g. yourname@upi)" value={upiId} onChange={e => setUpiId(e.target.value)} />
+                                </div>
+                            ) : refundMethod === "QR" ? (
+                                <div className="space-y-2 border p-4 rounded-lg bg-gray-50">
+                                    <Label>Upload Payment QR Code <span className="text-red-500">*</span></Label>
+                                    <p className="text-xs text-gray-500 mb-2">Upload a clear image of your PhonePe/GPay/Paytm QR Code.</p>
+                                    <ImageUpload
+                                        value={qrCodeUrl}
+                                        onChange={setQrCodeUrl}
+                                    />
                                 </div>
                             ) : (
                                 <div className="space-y-3 border p-4 rounded-lg bg-gray-50">
