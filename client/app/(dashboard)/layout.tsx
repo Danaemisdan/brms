@@ -45,7 +45,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     useEffect(() => {
         const token = localStorage.getItem("token");
-        const role = localStorage.getItem("role"); // Assuming we save role on login
+        const storedRole = localStorage.getItem("role"); // Assuming we save role on login
+        const role = storedRole ? storedRole.toUpperCase() : null;
 
         if (!token) {
             router.push("/login");
@@ -68,7 +69,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
         setIsAuthorized(true);
         setUserProfile({
-            name: role === "ADMIN" ? "Shruti Jaigariya" : (localStorage.getItem("name") || "User"),
+            name: role === "ADMIN" ? "Admin User" : (localStorage.getItem("name") || "User"),
             role: role || "CUSTOMER"
         });
     }, [pathname, router]);

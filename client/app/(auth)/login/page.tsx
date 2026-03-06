@@ -66,7 +66,7 @@ function LoginComponent() {
             // Save the token to localStorage for authenticated API requests
             if (data.token) {
                 localStorage.setItem("token", data.token);
-                localStorage.setItem("role", data.user.role);
+                localStorage.setItem("role", data.user.role.toUpperCase());
                 localStorage.setItem("name", data.user.name);
             }
 
