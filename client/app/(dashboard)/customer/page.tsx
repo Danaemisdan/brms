@@ -226,7 +226,7 @@ function CustomerDashboardContent() {
                                 <Label>Order Screenshot <span className="text-red-500">*</span></Label>
                                 <p className="text-xs text-red-600 font-medium my-1.5 flex items-start gap-1 p-2 bg-red-50 rounded-md border border-red-100">
                                     <span className="text-red-600 mt-0.5">⚠️</span>
-                                    Please upload a "Long Screenshot" that clearly shows the Total Order Value, Product Name, and Shipping Address. Small or cropped screenshots will be rejected.
+                                    Please upload a "Full Long Screenshot" that clearly shows the entire Total Order Value, Product Name, and Shipping Address. Small or cropped screenshots will be rejected by the AI.
                                 </p>
                                 <div className="mt-2">
                                     <ImageUpload
