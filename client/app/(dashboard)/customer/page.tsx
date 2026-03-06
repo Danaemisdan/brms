@@ -144,7 +144,22 @@ function CustomerDashboardContent() {
                     {products.map((product) => {
                         const images = parseImages(product.product_image);
                         return (
-                            <Card key={product.id} className="overflow-hidden flex flex-col">
+                            <Card key={product.id} className="overflow-hidden flex flex-col relative">
+                                {(() => {
+                                    const createdDate = new Date(product.created_at);
+                                    const now = new Date();
+                                    const hoursSinceCreated = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60);
+                                    if (hoursSinceCreated <= 48) {
+                                        return (
+                                            <div className="absolute top-2 left-2 z-10">
+                                                <Badge className="bg-indigo-600 hover:bg-indigo-700 animate-pulse shadow-md border-none text-[10px] px-2 py-0.5">
+                                                    New 🚀
+                                                </Badge>
+                                            </div>
+                                        );
+                                    }
+                                    return null;
+                                })()}
                                 <div className="bg-gray-100 h-48 flex items-center justify-center p-4 relative group">
                                     {images.length > 0 ? (
                                         <div className="flex overflow-x-auto w-full h-full snap-x snap-mandatory hide-scrollbar">
@@ -172,8 +187,22 @@ function CustomerDashboardContent() {
                                         <h3 className="font-semibold text-lg line-clamp-2">{product.product_name}</h3>
                                         <p className="text-sm text-gray-500 mt-1">by {product.brand}</p>
                                     </div>
-                                    <div className="text-sm text-gray-500">
-                                        <span className="font-medium text-gray-900">{product.total_slots - product.filled_slots}</span> slots remaining
+                                    <div className="text-sm">
+                                        {(() => {
+                                            const filled = product.filled_slots || 0;
+                                            const total = product.total_slots || 1;
+                                            const percentFilled = (filled / total) * 100;
+
+                                            if (percentFilled >= 95) {
+                                                return <Badge variant="destructive" className="bg-red-500 hover:bg-red-600">About to close ⏳</Badge>;
+                                            } else if (percentFilled >= 80) {
+                                                return <Badge variant="default" className="bg-orange-500 hover:bg-orange-600 text-white">Almost Full 🔥</Badge>;
+                                            } else if (percentFilled >= 50) {
+                                                return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Filling Fast 📉</Badge>;
+                                            } else {
+                                                return <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">Slots Available ✅</Badge>;
+                                            }
+                                        })()}
                                     </div>
 
                                     <div className="pt-2 space-y-2 flex-grow flex flex-col justify-end">
