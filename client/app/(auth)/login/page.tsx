@@ -29,17 +29,24 @@ function LoginComponent() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState("");
 
-    // Auto-redirect if already logged in
+    // Auto-redirect if already logged in OR clear token if returning from a strict guarded route
     useEffect(() => {
         const token = localStorage.getItem("token");
         const role = localStorage.getItem("role");
+
+        // If we arrived here via a fallback redirect with a returnUrl, it means the layout guard rejected our token/role
+        // We MUST clear the storage so the user actually sees the login page instead of looping endlessly.
+        if (returnUrl) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("role");
+            localStorage.removeItem("name");
+            return;
+        }
+
         if (token && role) {
-            if (returnUrl) {
-                router.push(returnUrl);
-                return;
-            }
-            if (role === "ADMIN") router.push("/admin");
-            else if (role === "VENDOR") router.push("/brand");
+            const upperRole = role.toUpperCase();
+            if (upperRole === "ADMIN") router.push("/admin");
+            else if (upperRole === "VENDOR") router.push("/brand");
             else router.push("/customer");
         }
     }, [router, returnUrl]);

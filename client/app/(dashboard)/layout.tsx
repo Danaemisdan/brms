@@ -48,22 +48,22 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         const storedRole = localStorage.getItem("role"); // Assuming we save role on login
         const role = storedRole ? storedRole.toUpperCase() : null;
 
-        if (!token) {
-            router.push("/login");
+        if (!token || !role) {
+            router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
             return;
         }
 
         // Basic frontend role checking
         if (pathname.startsWith("/admin") && role !== "ADMIN") {
-            router.push("/login");
+            router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
             return;
         }
         if (pathname.startsWith("/brand") && role !== "VENDOR") {
-            router.push("/login");
+            router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
             return;
         }
         if (pathname.startsWith("/customer") && role !== "CUSTOMER") {
-            router.push("/login");
+            router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
             return;
         }
 
