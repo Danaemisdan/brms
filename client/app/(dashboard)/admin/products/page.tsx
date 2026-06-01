@@ -790,9 +790,11 @@ export default function AdminProducts() {
                             <div className="space-y-4">
                                 <div className="space-y-2 p-4 bg-gray-50 border rounded-lg">
                                     <h4 className="font-medium text-sm text-gray-700">Message Preview</h4>
-                                    <div className="whitespace-pre-wrap font-mono text-sm bg-white p-3 border rounded text-gray-800">
-                                        {waTemplate}
-                                    </div>
+                                    <Textarea 
+                                        className="min-h-[200px] whitespace-pre-wrap font-mono text-sm bg-white p-3 border rounded text-gray-800"
+                                        value={waTemplate}
+                                        onChange={(e) => setWaTemplate(e.target.value)}
+                                    />
                                     {selectedWaProduct.wa_attachment_url && (
                                         <div className="mt-2">
                                             <p className="text-xs text-gray-500 mb-1">Attachment:</p>
@@ -800,13 +802,31 @@ export default function AdminProducts() {
                                         </div>
                                     )}
                                 </div>
-                                <div className="p-4 bg-gray-50 border rounded-lg">
-                                    <h4 className="font-medium text-sm text-gray-700">Target Audience</h4>
-                                    <p className="text-sm mt-1">
-                                        {waTarget === "all_customers" ? "All Registered Customers" :
-                                            waTarget === "verified_customers" ? "Verified Customers" :
-                                                `Custom: ${customPhones || "None specified"}`}
-                                    </p>
+                                <div className="space-y-4 p-4 bg-gray-50 border rounded-lg">
+                                    <div>
+                                        <h4 className="font-medium text-sm text-gray-700 mb-2">Target Audience</h4>
+                                        <select
+                                            className="flex h-10 w-full rounded-md border border-input bg-white px-3 py-2 text-sm"
+                                            value={waTarget}
+                                            onChange={(e) => setWaTarget(e.target.value)}
+                                        >
+                                            <option value="all_customers">All Registered Customers</option>
+                                            <option value="verified_customers">Verified Customers</option>
+                                            <option value="custom">Custom (Select specific groups or numbers)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    {waTarget === "custom" && (
+                                        <div>
+                                            <Label className="text-sm text-gray-700">Phone Numbers or Group Names</Label>
+                                            <Textarea
+                                                className="font-mono text-sm min-h-[80px] bg-white mt-1"
+                                                placeholder="e.g. 919876543210, +1 555-0100, Freebie Reviewers Group"
+                                                value={customPhones}
+                                                onChange={(e) => setCustomPhones(e.target.value)}
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
