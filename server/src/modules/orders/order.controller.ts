@@ -87,7 +87,8 @@ export class OrderController {
                 hasRefund: !!o.refund,
                 hasReview: !!o.review,
                 refundStatus: o.refund?.status || null,
-                screenshot_url: o.screenshot_url
+                screenshot_url: o.screenshot_url,
+                created_at: o.created_at
             }));
 
             res.json({ orders: formattedOrders });
@@ -221,7 +222,8 @@ export class OrderController {
                 hasRefund: !!o.refund,
                 hasReview: !!o.review,
                 refundStatus: o.refund?.status || null,
-                screenshot_url: o.screenshot_url
+                screenshot_url: o.screenshot_url,
+                created_at: o.created_at
             }));
 
             res.json({ orders: formattedOrders });
