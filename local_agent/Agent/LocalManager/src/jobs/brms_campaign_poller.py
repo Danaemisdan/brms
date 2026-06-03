@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional
 import requests
 from dotenv import load_dotenv
 
-from src.tools.playwright_whatsapp import send_whatsapp_message_batch_playwright
+from src.tools.playwright_whatsapp import WhatsAppAgent
 
 load_dotenv()
 
@@ -17,6 +17,9 @@ POLL_SECONDS = int(os.getenv("WHATSAPP_POLL_SECONDS", "10"))
 RETRY_SECONDS = int(os.getenv("WHATSAPP_RETRY_SECONDS", "60"))
 
 logger = logging.getLogger(__name__)
+
+# Global persistent agent
+wa_agent: Optional[WhatsAppAgent] = None
 
 def _headers() -> Dict[str, str]:
     return {
@@ -74,6 +77,7 @@ def _parse_recipients(payload: Dict[str, Any]) -> List[str]:
     return []
 
 def _process_campaign_task(task: Dict[str, Any]) -> None:
+    global wa_agent
     task_id = str(task.get("id", ""))
     payload = task.get("payload") or {}
     message = str(payload.get("message", "")).strip()
@@ -92,7 +96,6 @@ def _process_campaign_task(task: Dict[str, Any]) -> None:
         import tempfile
         import os
         try:
-            # Prepend API_URL if it is a relative path
             if attachment_url.startswith("/"):
                 base_url = os.getenv("API_URL", "http://localhost:5001").rstrip("/")
                 attachment_url = f"{base_url}{attachment_url}"
@@ -110,15 +113,16 @@ def _process_campaign_task(task: Dict[str, Any]) -> None:
     sent_results: List[Dict[str, Any]] = []
     failed_count = 0
 
-    logger.info("Sending batch message to %s recipients via Playwright...", len(recipients))
+    logger.info("Sending batch message to %s recipients via persistent Playwright...", len(recipients))
     
-    # Hand over the entire recipients list to the Playwright script
-    # This prevents Chrome from constantly opening and closing
     batch_results = []
-    failed_count = 0
     
     try:
-        batch_results = send_whatsapp_message_batch_playwright(
+        if not wa_agent:
+            logger.error("WhatsApp agent not initialized!")
+            raise Exception("Agent offline")
+            
+        batch_results = wa_agent.send_batch(
             contacts=recipients,
             message=message,
             attachment_path=attachment_path
@@ -139,20 +143,16 @@ def _process_campaign_task(task: Dict[str, Any]) -> None:
 
     if failed_count == 0:
         _complete_task(task_id, "COMPLETED", {"results": sent_results, "failed_count": 0})
-        return
-
-    if failed_count == len(recipients):
+    elif failed_count == len(recipients):
         _complete_task(
             task_id,
             "PENDING",
             {"results": sent_results, "failed_count": failed_count},
             retry_after_seconds=RETRY_SECONDS,
         )
-        return
+    else:
+        _complete_task(task_id, "COMPLETED", {"results": sent_results, "failed_count": failed_count})
 
-    _complete_task(task_id, "COMPLETED", {"results": sent_results, "failed_count": failed_count})
-
-    # Clean up temp attachment file
     if attachment_path and os.path.exists(attachment_path):
         try:
             os.remove(attachment_path)
@@ -169,8 +169,16 @@ def process_campaign_jobs() -> None:
         _process_campaign_task(task)
 
 def start_campaign_polling_loop() -> None:
+    global wa_agent
     logger.info("Starting BRMS WhatsApp Campaign Poller...")
-    process_campaign_jobs()
+    try:
+        wa_agent = WhatsAppAgent()
+        process_campaign_jobs()
+    except KeyboardInterrupt:
+        logger.info("Shutting down...")
+    finally:
+        if wa_agent:
+            wa_agent.close()
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
