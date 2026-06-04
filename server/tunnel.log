@@ -1,0 +1,21 @@
+2026-03-10T14:12:21Z INF Thank you for trying Cloudflare Tunnel. Doing so, without a Cloudflare account, is a quick way to experiment and try it out. However, be aware that these account-less Tunnels have no uptime guarantee, are subject to the Cloudflare Online Services Terms of Use (https://www.cloudflare.com/website-terms/), and Cloudflare reserves the right to investigate your use of Tunnels for violations of such terms. If you intend to use Tunnels in production you should use a pre-created named tunnel by following: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps
+2026-03-10T14:12:21Z INF Requesting new quick Tunnel on trycloudflare.com...
+2026-03-10T14:12:26Z INF +--------------------------------------------------------------------------------------------+
+2026-03-10T14:12:26Z INF |  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |
+2026-03-10T14:12:26Z INF |  https://steering-stylish-sweet-opt.trycloudflare.com                                      |
+2026-03-10T14:12:26Z INF +--------------------------------------------------------------------------------------------+
+2026-03-10T14:12:26Z INF Cannot determine default configuration path. No file [config.yml config.yaml] in [~/.cloudflared ~/.cloudflare-warp ~/cloudflare-warp /etc/cloudflared /usr/local/etc/cloudflared]
+2026-03-10T14:12:26Z INF Version 2026.2.0 (Checksum 659e90c91014a0017ec933e4a5c924e5ed1c77e3033bf768c47509c2120e598d)
+2026-03-10T14:12:26Z INF GOOS: darwin, GOVersion: go1.25.7, GoArch: arm64
+2026-03-10T14:12:26Z INF Settings: map[ha-connections:1 protocol:quic url:http://localhost:5001]
+2026-03-10T14:12:26Z INF cloudflared will not automatically update if installed by a package manager.
+2026-03-10T14:12:26Z INF Generated Connector ID: f1bc1717-08e3-4bc3-83e2-8fb67da0c9f8
+2026-03-10T14:12:26Z INF Initial protocol quic
+2026-03-10T14:12:26Z INF ICMP proxy will use 192.168.31.16 as source for IPv4
+2026-03-10T14:12:26Z INF ICMP proxy will use fe80::cf8:30a9:a98d:5a65 in zone en0 as source for IPv6
+2026-03-10T14:12:26Z INF Created ICMP proxy listening on 192.168.31.16:0
+2026-03-10T14:12:28Z INF ICMP proxy will use 192.168.31.16 as source for IPv4
+2026-03-10T14:12:28Z INF ICMP proxy will use fe80::cf8:30a9:a98d:5a65 in zone en0 as source for IPv6
+2026-03-10T14:12:28Z INF Starting metrics server on 127.0.0.1:20241/metrics
+2026-03-10T14:12:28Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.37
+2026-03-10T14:12:29Z INF Registered tunnel connection connIndex=0 connection=523d667e-d07b-4298-8241-96648bb77e77 event=0 ip=198.41.192.37 location=hyd02 protocol=quic

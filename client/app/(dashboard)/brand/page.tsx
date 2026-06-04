@@ -28,6 +28,8 @@ export default function BrandDashboard() {
         ordersNeeded: "",
         productLink: "",
         productImage: "",
+        realPrice: "",
+        offerPrice: "",
         refundAmount: "",
         deliveryType: "ORIGINAL",
         exchangeImage: ""
@@ -74,6 +76,8 @@ export default function BrandDashboard() {
                     product_image: form.productImage,
                     product_link: form.productLink,
                     platform: form.platform,
+                    real_price: form.realPrice ? Number(form.realPrice) : null,
+                    offer_price: form.offerPrice ? Number(form.offerPrice) : null,
                     refund_amount: Number(form.refundAmount) || 0,
                     total_slots: Number(form.ordersNeeded) || 0,
                     daily_limit: 100,
@@ -89,7 +93,7 @@ export default function BrandDashboard() {
             }
 
             toast.success("Product request submitted! It will appear when Admin approves it.");
-            setForm({ brand: "", productName: "", platform: "AMAZON", ordersNeeded: "", productLink: "", productImage: "", refundAmount: "", deliveryType: "ORIGINAL", exchangeImage: "" });
+            setForm({ brand: "", productName: "", platform: "AMAZON", ordersNeeded: "", productLink: "", productImage: "", realPrice: "", offerPrice: "", refundAmount: "", deliveryType: "ORIGINAL", exchangeImage: "" });
             fetchProducts();
         } catch (error) {
             toast.error("Error submitting request.");
@@ -148,8 +152,16 @@ export default function BrandDashboard() {
                                     <Input id="productImage" type="url" placeholder="Optional image link" value={form.productImage} onChange={e => setForm({ ...form, productImage: e.target.value })} />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label htmlFor="refundAmount">Refund/Review (₹)</Label>
-                                    <Input id="refundAmount" type="number" placeholder="1000" required value={form.refundAmount} onChange={e => setForm({ ...form, refundAmount: e.target.value })} />
+                                    <Label htmlFor="realPrice">Real Price (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
+                                    <Input id="realPrice" type="number" placeholder="Original MRP" min="0" value={form.realPrice} onChange={e => setForm({ ...form, realPrice: e.target.value })} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="offerPrice">Offer Price (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
+                                    <Input id="offerPrice" type="number" placeholder="Discounted Price" min="0" value={form.offerPrice} onChange={e => setForm({ ...form, offerPrice: e.target.value })} />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="refundAmount">Refund/Review (₹) <span className="text-red-500">*</span></Label>
+                                    <Input id="refundAmount" type="number" placeholder="1000" required min="1" value={form.refundAmount} onChange={e => setForm({ ...form, refundAmount: e.target.value })} />
                                 </div>
                             </div>
 

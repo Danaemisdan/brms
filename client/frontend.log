@@ -1,0 +1,16 @@
+
+> client@0.1.0 dev
+> next dev
+
+⚠ `eslint` configuration in next.config.ts is no longer supported. See more info here: https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
+⚠ Invalid next.config.ts options detected: 
+⚠     Unrecognized key(s) in object: 'eslint'
+⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+▲ Next.js 16.1.6 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://172.20.10.5:3000
+- Environments: .env.local
+
+✓ Starting...
+✓ Ready in 1879ms
+ HEAD / 200 in 1308ms (compile: 1207ms, render: 102ms)

@@ -21,6 +21,8 @@ export class WhatsAppController {
             let finalMessage = template
                 .replace(/{{product_name}}/g, product.product_name)
                 .replace(/{{platform}}/g, product.platform)
+                .replace(/{{real_price}}/g, (product.real_price || "").toString())
+                .replace(/{{offer_price}}/g, (product.offer_price || "").toString())
                 .replace(/{{refund_amount}}/g, product.refund_amount.toString())
                 .replace(/{{available_slots}}/g, (product.total_slots - product.filled_slots).toString())
                 .replace(/{{product_link}}/g, product.product_link)

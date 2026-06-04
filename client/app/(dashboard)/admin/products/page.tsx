@@ -37,6 +37,8 @@ export default function AdminProducts() {
         product_name: "",
         product_link: "",
         platform: "AMAZON",
+        real_price: "",
+        offer_price: "",
         refund_amount: "",
         deadline: "",
         total_slots: "",
@@ -128,7 +130,7 @@ export default function AdminProducts() {
     const resetForm = () => {
         setEditingId(null);
         setForm({
-            product_name: "", product_link: "", platform: "AMAZON", refund_amount: "", deadline: "", total_slots: "", is_public: true,
+            product_name: "", product_link: "", platform: "AMAZON", real_price: "", offer_price: "", refund_amount: "", deadline: "", total_slots: "", is_public: true,
             wa_target: "all_customers", wa_custom_phones: "", wa_template: "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
             wa_start_date: "", wa_end_date: "", wa_times_per_day: "1", wa_time_1: "09:00", wa_time_2: "", wa_time_3: ""
         });
@@ -146,6 +148,8 @@ export default function AdminProducts() {
             product_name: product.product_name,
             product_link: product.product_link,
             platform: product.platform,
+            real_price: product.real_price ? String(product.real_price) : "",
+            offer_price: product.offer_price ? String(product.offer_price) : "",
             refund_amount: String(product.refund_amount),
             deadline: product.deadline ? new Date(product.deadline).toISOString().split('T')[0] : "",
             total_slots: String(product.total_slots),
@@ -300,6 +304,8 @@ export default function AdminProducts() {
                 product_name: form.product_name,
                 product_link: form.product_link,
                 platform: form.platform,
+                real_price: form.real_price || undefined,
+                offer_price: form.offer_price || undefined,
                 refund_amount: Math.min(Number(form.refund_amount) || 0, 1000000),
                 total_slots: Math.min(Number(form.total_slots) || 0, 1000000),
                 daily_limit: 100,
@@ -479,6 +485,14 @@ export default function AdminProducts() {
                                 </select>
                             </div>
                             <div className="space-y-2">
+                                <Label>Real Price (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
+                                <Input type="number" placeholder="Original MRP" min="0" value={form.real_price} onChange={e => setForm({ ...form, real_price: e.target.value })} />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Offer Price (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
+                                <Input type="number" placeholder="Discounted Price" min="0" value={form.offer_price} onChange={e => setForm({ ...form, offer_price: e.target.value })} />
+                            </div>
+                            <div className="space-y-2">
                                 <Label>Refund Amount (₹) <span className="text-red-500">*</span></Label>
                                 <Input type="number" placeholder="1000" required min="1" value={form.refund_amount} onChange={e => setForm({ ...form, refund_amount: e.target.value })} />
                             </div>
@@ -629,7 +643,7 @@ export default function AdminProducts() {
                             <div className="space-y-2 md:col-span-2">
                                 <Label>Message Template</Label>
                                 <div className="flex flex-wrap gap-2 mb-2">
-                                    {['product_name', 'platform', 'refund_amount', 'available_slots', 'product_link', 'deadline'].map(v => (
+                                    {['product_name', 'platform', 'real_price', 'offer_price', 'refund_amount', 'available_slots', 'product_link', 'deadline'].map(v => (
                                         <button
                                             key={v}
                                             type="button"

@@ -83,6 +83,8 @@ model Product {
   product_image String?
   product_link  String
   platform      String   // AMAZON | FLIPKART | MYNTRA
+  real_price    Float?
+  offer_price   Float?
   refund_amount Float
   total_slots   Int
   filled_slots  Int      @default(0)
