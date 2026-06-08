@@ -57,6 +57,7 @@ model Vendor {
   payout_threshold Int      @default(2000)
   wallet_balance   Float    @default(0)
   agreement_url    String?
+  commission       Float    @default(0)
   status           String   @default("active")
   created_at       DateTime @default(now())
 

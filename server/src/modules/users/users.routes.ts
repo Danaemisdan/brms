@@ -66,6 +66,7 @@ router.post('/brand', authMiddleware, roleGuard('ADMIN'), async (req: Request, r
             await tx.vendor.create({
                 data: {
                     user_id: user.id,
+                    commission: req.body.commission ? parseFloat(req.body.commission) : 0,
                 }
             });
 
@@ -138,6 +139,13 @@ router.put('/brand/:id', authMiddleware, roleGuard('ADMIN'), async (req: Request
             where: { id },
             data: updateData
         });
+
+        if (req.body.commission !== undefined) {
+            await prisma.vendor.update({
+                where: { user_id: id },
+                data: { commission: parseFloat(req.body.commission) || 0 }
+            });
+        }
 
         res.json({ message: 'Brand updated successfully' });
     } catch (error) {
@@ -225,6 +233,7 @@ router.get('/brands', authMiddleware, roleGuard('ADMIN'), async (req: Request, r
             registered_at: brand.created_at,
             status: brand.vendor?.status || 'active',
             wallet_balance: brand.vendor?.wallet_balance || 0,
+            commission: brand.vendor?.commission || 0,
             products: brand._count.orders
         }));
 

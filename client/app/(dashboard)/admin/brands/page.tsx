@@ -24,6 +24,7 @@ interface Brand {
     products: number;
     status: string;
     wallet_balance: number;
+    commission: number;
 }
 
 export default function AdminBrands() {
@@ -43,7 +44,8 @@ export default function AdminBrands() {
         poc_name: "",
         website: "",
         country: "India",
-        category: ""
+        category: "",
+        commission: ""
     });
 
     const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
@@ -56,7 +58,8 @@ export default function AdminBrands() {
         poc_name: "",
         website: "",
         country: "India",
-        category: ""
+        category: "",
+        commission: ""
     });
 
     const [walletBrand, setWalletBrand] = useState<Brand | null>(null);
@@ -119,6 +122,7 @@ export default function AdminBrands() {
             website: brand.website || "",
             country: brand.country || "India",
             category: brand.category || "",
+            commission: brand.commission?.toString() || "0",
             password: ""
         });
         setError("");
@@ -182,7 +186,7 @@ export default function AdminBrands() {
 
             toast.success("Brand added successfully.");
             setShowForm(false);
-            setFormData({ brand_name: "", country_code: "+91", mobile: "", email: "", password: "", poc_name: "", website: "", country: "India", category: "" });
+            setFormData({ brand_name: "", country_code: "+91", mobile: "", email: "", password: "", poc_name: "", website: "", country: "India", category: "", commission: "" });
             fetchBrands();
         } catch (error) {
             setError("Server error.");
@@ -322,6 +326,10 @@ export default function AdminBrands() {
                                 </select>
                             </div>
                             <div className="space-y-2">
+                                <Label htmlFor="commission">Commission (%)</Label>
+                                <Input id="commission" type="number" placeholder="e.g., 10" value={formData.commission} onChange={handleChange} min="0" step="0.01" required />
+                            </div>
+                            <div className="space-y-2">
                                 <Label htmlFor="password">Password (for brand login)</Label>
                                 <Input id="password" type="password" placeholder="••••••••" value={formData.password} onChange={handleChange} required minLength={6} />
                             </div>
@@ -449,6 +457,10 @@ export default function AdminBrands() {
                                         </select>
                                     </div>
                                     <div className="space-y-2">
+                                        <Label htmlFor="edit_commission">Commission (%)</Label>
+                                        <Input id="edit_commission" type="number" value={editFormData.commission} onChange={handleEditChange} min="0" step="0.01" required />
+                                    </div>
+                                    <div className="space-y-2">
                                         <Label htmlFor="edit_password">New Password (Optional)</Label>
                                         <Input id="edit_password" type="password" placeholder="Leave blank to keep current" value={editFormData.password} onChange={handleEditChange} minLength={6} />
                                     </div>
@@ -512,6 +524,8 @@ export default function AdminBrands() {
                                     <div className="mt-1 px-2.5 py-0.5 max-w-fit rounded-full bg-green-50 text-green-700 border border-green-200 text-xs font-medium flex items-center gap-1.5">
                                         <span>Wallet:</span>
                                         <span className="font-mono font-bold">₹{v.wallet_balance?.toLocaleString() || 0}</span>
+                                        <span className="ml-2 pl-2 border-l border-green-300">Commission:</span>
+                                        <span className="font-mono font-bold">{v.commission || 0}%</span>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
