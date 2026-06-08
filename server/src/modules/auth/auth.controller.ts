@@ -3,6 +3,9 @@ import { z } from 'zod';
 import { Prisma } from '@prisma/client';
 import prisma from '../../config/database';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { sendEmail } from '../../utils/mailer';
+
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../../utils/jwt';
 import { authMiddleware, AuthRequest } from '../../middleware/auth';
 import { encryptBankData } from '../../utils/encryption';
@@ -271,4 +274,63 @@ router.get('/me', authMiddleware, async (req: AuthRequest, res: Response) => {
     }
 });
 
+
+// FORGOT PASSWORD
+router.post("/forgot-password", async (req: Request, res: Response) => {
+    try {
+        const { email } = req.body;
+        if (!email) return res.status(400).json({ error: "Email is required" });
+
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        // Create a JWT token valid for 1 hour
+        const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET || "default_secret", { expiresIn: '1h' });
+        
+        // Ensure you have NEXT_PUBLIC_CLIENT_URL or fall back to localhost
+        const clientUrl = process.env.CLIENT_URL || "http://localhost:3000";
+        const resetLink = `${clientUrl}/login?reset_token=${token}`;
+
+        await sendEmail(
+            user.email!,
+            "Password Reset Request",
+            `<h1>Password Reset</h1>
+             <p>You requested a password reset. Click the link below to reset your password. It is valid for 1 hour.</p>
+             <a href="${resetLink}">${resetLink}</a>`
+        );
+
+        res.json({ message: "Password reset link sent to email" });
+    } catch (error) {
+        console.error("Error in forgot-password:", error);
+        res.status(500).json({ error: "Failed to process request" });
+    }
+});
+
+// RESET PASSWORD
+router.post("/reset-password", async (req: Request, res: Response) => {
+    try {
+        const { token, newPassword } = req.body;
+        if (!token || !newPassword) return res.status(400).json({ error: "Token and new password are required" });
+
+        let decoded: any;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET || "default_secret");
+        } catch (err) {
+            return res.status(401).json({ error: "Invalid or expired token" });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        await prisma.user.update({
+            where: { id: decoded.userId },
+            data: { password_hash: hashedPassword }
+        });
+
+        res.json({ message: "Password successfully reset" });
+    } catch (error) {
+        console.error("Error in reset-password:", error);
+        res.status(500).json({ error: "Failed to reset password" });
+    }
+});
+
 export default router;
+

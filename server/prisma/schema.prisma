@@ -85,7 +85,8 @@ model Product {
   platform      String   // AMAZON | FLIPKART | MYNTRA
   real_price    Float?
   offer_price   Float?
-  refund_amount Float
+  refund_amount Float?
+  deal_type     String?  @default("Review Deal")
   total_slots   Int
   filled_slots  Int      @default(0)
   daily_limit   Int      @default(100)
@@ -144,6 +145,8 @@ model Order {
   delivery_date                DateTime?
   delivery_screenshot_url      String?
   return_window_screenshot_url String?
+  deal_screenshot_url          String?
+  remarks                      String?
   created_at                   DateTime @default(now())
   updated_at                   DateTime @updatedAt
 

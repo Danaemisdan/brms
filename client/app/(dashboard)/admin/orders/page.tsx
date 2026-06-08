@@ -47,9 +47,19 @@ export default function AdminOrders() {
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">All Orders</h1>
-                <p className="text-gray-500">View all customer orders across campaigns.</p>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight">All Orders</h1>
+                    <p className="text-sm text-gray-500 mt-1">
+                        Live Google Sheets Link: <code className="bg-gray-100 p-1 rounded select-all">{`${API_URL}/api/orders/export?token=brms_export_secret_123`}</code>
+                        <span className="text-xs ml-2">(Use `=IMPORTDATA("url")`)</span>
+                    </p>
+                </div>
+                <a href={`${API_URL}/api/orders/export?token=brms_export_secret_123`} target="_blank" rel="noreferrer">
+                    <Button variant="outline" className="bg-green-50 text-green-700 border-green-200 hover:bg-green-100">
+                        Export to CSV
+                    </Button>
+                </a>
             </div>
 
             <Card className="p-4 mb-6">

@@ -1,21 +1,84 @@
-2026-03-10T14:12:21Z INF Thank you for trying Cloudflare Tunnel. Doing so, without a Cloudflare account, is a quick way to experiment and try it out. However, be aware that these account-less Tunnels have no uptime guarantee, are subject to the Cloudflare Online Services Terms of Use (https://www.cloudflare.com/website-terms/), and Cloudflare reserves the right to investigate your use of Tunnels for violations of such terms. If you intend to use Tunnels in production you should use a pre-created named tunnel by following: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps
-2026-03-10T14:12:21Z INF Requesting new quick Tunnel on trycloudflare.com...
-2026-03-10T14:12:26Z INF +--------------------------------------------------------------------------------------------+
-2026-03-10T14:12:26Z INF |  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |
-2026-03-10T14:12:26Z INF |  https://steering-stylish-sweet-opt.trycloudflare.com                                      |
-2026-03-10T14:12:26Z INF +--------------------------------------------------------------------------------------------+
-2026-03-10T14:12:26Z INF Cannot determine default configuration path. No file [config.yml config.yaml] in [~/.cloudflared ~/.cloudflare-warp ~/cloudflare-warp /etc/cloudflared /usr/local/etc/cloudflared]
-2026-03-10T14:12:26Z INF Version 2026.2.0 (Checksum 659e90c91014a0017ec933e4a5c924e5ed1c77e3033bf768c47509c2120e598d)
-2026-03-10T14:12:26Z INF GOOS: darwin, GOVersion: go1.25.7, GoArch: arm64
-2026-03-10T14:12:26Z INF Settings: map[ha-connections:1 protocol:quic url:http://localhost:5001]
-2026-03-10T14:12:26Z INF cloudflared will not automatically update if installed by a package manager.
-2026-03-10T14:12:26Z INF Generated Connector ID: f1bc1717-08e3-4bc3-83e2-8fb67da0c9f8
-2026-03-10T14:12:26Z INF Initial protocol quic
-2026-03-10T14:12:26Z INF ICMP proxy will use 192.168.31.16 as source for IPv4
-2026-03-10T14:12:26Z INF ICMP proxy will use fe80::cf8:30a9:a98d:5a65 in zone en0 as source for IPv6
-2026-03-10T14:12:26Z INF Created ICMP proxy listening on 192.168.31.16:0
-2026-03-10T14:12:28Z INF ICMP proxy will use 192.168.31.16 as source for IPv4
-2026-03-10T14:12:28Z INF ICMP proxy will use fe80::cf8:30a9:a98d:5a65 in zone en0 as source for IPv6
-2026-03-10T14:12:28Z INF Starting metrics server on 127.0.0.1:20241/metrics
-2026-03-10T14:12:28Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.192.37
-2026-03-10T14:12:29Z INF Registered tunnel connection connIndex=0 connection=523d667e-d07b-4298-8241-96648bb77e77 event=0 ip=198.41.192.37 location=hyd02 protocol=quic
+2026-06-08T05:27:49Z INF Thank you for trying Cloudflare Tunnel. Doing so, without a Cloudflare account, is a quick way to experiment and try it out. However, be aware that these account-less Tunnels have no uptime guarantee, are subject to the Cloudflare Online Services Terms of Use (https://www.cloudflare.com/website-terms/), and Cloudflare reserves the right to investigate your use of Tunnels for violations of such terms. If you intend to use Tunnels in production you should use a pre-created named tunnel by following: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps
+2026-06-08T05:27:49Z INF Requesting new quick Tunnel on trycloudflare.com...
+2026-06-08T05:27:57Z INF +--------------------------------------------------------------------------------------------+
+2026-06-08T05:27:57Z INF |  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |
+2026-06-08T05:27:57Z INF |  https://ranging-bikini-suited-estate.trycloudflare.com                                    |
+2026-06-08T05:27:57Z INF +--------------------------------------------------------------------------------------------+
+2026-06-08T05:27:57Z INF Cannot determine default configuration path. No file [config.yml config.yaml] in [~/.cloudflared ~/.cloudflare-warp ~/cloudflare-warp /etc/cloudflared /usr/local/etc/cloudflared]
+2026-06-08T05:27:57Z INF Version 2026.5.2 (Checksum cd9f764abfd06757b4def10ee5ba3d862381ed9fc02d6c1f06086c23d88695c6)
+2026-06-08T05:27:57Z INF GOOS: darwin, GOVersion: go1.26.2, GoArch: arm64
+2026-06-08T05:27:57Z INF Settings: map[ha-connections:1 protocol:quic url:http://localhost:5001]
+2026-06-08T05:27:57Z INF Autoupdate frequency is set autoupdateFreq=86400000
+2026-06-08T05:27:57Z INF Generated Connector ID: b7b3e9b8-e2f6-4eec-a972-ddddb270dc85
+2026-06-08T05:27:58Z INF Initial protocol quic
+2026-06-08T05:27:58Z INF ICMP proxy will use 172.20.10.5 as source for IPv4
+2026-06-08T05:27:58Z INF ICMP proxy will use fe80::1022:cc29:b46e:92a9 in zone en0 as source for IPv6
+2026-06-08T05:27:58Z INF Created ICMP proxy listening on 172.20.10.5:0
+2026-06-08T05:28:02Z INF ICMP proxy will use 172.20.10.5 as source for IPv4
+2026-06-08T05:28:02Z INF ICMP proxy will use fe80::1022:cc29:b46e:92a9 in zone en0 as source for IPv6
+2026-06-08T05:28:02Z INF Starting metrics server on 127.0.0.1:20241/metrics
+2026-06-08T05:28:02Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=0 event=0 ip=2606:4700:a0::7
+2026-06-08T05:28:07Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=2606:4700:a0::7
+2026-06-08T05:28:07Z INF Retrying connection in up to 2s connIndex=0 event=0 ip=2606:4700:a0::7
+2026-06-08T05:28:08Z INF +----------------------------------------------------------------------------------------------------+
+2026-06-08T05:28:08Z INF |                                      CONNECTIVITY PRE-CHECKS                                       |
+2026-06-08T05:28:08Z INF +----------------------------------------------------------------------------------------------------+
+2026-06-08T05:28:08Z INF |  COMPONENT         TARGET                     STATUS  DETAILS                                      |
+2026-06-08T05:28:08Z INF |  DNS Resolution    region1.v2.argotunnel.com  PASS    DNS Resolved successfully                    |
+2026-06-08T05:28:08Z INF |  DNS Resolution    region2.v2.argotunnel.com  PASS    DNS Resolved successfully                    |
+2026-06-08T05:28:08Z INF |  UDP Connectivity  region1.v2.argotunnel.com  PASS    QUIC connection successful                   |
+2026-06-08T05:28:08Z INF |  UDP Connectivity  region2.v2.argotunnel.com  FAIL    QUIC connection failed                       |
+2026-06-08T05:28:08Z INF |  TCP Connectivity  region1.v2.argotunnel.com  PASS    HTTP/2 connection successful                 |
+2026-06-08T05:28:08Z INF |  TCP Connectivity  region2.v2.argotunnel.com  FAIL    HTTP/2 connection is blocked or unreachable  |
+2026-06-08T05:28:08Z INF |  Cloudflare API    api.cloudflare.com:443     PASS    API is reachable                             |
+2026-06-08T05:28:08Z INF |  ERROR: Allow outbound QUIC traffic on port 7844 or use HTTP2.                                     |
+2026-06-08T05:28:08Z INF |  ERROR: Allow outbound TCP on port 7844.                                                           |
+2026-06-08T05:28:08Z INF |                                                                                                    |
+2026-06-08T05:28:08Z INF |  SUMMARY: Environment has critical failures. cloudflared may not be able to establish a tunnel.    |
+2026-06-08T05:28:08Z INF +----------------------------------------------------------------------------------------------------+
+2026-06-08T05:28:08Z INF precheck component="DNS Resolution" details="DNS Resolved successfully" run_id=c0de17cd-030c-409d-9e2a-6d6bfc7a7f92 status=pass target=region1.v2.argotunnel.com
+2026-06-08T05:28:08Z INF precheck component="DNS Resolution" details="DNS Resolved successfully" run_id=c0de17cd-030c-409d-9e2a-6d6bfc7a7f92 status=pass target=region2.v2.argotunnel.com
+2026-06-08T05:28:08Z INF precheck component="UDP Connectivity" details="QUIC connection successful" run_id=c0de17cd-030c-409d-9e2a-6d6bfc7a7f92 status=pass target=region1.v2.argotunnel.com
+2026-06-08T05:28:08Z INF precheck component="UDP Connectivity" details="QUIC connection failed" run_id=c0de17cd-030c-409d-9e2a-6d6bfc7a7f92 status=fail target=region2.v2.argotunnel.com
+2026-06-08T05:28:08Z INF precheck component="TCP Connectivity" details="HTTP/2 connection successful" run_id=c0de17cd-030c-409d-9e2a-6d6bfc7a7f92 status=pass target=region1.v2.argotunnel.com
+2026-06-08T05:28:08Z INF precheck component="TCP Connectivity" details="HTTP/2 connection is blocked or unreachable" run_id=c0de17cd-030c-409d-9e2a-6d6bfc7a7f92 status=fail target=region2.v2.argotunnel.com
+2026-06-08T05:28:08Z INF precheck component="Cloudflare API" details="API is reachable" run_id=c0de17cd-030c-409d-9e2a-6d6bfc7a7f92 status=pass target=api.cloudflare.com:443
+2026-06-08T05:28:08Z INF precheck complete hard_fail=true run_id=c0de17cd-030c-409d-9e2a-6d6bfc7a7f92
+2026-06-08T05:28:08Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=0 event=0 ip=2606:4700:a8::4
+2026-06-08T05:28:13Z ERR Failed to dial a quic connection error="failed to dial to edge with quic: timeout: no recent network activity" connIndex=0 event=0 ip=2606:4700:a8::4
+2026-06-08T05:28:13Z INF Retrying connection in up to 4s connIndex=0 event=0 ip=2606:4700:a8::4
+2026-06-08T05:28:15Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T05:28:19Z INF Registered tunnel connection connIndex=0 connection=f5b00247-dc3c-4da8-8f6d-41bdd7a4f878 event=0 ip=198.41.200.193 location=bom10 protocol=quic
+2026-06-08T07:11:16Z ERR  error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp [::1]:5001: connect: connection refused" connIndex=0 event=1 ingressRule=0 originService=http://localhost:5001
+2026-06-08T07:11:16Z ERR  error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp [::1]:5001: connect: connection refused" connIndex=0 event=1 ingressRule=0 originService=http://localhost:5001
+2026-06-08T07:11:16Z ERR Request failed error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp [::1]:5001: connect: connection refused" connIndex=0 dest=https://ranging-bikini-suited-estate.trycloudflare.com/api/refunds/tasks/stats event=0 ip=198.41.200.193 type=http
+2026-06-08T07:11:16Z ERR  error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp [::1]:5001: connect: connection refused" connIndex=0 event=1 ingressRule=0 originService=http://localhost:5001
+2026-06-08T07:11:16Z ERR Request failed error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp [::1]:5001: connect: connection refused" connIndex=0 dest=https://ranging-bikini-suited-estate.trycloudflare.com/api/products event=0 ip=198.41.200.193 type=http
+2026-06-08T07:11:16Z ERR Request failed error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp [::1]:5001: connect: connection refused" connIndex=0 dest=https://ranging-bikini-suited-estate.trycloudflare.com/api/orders event=0 ip=198.41.200.193 type=http
+2026-06-08T07:11:21Z ERR  error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp [::1]:5001: connect: connection refused" connIndex=0 event=1 ingressRule=0 originService=http://localhost:5001
+2026-06-08T07:11:21Z ERR Request failed error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp [::1]:5001: connect: connection refused" connIndex=0 dest=https://ranging-bikini-suited-estate.trycloudflare.com/api/products?t=1780902681380 event=0 ip=198.41.200.193 type=http
+2026-06-08T07:15:03Z ERR  error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp [::1]:5001: connect: connection refused" connIndex=0 event=1 ingressRule=0 originService=http://localhost:5001
+2026-06-08T07:15:03Z ERR Request failed error="Unable to reach the origin service. The service may be down or it may not be responding to traffic from cloudflared: dial tcp [::1]:5001: connect: connection refused" connIndex=0 dest=https://ranging-bikini-suited-estate.trycloudflare.com/api/products?t=1780902902649 event=0 ip=198.41.200.193 type=http
+2026-06-08T07:15:51Z ERR failed to accept incoming stream requests error="failed to accept QUIC stream: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:15:51Z ERR failed to run the datagram handler error="timeout: no recent network activity" connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:15:51Z ERR failed to serve tunnel connection error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:15:51Z ERR Serve tunnel error error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:15:51Z INF Retrying connection in up to 1s connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:15:51Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:15:54Z INF Registered tunnel connection connIndex=0 connection=48ca4d2b-85dd-4b7b-812a-9d12a9392768 event=0 ip=198.41.200.193 location=bom10 protocol=quic
+2026-06-08T07:23:43Z ERR failed to accept incoming stream requests error="failed to accept QUIC stream: timeout: no recent network activity" connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:23:43Z ERR failed to run the datagram handler error="timeout: no recent network activity" connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:23:43Z ERR failed to serve tunnel connection error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:23:43Z ERR Serve tunnel error error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:23:43Z INF Retrying connection in up to 1s connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:23:45Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:23:48Z INF Registered tunnel connection connIndex=0 connection=8c8a3740-2000-4807-b04c-4efd7add1ae2 event=0 ip=198.41.200.193 location=bom10 protocol=quic
+2026-06-08T07:36:09Z INF Initiating graceful shutdown due to signal terminated ...
+2026-06-08T07:36:10Z ERR failed to run the datagram handler error="Application error 0x0 (remote)" connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:36:10Z ERR failed to serve tunnel connection error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:36:10Z ERR Serve tunnel error error="accept stream listener encountered a failure while serving" connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:36:10Z INF Retrying connection in up to 1s connIndex=0 event=0 ip=198.41.200.193
+2026-06-08T07:36:10Z ERR Connection terminated connIndex=0
+2026-06-08T07:36:10Z ERR no more connections active and exiting
+2026-06-08T07:36:10Z INF Tunnel server stopped
+2026-06-08T07:36:10Z INF Metrics server stopped

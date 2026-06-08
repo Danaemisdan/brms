@@ -346,49 +346,96 @@ function CustomerSubmissionsContent() {
                         return <p className="text-center text-gray-500 py-8">{orders.length === 0 ? "You haven't submitted any orders yet." : "No submissions found matching filters."}</p>;
                     }
 
-                    return filteredOrders.map((req) => (
-                        <Card key={req.id} className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-blue-100 shadow-sm">
-                            <div className="space-y-2">
-                                <CardTitle className="text-lg">{req.productName}</CardTitle>
-                                <CardDescription>
-                                    Order ID: {req.order_id} • {req.platform} • Refund: ₹{req.refundAmount}
-                                </CardDescription>
-                                <div className="flex flex-wrap items-center gap-2 mt-2">
-                                    <span className={`px-2 py-1 text-xs font-semibold rounded-md ${statusColor[req.status] || "bg-gray-100 text-gray-800"}`}>
-                                        Order {req.status}
-                                    </span>
-                                    {req.hasReview && <Badge variant="outline" className="border-green-200 text-green-700 bg-green-50">Review Uploaded</Badge>}
-                                    {req.hasRefund && (
-                                        <Badge variant="outline"
-                                            className={
-                                                req.refundStatus === 'REFUNDED' ? "border-green-200 text-green-700 bg-green-50" :
-                                                    req.refundStatus === 'FAILED' ? "border-red-200 text-red-700 bg-red-50" :
-                                                        req.refundStatus === 'PROCESSING' ? "border-blue-200 text-blue-700 bg-blue-50" :
-                                                            req.refundStatus === 'APPROVED' ? "border-emerald-200 text-emerald-700 bg-emerald-50" :
+                    
+                    return (
+                        <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+                            <table className="w-full text-sm text-left">
+                                <thead className="bg-gray-50 text-gray-700 font-semibold border-b">
+                                    <tr>
+                                        <th className="px-4 py-3">Product Name</th>
+                                        <th className="px-4 py-3">Order ID & Platform</th>
+                                        <th className="px-4 py-3">Refund Amount</th>
+                                        <th className="px-4 py-3">Order Status</th>
+                                        <th className="px-4 py-3">Review Status</th>
+                                        <th className="px-4 py-3">Refund Status</th>
+                                        <th className="px-4 py-3 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-100 bg-white">
+                                    {filteredOrders.map((req) => {
+                                        const orderDate = req.created_at ? new Date(req.created_at) : new Date();
+                                        const now = new Date();
+                                        const daysSinceOrder = Math.floor((now.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24));
+                                        
+                                        const isReviewLocked = daysSinceOrder < 5;
+                                        const isRefundLocked = daysSinceOrder < 10;
+
+                                        return (
+                                            <tr key={req.id} className="hover:bg-gray-50 transition-colors">
+                                                <td className="px-4 py-4 font-medium text-gray-900 max-w-[200px] truncate" title={req.productName}>
+                                                    {req.productName}
+                                                </td>
+                                                <td className="px-4 py-4">
+                                                    <div className="text-gray-900 font-mono text-xs bg-gray-100 px-2 py-1 rounded inline-block mb-1">{req.order_id}</div>
+                                                    <div className="text-gray-500 text-xs">{req.platform}</div>
+                                                </td>
+                                                <td className="px-4 py-4 font-semibold text-green-600">
+                                                    ₹{req.refundAmount}
+                                                </td>
+                                                <td className="px-4 py-4">
+                                                    <span className={`px-2 py-1 text-xs font-semibold rounded-md ${statusColor[req.status] || "bg-gray-100 text-gray-800"}`}>
+                                                        {req.status}
+                                                    </span>
+                                                </td>
+                                                <td className="px-4 py-4">
+                                                    {req.hasReview ? (
+                                                        <Badge variant="outline" className="border-green-200 text-green-700 bg-green-50">Uploaded</Badge>
+                                                    ) : (
+                                                        <span className="text-gray-400 text-xs">Pending</span>
+                                                    )}
+                                                </td>
+                                                <td className="px-4 py-4">
+                                                    {req.hasRefund ? (
+                                                        <Badge variant="outline"
+                                                            className={
+                                                                req.refundStatus === 'REFUNDED' ? "border-green-200 text-green-700 bg-green-50" :
+                                                                req.refundStatus === 'FAILED' ? "border-red-200 text-red-700 bg-red-50" :
+                                                                req.refundStatus === 'PROCESSING' ? "border-blue-200 text-blue-700 bg-blue-50" :
+                                                                req.refundStatus === 'APPROVED' ? "border-emerald-200 text-emerald-700 bg-emerald-50" :
                                                                 "border-purple-200 text-purple-700 bg-purple-50"
-                                            }
-                                        >
-                                            Refund {req.refundStatus === 'REFUNDED' ? 'Processed' : req.refundStatus === 'FAILED' ? 'Failed' : req.refundStatus === 'APPROVED' ? 'Approved' : req.refundStatus === 'PROCESSING' ? 'Processing' : 'Pending'}
-                                        </Badge>
-                                    )}
-                                </div>
-                            </div>
-                            <div className="flex flex-col gap-2 min-w-[200px]">
-                                {!req.hasRefund && !req.hasReview ? (
-                                    <Button
-                                        className="w-full bg-blue-600 hover:bg-blue-700"
-                                        onClick={() => openRefundModal(req)}
-                                    >
-                                        Apply for Refund
-                                    </Button>
-                                ) : (
-                                    <Button variant="outline" disabled className="w-full">
-                                        {req.refundStatus === 'REFUNDED' ? 'Refund Completed' : req.refundStatus === 'FAILED' ? 'Refund Failed' : req.refundStatus === 'APPROVED' ? 'Refund Approved' : req.refundStatus === 'PROCESSING' ? 'Refund Processing' : 'Refund Requested'}
-                                    </Button>
-                                )}
-                            </div>
-                        </Card>
-                    ));
+                                                            }
+                                                        >
+                                                            {req.refundStatus}
+                                                        </Badge>
+                                                    ) : (
+                                                        <span className="text-gray-400 text-xs">Not requested</span>
+                                                    )}
+                                                </td>
+                                                <td className="px-4 py-4 text-right">
+                                                    {!req.hasRefund && !req.hasReview ? (
+                                                        <Button
+                                                            size="sm"
+                                                            className="bg-blue-600 hover:bg-blue-700"
+                                                            onClick={() => openRefundModal(req)}
+                                                            disabled={isRefundLocked}
+                                                            title={isRefundLocked ? `Unlocks in ${10 - daysSinceOrder} days` : "Apply for Refund"}
+                                                        >
+                                                            {isRefundLocked ? `🔒 Wait ${10 - daysSinceOrder}d` : "Apply for Refund"}
+                                                        </Button>
+                                                    ) : (
+                                                        <Button size="sm" variant="outline" disabled className="text-xs">
+                                                            {req.refundStatus === 'REFUNDED' ? 'Completed' : req.refundStatus === 'FAILED' ? 'Failed' : req.refundStatus === 'APPROVED' ? 'Approved' : req.refundStatus === 'PROCESSING' ? 'Processing' : 'Requested'}
+                                                        </Button>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    );
+
                 })()}
             </div>
 

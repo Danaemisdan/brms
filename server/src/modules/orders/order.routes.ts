@@ -5,6 +5,9 @@ import { roleGuard } from "../../middleware/roleGuard";
 
 const router = Router();
 
+// Public export route
+router.get("/export", OrderController.exportOrders);
+
 // Customer Action routes
 router.post(
     "/submit",
@@ -48,6 +51,15 @@ router.get(
     authMiddleware,
     roleGuard("CUSTOMER"),
     OrderController.getMyOrders
+);
+
+
+// Vendor/Brand routes
+router.get(
+    "/brand-orders",
+    authMiddleware,
+    roleGuard("VENDOR"),
+    OrderController.getBrandOrders
 );
 
 export default router;

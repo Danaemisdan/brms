@@ -34,6 +34,8 @@ export default function AdminProducts() {
 
     // Form State
     const [form, setForm] = useState({
+        brand: "",
+        deal_type: [] as string[],
         product_name: "",
         product_link: "",
         platform: "AMAZON",
@@ -70,6 +72,7 @@ export default function AdminProducts() {
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [products, setProducts] = useState<any[]>([]);
+    const [brandsList, setBrandsList] = useState<any[]>([]);
 
     // WA Image Attachment State
     const [waImageFile, setWaImageFile] = useState<File | null>(null);
@@ -81,7 +84,23 @@ export default function AdminProducts() {
 
     useEffect(() => {
         fetchProducts();
+        fetchBrands();
     }, []);
+
+    const fetchBrands = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await apiFetch(`${API_URL}/api/users/brands`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const data = await res.json();
+                setBrandsList(data.brands || []);
+            }
+        } catch (error) {
+            console.error("Failed to fetch brands", error);
+        }
+    };
 
     const fetchProducts = async () => {
         try {
@@ -130,7 +149,7 @@ export default function AdminProducts() {
     const resetForm = () => {
         setEditingId(null);
         setForm({
-            product_name: "", product_link: "", platform: "AMAZON", real_price: "", offer_price: "", refund_amount: "", deadline: "", total_slots: "", is_public: true,
+            brand: "", deal_type: [], product_name: "", product_link: "", platform: "AMAZON", real_price: "", offer_price: "", refund_amount: "", deadline: "", total_slots: "", is_public: true,
             wa_target: "all_customers", wa_custom_phones: "", wa_template: "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
             wa_start_date: "", wa_end_date: "", wa_times_per_day: "1", wa_time_1: "09:00", wa_time_2: "", wa_time_3: ""
         });
@@ -145,6 +164,8 @@ export default function AdminProducts() {
     const handleEditClick = (product: any) => {
         setEditingId(product.id);
         setForm({
+            brand: product.brand || "",
+            deal_type: product.deal_type ? product.deal_type.split(",") : [],
             product_name: product.product_name,
             product_link: product.product_link,
             platform: product.platform,
@@ -299,14 +320,14 @@ export default function AdminProducts() {
 
             // 3. Submit Product Form
             const payload: any = {
-                client_id: "5d0b58cf-aa25-4088-8032-4dbd913a4be4",
-                brand: "Admin Added Brand",
+                brand: form.brand || "Admin Added Brand",
+                deal_type: form.deal_type.join(","),
                 product_name: form.product_name,
                 product_link: form.product_link,
                 platform: form.platform,
                 real_price: form.real_price || undefined,
                 offer_price: form.offer_price || undefined,
-                refund_amount: Math.min(Number(form.refund_amount) || 0, 1000000),
+                refund_amount: form.refund_amount ? Math.min(Number(form.refund_amount) || 0, 1000000) : undefined,
                 total_slots: Math.min(Number(form.total_slots) || 0, 1000000),
                 daily_limit: 100,
                 deadline: form.deadline ? new Date(form.deadline).toISOString() : new Date().toISOString(),
@@ -406,7 +427,7 @@ export default function AdminProducts() {
                 <Button onClick={() => {
                     if (showForm) resetForm();
                     else setShowForm(true);
-                }}>{showForm ? "Cancel" : "Add New Product"}</Button>
+                }} className="text-white">{showForm ? "Cancel" : "Add New Product"}</Button>
             </div>
 
             {showForm && (
@@ -847,7 +868,7 @@ export default function AdminProducts() {
                     )}
 
                     <DialogFooter>
-                        <Button variant="outline" onClick={() => setIsWaModalOpen(false)}>Cancel</Button>
+                        <Button variant="outline" onClick={() => setIsWaModalOpen(false)} className="text-white border-white hover:text-white hover:bg-slate-800">Cancel</Button>
                         <Button
                             className="bg-green-600 hover:bg-green-700 text-white gap-2 px-8"
                             disabled={isSendingWa}

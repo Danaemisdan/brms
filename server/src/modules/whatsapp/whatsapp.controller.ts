@@ -23,7 +23,7 @@ export class WhatsAppController {
                 .replace(/{{platform}}/g, product.platform)
                 .replace(/{{real_price}}/g, (product.real_price || "").toString())
                 .replace(/{{offer_price}}/g, (product.offer_price || "").toString())
-                .replace(/{{refund_amount}}/g, product.refund_amount.toString())
+                .replace(/{{refund_amount}}/g, (product.refund_amount || 0).toString())
                 .replace(/{{available_slots}}/g, (product.total_slots - product.filled_slots).toString())
                 .replace(/{{product_link}}/g, product.product_link)
                 .replace(/{{deadline}}/g, new Date(product.deadline).toLocaleDateString());

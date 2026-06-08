@@ -1,3 +1,4 @@
+import { sendEmail } from "../../utils/mailer";
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { encryptBankData } from '../../utils/encryption';
@@ -32,6 +33,18 @@ export class OrderController {
                 data: { filled_slots: { increment: 1 } }
             });
 
+            
+            // Send email notification
+            if ((req as any).user && (req as any).user.email) {
+                const userEmail = (req as any).user.email;
+                await sendEmail(
+                    userEmail, 
+                    "Order Successfully Submitted", 
+                    `<h1>Thank you for your submission!</h1>
+                     <p>Your order ID <strong>${order_id}</strong> for product ID <strong>${product_id}</strong> has been successfully recorded.</p>
+                     <p>You can track its status from your dashboard.</p>`
+                );
+            }
             res.status(201).json({ message: "Order proof submitted successfully", order });
         } catch (error: any) {
             console.error("Error submitting order proof:", error);
@@ -140,7 +153,7 @@ export class OrderController {
                 data: {
                     order_id: order.id,
                     user_id: order.user_id,
-                    amount: order.product.refund_amount,
+                    amount: order.product.refund_amount || 0,
                     status: "PENDING",
                     qr_code_url: qr_code_url || null
                 }
@@ -250,4 +263,82 @@ export class OrderController {
             res.status(500).json({ error: "Failed to update refund status." });
         }
     }
+
+    // API for Google Sheets CSV Export
+    static async exportOrders(req: Request, res: Response) {
+        try {
+            const { token } = req.query;
+            if (token !== "brms_export_secret_123") {
+                return res.status(401).send("Unauthorized");
+            }
+
+            const orders = await prisma.order.findMany({
+                include: {
+                    user: true,
+                    product: true
+                },
+                orderBy: { created_at: 'desc' }
+            });
+
+            const headers = ["Profile Name", "Order id", "Product Name", "Product Cost", "Order Screenshot", "Deal Screenshot", "Return Window SS", "Remarks"];
+            
+            const rows = orders.map(order => [
+                `"${(order.user?.name || "").replace(/"/g, '""')}"`,
+                `"${(order.order_id || "").replace(/"/g, '""')}"`,
+                `"${(order.product?.product_name || "").replace(/"/g, '""')}"`,
+                `"${order.amount || 0}"`,
+                `"${order.screenshot_url || ""}"`,
+                `"${order.deal_screenshot_url || ""}"`,
+                `"${order.return_window_screenshot_url || ""}"`,
+                `"${(order.remarks || "").replace(/"/g, '""')}"`
+            ].join(","));
+
+            const csvContent = [headers.join(","), ...rows].join("\n");
+
+            res.header('Content-Type', 'text/csv');
+            res.attachment('orders_export.csv');
+            return res.send(csvContent);
+        } catch (error) {
+            console.error("Error exporting orders:", error);
+            res.status(500).send("Error generating export");
+        }
+    }
+
+    // VENDOR: Get orders related to their brand
+    static async getBrandOrders(req: Request, res: Response) {
+        try {
+            const user = (req as any).user;
+            if (user.role !== "VENDOR") {
+                return res.status(403).json({ error: "Access denied. Only vendors can view brand orders." });
+            }
+
+            const orders = await prisma.order.findMany({
+                where: {
+                    product: {
+                        brand: user.name
+                    }
+                },
+                include: {
+                    product: true,
+                    user: {
+                        select: { name: true, mobile: true, email: true }
+                    },
+                    refund: true,
+                    review: true
+                },
+                orderBy: { created_at: "desc" }
+            });
+
+            // Calculate simple analytics for the dashboard
+            const totalOrders = orders.length;
+            const totalSpent = orders.reduce((sum, order) => sum + (order.product?.refund_amount || 0), 0);
+            
+            res.json({ orders, analytics: { totalOrders, totalSpent } });
+        } catch (error) {
+            console.error("Error fetching brand orders:", error);
+            res.status(500).json({ error: "Failed to fetch brand orders." });
+        }
+    }
 }
+
+

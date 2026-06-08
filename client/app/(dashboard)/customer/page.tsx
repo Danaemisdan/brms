@@ -144,28 +144,20 @@ function CustomerDashboardContent() {
                     {products.map((product) => {
                         const images = parseImages(product.product_image);
                         return (
-                            <Card key={product.id} className="overflow-hidden flex flex-col relative">
-                                {(() => {
-                                    const createdDate = new Date(product.created_at);
-                                    const now = new Date();
-                                    const hoursSinceCreated = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60);
-                                    if (hoursSinceCreated <= 48) {
-                                        return (
-                                            <div className="absolute top-2 left-2 z-10">
-                                                <Badge className="bg-indigo-600 hover:bg-indigo-700 animate-pulse shadow-md border-none text-[10px] px-2 py-0.5">
-                                                    New 🚀
-                                                </Badge>
-                                            </div>
-                                        );
-                                    }
-                                    return null;
-                                })()}
-                                <div className="bg-gray-100 h-48 flex items-center justify-center p-4 relative group">
+                            
+                            <Card key={product.id} className="overflow-hidden flex flex-col relative rounded-2xl shadow-sm border border-gray-100">
+                                {/* Top Right Cashback Badge */}
+                                <div className="absolute top-4 right-0 z-10 bg-blue-600 text-white font-bold text-xs px-3 py-1.5 rounded-l-lg shadow-sm">
+                                    LESS ₹{product.refund_amount} CASHBACK
+                                </div>
+                                
+                                {/* Image Section */}
+                                <div className="bg-gray-50 h-56 flex items-center justify-center relative group p-4">
                                     {images.length > 0 ? (
                                         <div className="flex overflow-x-auto w-full h-full snap-x snap-mandatory hide-scrollbar">
                                             {images.map((img, idx) => (
                                                 <div key={idx} className="w-full h-full flex-shrink-0 snap-center flex items-center justify-center">
-                                                    <img src={img} alt={`${product.product_name} - ${idx + 1}`} className="max-h-full object-contain mix-blend-multiply" />
+                                                    <img src={img} alt={`${product.product_name} - ${idx + 1}`} className="max-h-full max-w-full object-contain mix-blend-multiply rounded-lg" />
                                                 </div>
                                             ))}
                                         </div>
@@ -173,43 +165,57 @@ function CustomerDashboardContent() {
                                         <span className="text-gray-400">No Image</span>
                                     )}
                                     {images.length > 1 && (
-                                        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded-full pointer-events-none">
+                                        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full pointer-events-none">
                                             {images.length} images (scroll ➡️)
                                         </div>
                                     )}
                                 </div>
-                                <CardContent className="flex-1 p-5 space-y-4">
+
+                                <CardContent className="flex-1 p-5 space-y-4 bg-white flex flex-col">
                                     <div>
-                                        <div className="flex justify-between items-start mb-2">
-                                            <Badge variant="secondary" className="bg-blue-100 text-blue-800">{product.platform}</Badge>
-                                            <span className="text-sm font-semibold text-green-600 font-mono">₹{product.refund_amount}</span>
+                                        {/* Category Pill */}
+                                        <Badge variant="outline" className="text-blue-600 border-blue-200 bg-white hover:bg-blue-50 font-semibold mb-3 rounded-md px-3">
+                                            {product.platform?.toUpperCase() || "DEAL"}
+                                        </Badge>
+                                        
+                                        {/* Brand & Name */}
+                                        <p className="text-xs font-bold text-slate-400 tracking-wider uppercase mb-1">{product.brand}</p>
+                                        <h3 className="font-bold text-lg leading-tight line-clamp-2 text-slate-900">{product.product_name}</h3>
+                                    </div>
+                                    
+                                    {/* Pricing Blocks */}
+                                    <div className="grid grid-cols-2 gap-3 mt-2">
+                                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Selling Price</p>
+                                            <p className="font-bold text-xl text-slate-900">₹{product.real_price || (Number(product.offer_price || 0) + Number(product.refund_amount || 0))}</p>
                                         </div>
-                                        <h3 className="font-semibold text-lg line-clamp-2">{product.product_name}</h3>
-                                        <p className="text-sm text-gray-500 mt-1">by {product.brand}</p>
-                                    </div>
-                                    <div className="text-sm">
-                                        {(() => {
-                                            const filled = product.filled_slots || 0;
-                                            const total = product.total_slots || 1;
-                                            const percentFilled = (filled / total) * 100;
-
-                                            if (percentFilled >= 95) {
-                                                return <Badge variant="destructive" className="bg-red-500 hover:bg-red-600">About to close ⏳</Badge>;
-                                            } else if (percentFilled >= 80) {
-                                                return <Badge variant="default" className="bg-orange-500 hover:bg-orange-600 text-white">Almost Full 🔥</Badge>;
-                                            } else if (percentFilled >= 50) {
-                                                return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200">Filling Fast 📉</Badge>;
-                                            } else {
-                                                return <Badge variant="outline" className="text-green-600 border-green-200 bg-green-50">Slots Available ✅</Badge>;
-                                            }
-                                        })()}
+                                        <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-50">
+                                            <p className="text-[10px] font-bold text-blue-500 uppercase tracking-wide">Final Cost</p>
+                                            <p className="font-bold text-xl text-blue-700">₹{product.offer_price || (product.real_price ? product.real_price - product.refund_amount : 0)}</p>
+                                        </div>
                                     </div>
 
-                                    <div className="pt-2 space-y-2 flex-grow flex flex-col justify-end">
-                                        <a href={product.product_link} target="_blank" rel="noreferrer" className="w-full">
-                                            <Button variant="outline" className="w-full border-blue-200 hover:bg-blue-50 hover:text-blue-700">Buy Product</Button>
+                                    {/* Info Box */}
+                                    <div className="flex items-center gap-2 p-3 mt-1 bg-slate-50 rounded-xl border border-slate-100 text-slate-600">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500 shrink-0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        <span className="text-xs font-medium">30-45 days After Delivery Screenshot Verification</span>
+                                    </div>
+
+                                    {/* Terms and Links */}
+                                    <div className="flex items-center justify-between mt-auto pt-2">
+                                        <a href="#" className="flex items-center gap-1 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-wider">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                            Terms & Conditions
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-0.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                                         </a>
-                                        <Button className="w-full bg-blue-600 hover:bg-blue-700" onClick={() => openSubmitModal(product)}>Submit Order ID</Button>
+                                    </div>
+
+                                    {/* Action Buttons */}
+                                    <div className="flex gap-2 pt-2">
+                                        <a href={product.product_link} target="_blank" rel="noreferrer" className="flex-1">
+                                            <Button variant="outline" className="w-full border-blue-200 text-blue-700 hover:bg-blue-50">Buy Now</Button>
+                                        </a>
+                                        <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white" onClick={() => openSubmitModal(product)}>Submit ID</Button>
                                     </div>
                                 </CardContent>
                             </Card>
