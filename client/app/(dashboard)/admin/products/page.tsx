@@ -3,6 +3,7 @@
 import { apiFetch } from "@/lib/apiFetch";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +25,7 @@ const getImageUrl = (src: string) => {
 };
 
 export default function AdminProducts() {
+    const router = useRouter();
     const [showForm, setShowForm] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -45,7 +47,7 @@ export default function AdminProducts() {
         deadline: "",
         total_slots: "",
         is_public: true, // Defaults to public
-        wa_target: "all_customers",
+        wa_target: ["all_customers"],
         wa_custom_phones: "",
         wa_template: "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
         wa_start_date: "",
@@ -62,7 +64,7 @@ export default function AdminProducts() {
     const [waTemplate, setWaTemplate] = useState(
         "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}"
     );
-    const [waTarget, setWaTarget] = useState("all_customers");
+    const [waTarget, setWaTarget] = useState<string[]>(["all_customers"]);
     const [customPhones, setCustomPhones] = useState("");
     const [isSendingWa, setIsSendingWa] = useState(false);
     const [waScheduledAt, setWaScheduledAt] = useState("");
@@ -150,7 +152,7 @@ export default function AdminProducts() {
         setEditingId(null);
         setForm({
             brand: "", deal_type: [], product_name: "", product_link: "", platform: "AMAZON", real_price: "", offer_price: "", refund_amount: "", deadline: "", total_slots: "", is_public: true,
-            wa_target: "all_customers", wa_custom_phones: "", wa_template: "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
+            wa_target: ["all_customers"], wa_custom_phones: "", wa_template: "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
             wa_start_date: "", wa_end_date: "", wa_times_per_day: "1", wa_time_1: "09:00", wa_time_2: "", wa_time_3: ""
         });
         setExistingImages([]);
@@ -175,7 +177,7 @@ export default function AdminProducts() {
             deadline: product.deadline ? new Date(product.deadline).toISOString().split('T')[0] : "",
             total_slots: String(product.total_slots),
             is_public: product.is_public !== false, // defaults to true
-            wa_target: product.wa_target || "all_customers",
+            wa_target: product.wa_target ? product.wa_target.split(",") : ["all_customers"],
             wa_custom_phones: product.wa_custom_phones || "",
             wa_template: product.wa_template || "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
             wa_start_date: product.wa_start_date ? new Date(product.wa_start_date).toISOString().split('T')[0] : "",
@@ -266,6 +268,16 @@ export default function AdminProducts() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!form.brand) {
+            toast.error("Please select a Brand / Vendor.");
+            return;
+        }
+
+        if (form.deal_type.length === 0) {
+            toast.error("Please select at least one Deal Type.");
+            return;
+        }
+
         if (!editingId && imageFiles.length === 0 && existingImages.length === 0) {
             toast.error("Please upload at least one product image.");
             return;
@@ -333,8 +345,8 @@ export default function AdminProducts() {
                 deadline: form.deadline ? new Date(form.deadline).toISOString() : new Date().toISOString(),
                 instructions: "1. Click Buy\n2. Submit Order ID",
                 is_public: form.is_public,
-                wa_target: form.wa_target,
-                wa_custom_phones: form.wa_target === "custom" ? form.wa_custom_phones : "",
+                wa_target: form.wa_target.join(","),
+                wa_custom_phones: form.wa_target.includes("custom") ? form.wa_custom_phones : "",
                 wa_template: form.wa_template,
                 wa_attachment_url: finalWaUrl,
                 wa_start_date: form.wa_start_date || null,
@@ -384,8 +396,8 @@ export default function AdminProducts() {
             const payload = {
                 product_id: selectedWaProduct.id,
                 template: waTemplate,
-                target: waTarget,
-                custom_phones: waTarget === "custom" ? customPhones : "",
+                target: waTarget.join(","),
+                custom_phones: waTarget.includes("custom") ? customPhones : "",
                 scheduled_at: waScheduledAt ? new Date(waScheduledAt).toISOString() : undefined
             };
 
@@ -435,6 +447,42 @@ export default function AdminProducts() {
                     <CardHeader><CardTitle>{editingId ? "Edit Product" : "New Product"}</CardTitle></CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2">
+                            <div className="space-y-2 md:col-span-2">
+                                <Label>Brand / Vendor <span className="text-red-500">*</span></Label>
+                                <select
+                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    value={form.brand}
+                                    onChange={e => setForm({ ...form, brand: e.target.value })}
+                                    required
+                                >
+                                    <option value="" disabled>Select a brand...</option>
+                                    {brandsList.map(b => (
+                                        <option key={b.id} value={b.name}>{b.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                                <Label>Type of Deal <span className="text-red-500">*</span></Label>
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                    {["Only Order", "Rating Deal", "Review Deal", "Seller Feedback Deal"].map(type => (
+                                        <label key={type} className="flex items-center space-x-2 bg-gray-50 border px-3 py-2 rounded-md cursor-pointer hover:bg-gray-100">
+                                            <input
+                                                type="checkbox"
+                                                checked={form.deal_type.includes(type)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setForm({ ...form, deal_type: [...form.deal_type, type] });
+                                                    } else {
+                                                        setForm({ ...form, deal_type: form.deal_type.filter(t => t !== type) });
+                                                    }
+                                                }}
+                                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            />
+                                            <span className="text-sm">{type}</span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </div>
                             <div className="space-y-2 md:col-span-2">
                                 <Label>Product Name <span className="text-red-500">*</span></Label>
                                 <Input placeholder="e.g., Wireless Mouse" required value={form.product_name} onChange={e => setForm({ ...form, product_name: e.target.value })} />
@@ -506,16 +554,16 @@ export default function AdminProducts() {
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <Label>Real Price (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
-                                <Input type="number" placeholder="Original MRP" min="0" value={form.real_price} onChange={e => setForm({ ...form, real_price: e.target.value })} />
+                                <Label>Real Price (₹) <span className="text-red-500">*</span></Label>
+                                <Input type="number" placeholder="Original MRP" required min="0" value={form.real_price} onChange={e => setForm({ ...form, real_price: e.target.value })} />
                             </div>
                             <div className="space-y-2">
                                 <Label>Offer Price (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
                                 <Input type="number" placeholder="Discounted Price" min="0" value={form.offer_price} onChange={e => setForm({ ...form, offer_price: e.target.value })} />
                             </div>
                             <div className="space-y-2">
-                                <Label>Refund Amount (₹) <span className="text-red-500">*</span></Label>
-                                <Input type="number" placeholder="1000" required min="1" value={form.refund_amount} onChange={e => setForm({ ...form, refund_amount: e.target.value })} />
+                                <Label>Refund Amount (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
+                                <Input type="number" placeholder="1000" min="0" value={form.refund_amount} onChange={e => setForm({ ...form, refund_amount: e.target.value })} />
                             </div>
                             <div className="space-y-2">
                                 <Label>Deal End Date <span className="text-red-500">*</span></Label>
@@ -542,16 +590,30 @@ export default function AdminProducts() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label>Target Audience</Label>
-                                <select
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                                    value={form.wa_target}
-                                    onChange={(e) => setForm({ ...form, wa_target: e.target.value })}
-                                >
-                                    <option value="all_customers">All Registered Customers</option>
-                                    <option value="verified_customers">Verified Customers</option>
-                                    <option value="custom">Custom (Select specific groups or numbers)</option>
-                                </select>
+                                <Label>Target Audience (Select multiple)</Label>
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                    {[
+                                        { id: "all_customers", label: "All Registered Customers" },
+                                        { id: "verified_customers", label: "Verified Customers" },
+                                        { id: "custom", label: "Custom (Select specific groups or numbers)" }
+                                    ].map(option => (
+                                        <label key={option.id} className="flex items-center space-x-2 bg-gray-50 border px-3 py-2 rounded-md cursor-pointer hover:bg-gray-100">
+                                            <input
+                                                type="checkbox"
+                                                checked={form.wa_target.includes(option.id)}
+                                                onChange={(e) => {
+                                                    if (e.target.checked) {
+                                                        setForm({ ...form, wa_target: [...form.wa_target, option.id] });
+                                                    } else {
+                                                        setForm({ ...form, wa_target: form.wa_target.filter(t => t !== option.id) });
+                                                    }
+                                                }}
+                                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                            />
+                                            <span className="text-sm">{option.label}</span>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
 
                             <div className="space-y-4 md:col-span-2 p-4 bg-gray-50 border rounded-lg mt-2 mb-4">
@@ -646,7 +708,7 @@ export default function AdminProducts() {
                                 </div>
                             </div>
 
-                            {form.wa_target === "custom" && (
+                            {form.wa_target.includes("custom") && (
                                 <div className="space-y-2 md:col-span-2 p-4 bg-gray-50 border rounded-lg">
                                     <Label>Phone Numbers or Group Names <span className="text-red-500">*</span></Label>
                                     <Textarea
@@ -785,6 +847,9 @@ export default function AdminProducts() {
                                         </>
                                     ) : (
                                         <>
+                                            <Button variant="outline" size="sm" onClick={() => router.push(`/admin/orders`)}>
+                                                Orders
+                                            </Button>
                                             <Button
                                                 variant="outline"
                                                 size="sm"

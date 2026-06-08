@@ -4,6 +4,7 @@ import { apiFetch } from "@/lib/apiFetch";
 
 import { useEffect, useState } from "react";
 import { Card, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { isDateMatch, DateFilterType } from "@/lib/dateUtils";
 
@@ -102,9 +103,9 @@ export default function AdminOrders() {
                 ) : (() => {
                     const filteredOrders = orders.filter(order => {
                         const matchesSearch =
-                            order.order_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            order.user?.mobile?.includes(searchTerm) ||
-                            order.product?.product_name.toLowerCase().includes(searchTerm.toLowerCase());
+                            (order.order_id?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+                            (order.user?.mobile || "").includes(searchTerm) ||
+                            (order.product?.product_name?.toLowerCase() || "").includes(searchTerm.toLowerCase());
 
                         const matchesStatus = statusFilter === "ALL" || order.status === statusFilter;
                         const matchesDate = isDateMatch(order.created_at, dateFilter);

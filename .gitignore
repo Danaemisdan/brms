@@ -6,3 +6,14 @@ venv/
 Agent/Models/
 local_agent/Agent/Models/
 .DS_Store
+chrome_data_*
+*.log
+chrome_data_whatsapp/
+
+chrome_data_whatsapp/
+tunnel.log
+frontend_tunnel.log
+backend.log
+*.log
+local_agent/Agent/LocalManager/agent.log
+

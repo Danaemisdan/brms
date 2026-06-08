@@ -19,8 +19,7 @@ cd ..
 echo "[*] Starting Python Agent in background..."
 cd "$(dirname "$0")/local_agent/Agent/LocalManager" || exit
 if [ -d "venv" ]; then
-    source venv/bin/activate
-    nohup python main.py > agent.log 2>&1 &
+    nohup ./venv/bin/python main.py > agent.log 2>&1 &
 else
     echo "⚠️  Python venv not found! Skipping agent start."
 fi
