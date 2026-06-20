@@ -240,37 +240,41 @@ export default function AdminBrands() {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="space-y-10 relative z-10">
+            <div className="flex items-center justify-between border-b border-white/5 pb-6">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Manage Brands</h1>
-                    <p className="text-gray-500">Add and manage brand accounts.</p>
+                    <h1 className="text-4xl font-heading text-[#d4af37] tracking-wider uppercase">Manage Vendors</h1>
+                    <p className="text-white/40 mt-2 font-sans tracking-wide text-sm">Orchestrate and onboard official brand partners.</p>
                 </div>
-                <Button onClick={() => setShowForm(!showForm)}>{showForm ? "Cancel" : "Add New Brand"}</Button>
+                <Button onClick={() => setShowForm(!showForm)} className="bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/50 hover:bg-[#d4af37]/20 font-sans tracking-widest uppercase text-xs h-12 px-6 rounded-sm transition-all shadow-[0_0_15px_rgba(212,175,55,0.1)]">
+                    {showForm ? "Cancel Operation" : "Authorize New Vendor"}
+                </Button>
             </div>
 
             {showForm && (
-                <Card>
-                    <CardHeader><CardTitle>New Brand</CardTitle></CardHeader>
+                <Card className="glass-panel border-[#d4af37]/30 shadow-[0_0_30px_rgba(212,175,55,0.05)]">
+                    <CardHeader className="border-b border-white/5 pb-4 mb-4">
+                        <CardTitle className="text-xl font-heading text-white tracking-widest uppercase">New Vendor Dossier</CardTitle>
+                    </CardHeader>
                     <CardContent>
                         {error && !editingBrand && (
-                            <div className="mb-4 p-3 rounded-md bg-red-50 text-red-600 text-sm">{error}</div>
+                            <div className="mb-6 p-3 rounded bg-red-900/20 text-red-400 text-xs border border-red-500/50 font-sans tracking-wider uppercase text-center">{error}</div>
                         )}
-                        <form onSubmit={handleAdd} className="grid gap-4 md:grid-cols-2">
-                            <div className="space-y-2">
-                                <Label htmlFor="brand_name">Brand / Company Name</Label>
-                                <Input id="brand_name" placeholder="e.g., Tech Accessories Inc" value={formData.brand_name} onChange={handleChange} required />
+                        <form onSubmit={handleAdd} className="grid gap-6 md:grid-cols-2">
+                            <div className="space-y-3">
+                                <Label htmlFor="brand_name" className="text-white/60 uppercase tracking-widest text-[10px]">Brand / Entity Name</Label>
+                                <Input id="brand_name" placeholder="e.g., Tech Accessories Inc" value={formData.brand_name} onChange={handleChange} required className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="poc_name">Point of Contact (POC) Name</Label>
-                                <Input id="poc_name" placeholder="John Doe" value={formData.poc_name} onChange={handleChange} required />
+                            <div className="space-y-3">
+                                <Label htmlFor="poc_name" className="text-white/60 uppercase tracking-widest text-[10px]">Liaison (POC) Name</Label>
+                                <Input id="poc_name" placeholder="John Doe" value={formData.poc_name} onChange={handleChange} required className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="mobile">Contact Mobile</Label>
+                            <div className="space-y-3">
+                                <Label htmlFor="mobile" className="text-white/60 uppercase tracking-widest text-[10px]">Direct Line</Label>
                                 <div className="flex gap-2">
                                     <select
                                         id="country_code"
-                                        className="h-10 w-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                        className="h-12 w-[110px] rounded-sm border border-white/10 bg-black/40 px-3 text-white text-xs font-sans outline-none focus:border-[#d4af37]/50"
                                         value={formData.country_code}
                                         onChange={handleChange}
                                     >
@@ -279,22 +283,22 @@ export default function AdminBrands() {
                                         <option value="+1">+1 (US)</option>
                                         <option value="+44">+44 (UK)</option>
                                     </select>
-                                    <Input id="mobile" className="flex-1" placeholder="9876543210" maxLength={10} value={formData.mobile} onChange={handleChange} required />
+                                    <Input id="mobile" className="flex-1 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" placeholder="9876543210" maxLength={10} value={formData.mobile} onChange={handleChange} required />
                                 </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="email">Email</Label>
-                                <Input id="email" type="email" placeholder="brand@example.com" value={formData.email} onChange={handleChange} required />
+                            <div className="space-y-3">
+                                <Label htmlFor="email" className="text-white/60 uppercase tracking-widest text-[10px]">Electronic Mail</Label>
+                                <Input id="email" type="email" placeholder="brand@domain.com" value={formData.email} onChange={handleChange} required className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="website">Website Link (Optional)</Label>
-                                <Input id="website" type="url" placeholder="https://example.com" value={formData.website} onChange={handleChange} />
+                            <div className="space-y-3">
+                                <Label htmlFor="website" className="text-white/60 uppercase tracking-widest text-[10px]">Digital Presence (Optional)</Label>
+                                <Input id="website" type="url" placeholder="https://domain.com" value={formData.website} onChange={handleChange} className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="country">Country</Label>
+                            <div className="space-y-3">
+                                <Label htmlFor="country" className="text-white/60 uppercase tracking-widest text-[10px]">Jurisdiction</Label>
                                 <select
                                     id="country"
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                    className="h-12 w-full rounded-sm border border-white/10 bg-black/40 px-3 text-white text-sm font-sans outline-none focus:border-[#d4af37]/50"
                                     value={formData.country}
                                     onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                                     required
@@ -305,14 +309,14 @@ export default function AdminBrands() {
                                     <option value="UK">UK</option>
                                 </select>
                             </div>
-                            <div className="space-y-2">
-                                <Label>Brand Category</Label>
+                            <div className="space-y-3">
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Sector</Label>
                                 <select
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    className="h-12 w-full rounded-sm border border-white/10 bg-black/40 px-3 text-white text-sm font-sans outline-none focus:border-[#d4af37]/50"
                                     value={formData.category}
                                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                 >
-                                    <option value="">Select a category...</option>
+                                    <option value="">Select a sector...</option>
                                     <option value="Electronics">Electronics</option>
                                     <option value="Fashion">Fashion</option>
                                     <option value="Home & Kitchen">Home & Kitchen</option>
@@ -325,17 +329,17 @@ export default function AdminBrands() {
                                     <option value="Other">Other</option>
                                 </select>
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="commission">Commission (%)</Label>
-                                <Input id="commission" type="number" placeholder="e.g., 10" value={formData.commission} onChange={handleChange} min="0" step="0.01" required />
+                            <div className="space-y-3">
+                                <Label htmlFor="commission" className="text-white/60 uppercase tracking-widest text-[10px]">Platform Commission (%)</Label>
+                                <Input id="commission" type="number" placeholder="10" value={formData.commission} onChange={handleChange} min="0" step="0.01" required className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="password">Password (for brand login)</Label>
-                                <Input id="password" type="password" placeholder="••••••••" value={formData.password} onChange={handleChange} required minLength={6} />
+                            <div className="space-y-3 md:col-span-2">
+                                <Label htmlFor="password" className="text-white/60 uppercase tracking-widest text-[10px]">Access Passcode</Label>
+                                <Input id="password" type="password" placeholder="••••••••" value={formData.password} onChange={handleChange} required minLength={6} className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" />
                             </div>
-                            <div className="md:col-span-2">
-                                <Button type="submit" className="w-full" disabled={isSubmitting || !formData.brand_name || !formData.poc_name || formData.mobile.length !== 10 || formData.password.length < 6}>
-                                    {isSubmitting ? "Adding..." : "Add Brand"}
+                            <div className="md:col-span-2 mt-4">
+                                <Button type="submit" className="w-full bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/50 hover:bg-[#d4af37]/20 font-sans tracking-widest uppercase text-xs h-14 rounded-sm transition-all" disabled={isSubmitting || !formData.brand_name || !formData.poc_name || formData.mobile.length !== 10 || formData.password.length < 6}>
+                                    {isSubmitting ? "Processing..." : "Commit Vendor Record"}
                                 </Button>
                             </div>
                         </form>
@@ -343,26 +347,24 @@ export default function AdminBrands() {
                 </Card>
             )}
 
-            <div className="space-y-4">
+            <div className="space-y-6 pt-6">
                 {!showForm && (
-                    <Card className="p-4 mb-2">
-                        <div className="relative">
-                            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                            <Input
-                                placeholder="Search brands by name, POC, email, or mobile..."
-                                className="pl-9"
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
-                            />
-                        </div>
-                    </Card>
+                    <div className="relative mb-8">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+                        <Input
+                            placeholder="Search dossier by name, liaison, email, or direct line..."
+                            className="pl-12 h-14 glass-panel border-white/10 text-white placeholder:text-white/30 focus:border-[#d4af37]/50 font-sans text-sm tracking-wide"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
                 )}
 
                 {isLoading ? (
-                    <div className="text-center py-8 text-gray-500">Loading brands...</div>
+                    <div className="text-center py-12 text-[#d4af37]/70 font-sans tracking-widest text-xs uppercase animate-pulse">Scanning records...</div>
                 ) : brands.length === 0 ? (
-                    <Card className="p-8 text-center text-gray-500">
-                        No brands added yet. Click "Add New Brand" to get started.
+                    <Card className="p-12 text-center glass-panel border-white/5">
+                        <p className="text-white/40 font-sans tracking-wide">No vendor records established. Initialize "Authorize New Vendor" to proceed.</p>
                     </Card>
                 ) : (() => {
                     const filteredBrands = brands.filter(v => {
@@ -374,34 +376,35 @@ export default function AdminBrands() {
                     });
 
                     if (filteredBrands.length === 0) {
-                        return <Card className="p-8 text-center text-gray-500">No brands found matching your search.</Card>;
+                        return <Card className="p-12 text-center glass-panel border-white/5"><p className="text-white/40 font-sans tracking-wide">No dossiers match your criteria.</p></Card>;
                     }
 
                     return filteredBrands.map((v) => (
                         editingBrand?.id === v.id ? (
-                            <Card key={v.id} className="p-6 border-blue-500 shadow-sm">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="font-semibold text-lg">Edit Brand: {v.name}</h3>
-                                    <Button variant="ghost" size="sm" onClick={() => { setEditingBrand(null); setError(""); }}>Cancel</Button>
+                            <Card key={v.id} className="p-6 glass-panel border-[#d4af37]/50 shadow-[0_0_30px_rgba(212,175,55,0.1)]">
+                                <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+                                    <h3 className="font-heading text-xl text-[#d4af37] uppercase tracking-widest">Update Dossier: {v.name}</h3>
+                                    <Button variant="ghost" size="sm" className="text-white/40 hover:text-white font-sans tracking-widest uppercase text-[10px]" onClick={() => { setEditingBrand(null); setError(""); }}>Abort</Button>
                                 </div>
                                 {error && editingBrand?.id === v.id && (
-                                    <div className="mb-4 p-3 rounded-md bg-red-50 text-red-600 text-sm">{error}</div>
+                                    <div className="mb-6 p-3 rounded bg-red-900/20 text-red-400 text-xs border border-red-500/50 font-sans tracking-wider uppercase text-center">{error}</div>
                                 )}
-                                <form onSubmit={handleUpdate} className="grid gap-4 md:grid-cols-2">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="edit_brand_name">Brand Name</Label>
-                                        <Input id="edit_brand_name" value={editFormData.brand_name} onChange={handleEditChange} required />
+                                <form onSubmit={handleUpdate} className="grid gap-6 md:grid-cols-2">
+                                    {/* Same fields but styled */}
+                                    <div className="space-y-3">
+                                        <Label htmlFor="edit_brand_name" className="text-white/60 uppercase tracking-widest text-[10px]">Brand Name</Label>
+                                        <Input id="edit_brand_name" value={editFormData.brand_name} onChange={handleEditChange} required className="h-12 bg-white/5 border-white/10 text-white focus:border-[#d4af37]/50" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="edit_poc_name">POC Name</Label>
-                                        <Input id="edit_poc_name" value={editFormData.poc_name} onChange={handleEditChange} required />
+                                    <div className="space-y-3">
+                                        <Label htmlFor="edit_poc_name" className="text-white/60 uppercase tracking-widest text-[10px]">Liaison Name</Label>
+                                        <Input id="edit_poc_name" value={editFormData.poc_name} onChange={handleEditChange} required className="h-12 bg-white/5 border-white/10 text-white focus:border-[#d4af37]/50" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="edit_mobile">Mobile</Label>
+                                    <div className="space-y-3">
+                                        <Label htmlFor="edit_mobile" className="text-white/60 uppercase tracking-widest text-[10px]">Direct Line</Label>
                                         <div className="flex gap-2">
                                             <select
                                                 id="edit_country_code"
-                                                className="h-10 w-[100px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                                                className="h-12 w-[110px] rounded-sm border border-white/10 bg-black/40 px-3 text-white text-xs outline-none focus:border-[#d4af37]/50"
                                                 value={editFormData.country_code}
                                                 onChange={(e) => setEditFormData({ ...editFormData, country_code: e.target.value })}
                                             >
@@ -410,22 +413,22 @@ export default function AdminBrands() {
                                                 <option value="+1">+1 (US)</option>
                                                 <option value="+44">+44 (UK)</option>
                                             </select>
-                                            <Input id="edit_mobile" className="flex-1" maxLength={10} value={editFormData.mobile} onChange={handleEditChange} required />
+                                            <Input id="edit_mobile" className="flex-1 h-12 bg-white/5 border-white/10 text-white focus:border-[#d4af37]/50" maxLength={10} value={editFormData.mobile} onChange={handleEditChange} required />
                                         </div>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="edit_email">Email</Label>
-                                        <Input id="edit_email" type="email" value={editFormData.email} onChange={handleEditChange} required />
+                                    <div className="space-y-3">
+                                        <Label htmlFor="edit_email" className="text-white/60 uppercase tracking-widest text-[10px]">Electronic Mail</Label>
+                                        <Input id="edit_email" type="email" value={editFormData.email} onChange={handleEditChange} required className="h-12 bg-white/5 border-white/10 text-white focus:border-[#d4af37]/50" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="edit_website">Website Link (Optional)</Label>
-                                        <Input id="edit_website" type="url" value={editFormData.website} onChange={handleEditChange} />
+                                    <div className="space-y-3">
+                                        <Label htmlFor="edit_website" className="text-white/60 uppercase tracking-widest text-[10px]">Digital Presence (Optional)</Label>
+                                        <Input id="edit_website" type="url" value={editFormData.website} onChange={handleEditChange} className="h-12 bg-white/5 border-white/10 text-white focus:border-[#d4af37]/50" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="edit_country">Country</Label>
+                                    <div className="space-y-3">
+                                        <Label htmlFor="edit_country" className="text-white/60 uppercase tracking-widest text-[10px]">Jurisdiction</Label>
                                         <select
                                             id="edit_country"
-                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            className="h-12 w-full rounded-sm border border-white/10 bg-black/40 px-3 text-white text-sm outline-none focus:border-[#d4af37]/50"
                                             value={editFormData.country}
                                             onChange={(e) => setEditFormData({ ...editFormData, country: e.target.value })}
                                             required
@@ -436,14 +439,14 @@ export default function AdminBrands() {
                                             <option value="UK">UK</option>
                                         </select>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label>Brand Category</Label>
+                                    <div className="space-y-3">
+                                        <Label className="text-white/60 uppercase tracking-widest text-[10px]">Sector</Label>
                                         <select
-                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                            className="h-12 w-full rounded-sm border border-white/10 bg-black/40 px-3 text-white text-sm outline-none focus:border-[#d4af37]/50"
                                             value={editFormData.category}
                                             onChange={(e) => setEditFormData({ ...editFormData, category: e.target.value })}
                                         >
-                                            <option value="">Select a category...</option>
+                                            <option value="">Select a sector...</option>
                                             <option value="Electronics">Electronics</option>
                                             <option value="Fashion">Fashion</option>
                                             <option value="Home & Kitchen">Home & Kitchen</option>
@@ -456,49 +459,49 @@ export default function AdminBrands() {
                                             <option value="Other">Other</option>
                                         </select>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="edit_commission">Commission (%)</Label>
-                                        <Input id="edit_commission" type="number" value={editFormData.commission} onChange={handleEditChange} min="0" step="0.01" required />
+                                    <div className="space-y-3">
+                                        <Label htmlFor="edit_commission" className="text-white/60 uppercase tracking-widest text-[10px]">Platform Commission (%)</Label>
+                                        <Input id="edit_commission" type="number" value={editFormData.commission} onChange={handleEditChange} min="0" step="0.01" required className="h-12 bg-white/5 border-white/10 text-white focus:border-[#d4af37]/50" />
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="edit_password">New Password (Optional)</Label>
-                                        <Input id="edit_password" type="password" placeholder="Leave blank to keep current" value={editFormData.password} onChange={handleEditChange} minLength={6} />
+                                    <div className="space-y-3 md:col-span-2">
+                                        <Label htmlFor="edit_password" className="text-white/60 uppercase tracking-widest text-[10px]">New Passcode (Optional)</Label>
+                                        <Input id="edit_password" type="password" placeholder="Leave blank to maintain current" value={editFormData.password} onChange={handleEditChange} minLength={6} className="h-12 bg-white/5 border-white/10 text-white focus:border-[#d4af37]/50" />
                                     </div>
-                                    <div className="md:col-span-2 flex justify-end">
-                                        <Button type="submit" disabled={isSubmitting || !editFormData.brand_name || editFormData.mobile.length !== 10}>
-                                            {isSubmitting ? "Saving..." : "Save Changes"}
+                                    <div className="md:col-span-2 flex justify-end mt-4">
+                                        <Button type="submit" disabled={isSubmitting || !editFormData.brand_name || editFormData.mobile.length !== 10} className="w-full bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/50 hover:bg-[#d4af37]/20 font-sans tracking-widest uppercase text-xs h-14 rounded-sm transition-all">
+                                            {isSubmitting ? "Committing..." : "Commit Changes"}
                                         </Button>
                                     </div>
                                 </form>
                             </Card>
                         ) : walletBrand?.id === v.id ? (
-                            <Card key={`wallet-${v.id}`} className="p-6 border-green-500 shadow-sm">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h3 className="font-semibold text-lg">Manage Wallet: {v.name}</h3>
-                                    <Button variant="ghost" size="sm" onClick={() => { setWalletBrand(null); setError(""); }}>Cancel</Button>
+                            <Card key={`wallet-${v.id}`} className="p-6 glass-panel border-[#8a7322]/50 shadow-[0_0_30px_rgba(138,115,34,0.1)]">
+                                <div className="flex items-center justify-between mb-6 border-b border-white/5 pb-4">
+                                    <h3 className="font-heading text-xl text-[#d4af37] uppercase tracking-widest">Treasury: {v.name}</h3>
+                                    <Button variant="ghost" size="sm" className="text-white/40 hover:text-white font-sans tracking-widest uppercase text-[10px]" onClick={() => { setWalletBrand(null); setError(""); }}>Abort</Button>
                                 </div>
-                                <div className="mb-4 bg-muted/50 p-4 rounded-md flex justify-between items-center">
-                                    <span className="text-muted-foreground font-medium">Current Balance:</span>
-                                    <span className="text-xl font-bold font-mono">₹{v.wallet_balance?.toLocaleString() || 0}</span>
+                                <div className="mb-6 bg-black/40 border border-white/5 p-5 rounded-sm flex justify-between items-center">
+                                    <span className="text-white/50 font-sans tracking-widest text-[10px] uppercase">Current Reserves:</span>
+                                    <span className="text-2xl text-[#d4af37] font-mono tracking-wider">₹{v.wallet_balance?.toLocaleString() || 0}</span>
                                 </div>
                                 {error && walletBrand?.id === v.id && (
-                                    <div className="mb-4 p-3 rounded-md bg-red-50 text-red-600 text-sm">{error}</div>
+                                    <div className="mb-6 p-3 rounded bg-red-900/20 text-red-400 text-xs border border-red-500/50 font-sans tracking-wider uppercase text-center">{error}</div>
                                 )}
-                                <form onSubmit={handleWalletUpdate} className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="action">Action</Label>
+                                <form onSubmit={handleWalletUpdate} className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                                    <div className="space-y-3">
+                                        <Label htmlFor="action" className="text-white/60 uppercase tracking-widest text-[10px]">Operation</Label>
                                         <select
                                             id="action"
-                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                                            className="h-12 w-full rounded-sm border border-white/10 bg-black/40 px-3 text-white text-xs outline-none focus:border-[#d4af37]/50"
                                             value={walletData.action}
                                             onChange={(e) => setWalletData({ ...walletData, action: e.target.value })}
                                         >
-                                            <option value="add">Add Funds (+)</option>
-                                            <option value="remove">Remove Funds (-)</option>
+                                            <option value="add">Deposit Funds (+)</option>
+                                            <option value="remove">Withdraw Funds (-)</option>
                                         </select>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="amount">Amount (₹)</Label>
+                                    <div className="space-y-3">
+                                        <Label htmlFor="amount" className="text-white/60 uppercase tracking-widest text-[10px]">Capital (₹)</Label>
                                         <Input
                                             id="amount"
                                             type="number"
@@ -507,33 +510,34 @@ export default function AdminBrands() {
                                             value={walletData.amount}
                                             onChange={(e) => setWalletData({ ...walletData, amount: e.target.value })}
                                             required
+                                            className="h-12 bg-white/5 border-white/10 text-white focus:border-[#d4af37]/50"
                                         />
                                     </div>
                                     <div className="flex items-end">
-                                        <Button type="submit" className={`w-full ${walletData.action === 'add' ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'}`} disabled={isSubmitting || !walletData.amount}>
-                                            {isSubmitting ? "Processing..." : walletData.action === 'add' ? "Confirm Add" : "Confirm Remove"}
+                                        <Button type="submit" className={`w-full h-12 font-sans tracking-widest uppercase text-[10px] rounded-sm transition-all ${walletData.action === 'add' ? 'bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/50 hover:bg-[#d4af37]/20' : 'bg-red-900/20 text-red-400 border border-red-500/50 hover:bg-red-900/40'}`} disabled={isSubmitting || !walletData.amount}>
+                                            {isSubmitting ? "Executing..." : walletData.action === 'add' ? "Execute Deposit" : "Execute Withdrawal"}
                                         </Button>
                                     </div>
                                 </form>
                             </Card>
                         ) : (
-                            <Card key={v.id} className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <Card key={v.id} className="p-6 glass-panel border-white/5 hover:border-[#d4af37]/20 transition-colors flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                                 <div>
-                                    <h3 className="font-semibold text-lg">{v.name}</h3>
-                                    <p className="text-sm text-gray-500">{v.email || "No email"} • {v.mobile} • {v.products} products listed{v.category ? ` • ${v.category}` : ""}</p>
-                                    <div className="mt-1 px-2.5 py-0.5 max-w-fit rounded-full bg-green-50 text-green-700 border border-green-200 text-xs font-medium flex items-center gap-1.5">
-                                        <span>Wallet:</span>
-                                        <span className="font-mono font-bold">₹{v.wallet_balance?.toLocaleString() || 0}</span>
-                                        <span className="ml-2 pl-2 border-l border-green-300">Commission:</span>
-                                        <span className="font-mono font-bold">{v.commission || 0}%</span>
+                                    <h3 className="font-heading text-xl text-white tracking-wide">{v.name}</h3>
+                                    <p className="text-xs font-sans tracking-widest text-white/40 uppercase mt-2">{v.email || "No email"} • {v.mobile} • {v.products} Campaigns{v.category ? ` • ${v.category}` : ""}</p>
+                                    <div className="mt-3 px-3 py-1.5 max-w-fit rounded-sm bg-[#d4af37]/5 border border-[#d4af37]/20 text-[#d4af37] text-[10px] uppercase tracking-widest flex items-center gap-2">
+                                        <span>Treasury:</span>
+                                        <span className="font-mono font-bold tracking-wider">₹{v.wallet_balance?.toLocaleString() || 0}</span>
+                                        <span className="ml-3 pl-3 border-l border-[#d4af37]/20">Tax:</span>
+                                        <span className="font-mono font-bold tracking-wider">{v.commission || 0}%</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${v.status === 'active' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800'}`}>
+                                <div className="flex items-center gap-3">
+                                    <span className={`px-3 py-1 text-[9px] uppercase tracking-widest rounded-sm ${v.status === 'active' ? 'bg-white/10 text-white' : 'bg-red-900/20 text-red-400'}`}>
                                         {v.status || "Active"}
                                     </span>
-                                    <Button variant="outline" size="sm" onClick={() => handleEditClick(v)}>Edit</Button>
-                                    <Button variant="secondary" size="sm" className="bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200" onClick={() => { setWalletBrand(v); setError(""); setWalletData({ action: 'add', amount: '' }); }}>Manage Wallet</Button>
+                                    <Button variant="outline" className="h-9 px-4 border-white/10 text-white/70 hover:text-white hover:bg-white/5 font-sans tracking-widest uppercase text-[9px] rounded-sm" onClick={() => handleEditClick(v)}>Modify</Button>
+                                    <Button variant="secondary" className="h-9 px-4 bg-[#d4af37]/10 text-[#d4af37] hover:bg-[#d4af37]/20 border border-[#d4af37]/30 font-sans tracking-widest uppercase text-[9px] rounded-sm" onClick={() => { setWalletBrand(v); setError(""); setWalletData({ action: 'add', amount: '' }); }}>Treasury</Button>
                                 </div>
                             </Card>
                         )

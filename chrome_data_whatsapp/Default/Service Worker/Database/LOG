@@ -1,3 +1,2 @@
-2026/06/04-01:00:59.329 f0768 Reusing MANIFEST /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Service Worker/Database/MANIFEST-000001
-2026/06/04-01:00:59.343 f0768 Recovering log #3
-2026/06/04-01:00:59.343 f0768 Reusing old log /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Service Worker/Database/000003.log 
+2026/06/08-23:19:14.203 65891 Creating DB /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Service Worker/Database since it was missing.
+2026/06/08-23:19:14.207 65891 Reusing MANIFEST /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Service Worker/Database/MANIFEST-000001
