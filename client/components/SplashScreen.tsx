@@ -32,9 +32,7 @@ export function SplashScreen({ children }: { children: React.ReactNode }) {
                             transition={{ duration: 1, ease: "easeOut" }}
                             className="flex flex-col items-center"
                         >
-                            <h1 className="font-sans text-5xl md:text-7xl font-bold tracking-widest text-primary uppercase">
-                                BRMS
-                            </h1>
+                            <img src="/logo.svg" alt="BRMS Logo" className="h-16 md:h-24 w-auto mb-2" />
                             <motion.div 
                                 initial={{ width: 0 }}
                                 animate={{ width: "100%" }}
