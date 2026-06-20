@@ -23,29 +23,29 @@ export function SplashScreen({ children }: { children: React.ReactNode }) {
                         initial={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         transition={{ duration: 0.6, ease: "easeInOut" }}
-                        className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0a0a0a]"
+                        className="fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-white dark:bg-zinc-950"
                     >
-                        {/* Empire / Luxury Vibe Logo Reveal */}
+                        {/* Minimal Vibe Logo Reveal */}
                         <motion.div
                             initial={{ scale: 0.9, opacity: 0, filter: "blur(10px)" }}
                             animate={{ scale: 1, opacity: 1, filter: "blur(0px)" }}
                             transition={{ duration: 1, ease: "easeOut" }}
                             className="flex flex-col items-center"
                         >
-                            <h1 className="font-heading text-5xl md:text-7xl font-bold tracking-widest text-[#d4af37] uppercase">
+                            <h1 className="font-sans text-5xl md:text-7xl font-bold tracking-widest text-primary uppercase">
                                 BRMS
                             </h1>
                             <motion.div 
                                 initial={{ width: 0 }}
                                 animate={{ width: "100%" }}
                                 transition={{ delay: 0.5, duration: 0.8, ease: "easeInOut" }}
-                                className="h-[1px] bg-[#d4af37]/50 mt-4 mb-3"
+                                className="h-[2px] bg-primary/50 mt-4 mb-3"
                             />
                             <motion.p
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.8, duration: 0.5 }}
-                                className="font-sans text-xs tracking-[0.3em] text-[#d4af37]/70 uppercase"
+                                className="font-sans text-xs font-semibold tracking-[0.3em] text-primary/80 uppercase"
                             >
                                 Brand For You
                             </motion.p>

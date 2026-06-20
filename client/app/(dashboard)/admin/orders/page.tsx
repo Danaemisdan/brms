@@ -48,34 +48,34 @@ export default function AdminOrders() {
 
     return (
         <div className="space-y-10 relative z-10">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-b border-white/5 pb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 border-b border-border/5 pb-6">
                 <div>
-                    <h1 className="text-4xl font-heading text-[#d4af37] tracking-wider uppercase">Order Intelligence</h1>
-                    <p className="text-white/40 mt-2 font-sans tracking-wide text-sm">
+                    <h1 className="text-4xl font-sans font-bold text-primary tracking-wider uppercase">Order Intelligence</h1>
+                    <p className="text-foreground/40 mt-2 font-sans tracking-wide text-sm">
                         Real-time feed of all incoming campaign operations.
                     </p>
-                    <p className="text-white/30 text-xs mt-2 font-mono flex items-center gap-2">
+                    <p className="text-foreground/30 text-xs mt-2 font-mono flex items-center gap-2">
                         <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
                         Syncing live with Google Sheets infrastructure
                     </p>
                 </div>
-                <Button variant="outline" className="bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/50 hover:bg-[#d4af37]/20 font-sans tracking-widest uppercase text-xs h-12 px-6 rounded-sm transition-all shadow-[0_0_15px_rgba(212,175,55,0.1)]" onClick={() => window.open(`${API_URL}/api/orders/export?token=brms_export_secret_123`, "_blank")}>
+                <Button variant="outline" className="bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20 font-sans tracking-widest uppercase text-xs h-12 px-6 rounded-sm transition-all shadow-[0_0_15px_rgba(212,175,55,0.1)]" onClick={() => window.open(`${API_URL}/api/orders/export?token=brms_export_secret_123`, "_blank")}>
                     Export Dossier
                 </Button>
             </div>
 
-            <Card className="p-6 mb-8 glass-panel border-white/5">
+            <Card className="p-6 mb-8 glass-panel border-border/5">
                 <div className="flex flex-col md:flex-row gap-4">
                     <div className="flex-1 relative">
                         <Input
                             placeholder="Trace order ID, mobile, or product designation..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="h-12 bg-black/40 border-white/10 text-white placeholder:text-white/30 focus:border-[#d4af37]/50 font-sans tracking-wide"
+                            className="h-12 bg-foreground/40 border-border/10 text-foreground placeholder:text-foreground/30 focus:border-primary/50 font-sans tracking-wide"
                         />
                     </div>
                     <select
-                        className="h-12 w-full md:w-[200px] rounded-sm border border-white/10 bg-black/40 px-3 text-white text-sm font-sans outline-none focus:border-[#d4af37]/50 tracking-wide uppercase"
+                        className="h-12 w-full md:w-[200px] rounded-sm border border-border/10 bg-foreground/40 px-3 text-foreground text-sm font-sans outline-none focus:border-primary/50 tracking-wide uppercase"
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
                     >
@@ -86,7 +86,7 @@ export default function AdminOrders() {
                         <option value="REJECTED">Rejected</option>
                     </select>
                     <select
-                        className="h-12 w-full md:w-[200px] rounded-sm border border-white/10 bg-black/40 px-3 text-white text-sm font-sans outline-none focus:border-[#d4af37]/50 tracking-wide uppercase"
+                        className="h-12 w-full md:w-[200px] rounded-sm border border-border/10 bg-foreground/40 px-3 text-foreground text-sm font-sans outline-none focus:border-primary/50 tracking-wide uppercase"
                         value={dateFilter}
                         onChange={(e) => setDateFilter(e.target.value as DateFilterType)}
                     >
@@ -101,7 +101,7 @@ export default function AdminOrders() {
 
             <div className="space-y-6">
                 {isLoading ? (
-                    <p className="text-center text-[#d4af37]/70 py-12 font-sans tracking-widest text-xs uppercase animate-pulse">Decrypting orders...</p>
+                    <p className="text-center text-primary/70 py-12 font-sans tracking-widest text-xs uppercase animate-pulse">Decrypting orders...</p>
                 ) : (() => {
                     const filteredOrders = orders.filter(order => {
                         const matchesSearch =
@@ -117,23 +117,23 @@ export default function AdminOrders() {
 
                     if (filteredOrders.length === 0) {
                         return (
-                            <Card className="p-12 text-center glass-panel border-white/5">
-                                <p className="text-white/40 font-sans tracking-wide">No operations found matching current parameters.</p>
+                            <Card className="p-12 text-center glass-panel border-border/5">
+                                <p className="text-foreground/40 font-sans tracking-wide">No operations found matching current parameters.</p>
                             </Card>
                         );
                     }
 
                     return filteredOrders.map((order) => (
-                        <Card key={order.id} className="p-6 glass-panel border-[#d4af37]/10 hover:border-[#d4af37]/30 transition-colors flex flex-col md:flex-row md:items-center md:justify-between gap-6 shadow-[0_0_20px_rgba(212,175,55,0.02)]">
+                        <Card key={order.id} className="p-6 glass-panel border-primary/10 hover:border-primary/30 transition-colors flex flex-col md:flex-row md:items-center md:justify-between gap-6 shadow-[0_0_20px_rgba(212,175,55,0.02)]">
                             <div>
-                                <CardTitle className="text-xl font-heading text-[#d4af37] tracking-wide mb-2">
+                                <CardTitle className="text-xl font-sans font-bold text-primary tracking-wide mb-2">
                                     {order.product?.product_name || "Unknown Product"}
                                 </CardTitle>
-                                <CardDescription className="text-white/50 font-sans text-xs tracking-widest uppercase">
-                                    <span className="text-white">{order.user?.name || order.user?.mobile}</span> • {order.product?.platform} • <span className="font-mono text-[#d4af37]/70">{order.order_id}</span> • {new Date(order.created_at).toLocaleDateString()}
+                                <CardDescription className="text-foreground/50 font-sans text-xs tracking-widest uppercase">
+                                    <span className="text-foreground">{order.user?.name || order.user?.mobile}</span> • {order.product?.platform} • <span className="font-mono text-primary/70">{order.order_id}</span> • {new Date(order.created_at).toLocaleDateString()}
                                 </CardDescription>
                                 {order.screenshot_url && order.screenshot_url !== "https://dummyimage.com/600x400/000/fff&text=Order+Screenshot" && (
-                                    <a href={order.screenshot_url} target="_blank" rel="noreferrer" className="text-[10px] text-[#d4af37]/80 hover:text-[#d4af37] tracking-widest uppercase font-sans mt-3 inline-block border-b border-[#d4af37]/30 hover:border-[#d4af37]">Access Intelligence Image</a>
+                                    <a href={order.screenshot_url} target="_blank" rel="noreferrer" className="text-[10px] text-primary/80 hover:text-primary tracking-widest uppercase font-sans mt-3 inline-block border-b border-primary/30 hover:border-primary">Access Intelligence Image</a>
                                 )}
                             </div>
                             <span className={`px-4 py-2 text-[10px] font-sans tracking-widest uppercase rounded-sm border ${
@@ -141,7 +141,7 @@ export default function AdminOrders() {
                                 order.status === 'VALIDATING' ? 'bg-yellow-900/20 text-yellow-500 border-yellow-500/30' :
                                 order.status === 'VALIDATED' ? 'bg-green-900/20 text-green-400 border-green-500/30' :
                                 order.status === 'REJECTED' ? 'bg-red-900/20 text-red-400 border-red-500/30' :
-                                'bg-white/5 text-white/50 border-white/10'
+                                'bg-white/5 text-foreground/50 border-border/10'
                             }`}>
                                 {order.status}
                             </span>

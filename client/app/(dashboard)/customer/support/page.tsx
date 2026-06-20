@@ -129,7 +129,7 @@ export default function CustomerSupport() {
                     <h1 className="text-3xl font-bold tracking-tight text-gray-900">Customer Support</h1>
                     <p className="text-gray-500">Create a ticket to get help with your orders or refunds.</p>
                 </div>
-                <Button onClick={() => setIsCreating(true)} className="bg-blue-600 hover:bg-blue-700 text-white">
+                <Button onClick={() => setIsCreating(true)} className="bg-blue-600 hover:bg-blue-700 text-foreground">
                     Create New Ticket
                 </Button>
             </div>
@@ -194,7 +194,7 @@ export default function CustomerSupport() {
                             </CardContent>
                             <CardFooter className="border-t border-gray-100 p-4 bg-gray-50/30 flex justify-end gap-3">
                                 <Button variant="outline" onClick={() => setIsCreating(false)}>Cancel</Button>
-                                <Button onClick={handleCreateTicket} className="bg-blue-600 hover:bg-blue-700 text-white">Submit Ticket</Button>
+                                <Button onClick={handleCreateTicket} className="bg-blue-600 hover:bg-blue-700 text-foreground">Submit Ticket</Button>
                             </CardFooter>
                         </div>
                     ) : selectedThread ? (
@@ -209,7 +209,7 @@ export default function CustomerSupport() {
                                     selectedThread.messages.map((msg) => (
                                         <div key={msg.id} className={`flex ${msg.from === "customer" ? "justify-end" : "justify-start"}`}>
                                             <div className={`max-w-xs lg:max-w-md px-4 py-2.5 rounded-2xl text-sm shadow-sm ${msg.from === "customer"
-                                                ? "bg-blue-600 text-white rounded-br-sm"
+                                                ? "bg-blue-600 text-foreground rounded-br-sm"
                                                 : "bg-gray-100 text-gray-900 rounded-bl-sm border border-gray-200/50"
                                                 }`}>
                                                 <p className="leading-relaxed">{msg.text}</p>
@@ -227,7 +227,7 @@ export default function CustomerSupport() {
                                         onChange={(e) => setReply(e.target.value)}
                                         className="flex-1 bg-white border-gray-200 focus-visible:ring-blue-500"
                                     />
-                                    <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm">Send</Button>
+                                    <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-foreground shadow-sm">Send</Button>
                                 </form>
                             </div>
                         </>

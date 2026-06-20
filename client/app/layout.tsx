@@ -12,20 +12,24 @@ export const metadata: Metadata = {
   description: "Premium Brand Review Management System",
 };
 
+import { ThemeProvider } from "next-themes";
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-background text-foreground`}
       >
-        <SplashScreen>
-            {children}
-        </SplashScreen>
-        <Toaster position="top-center" richColors theme="dark" />
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <SplashScreen>
+              {children}
+          </SplashScreen>
+          <Toaster position="top-center" richColors />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -147,7 +147,7 @@ function CustomerDashboardContent() {
                             
                             <Card key={product.id} className="overflow-hidden flex flex-col relative rounded-2xl shadow-sm border border-gray-100">
                                 {/* Top Right Cashback Badge */}
-                                <div className="absolute top-4 right-0 z-10 bg-blue-600 text-white font-bold text-xs px-3 py-1.5 rounded-l-lg shadow-sm">
+                                <div className="absolute top-4 right-0 z-10 bg-blue-600 text-foreground font-bold text-xs px-3 py-1.5 rounded-l-lg shadow-sm">
                                     LESS ₹{product.refund_amount} CASHBACK
                                 </div>
                                 
@@ -165,7 +165,7 @@ function CustomerDashboardContent() {
                                         <span className="text-gray-400">No Image</span>
                                     )}
                                     {images.length > 1 && (
-                                        <div className="absolute bottom-2 right-2 bg-black/50 text-white text-[10px] px-2 py-0.5 rounded-full pointer-events-none">
+                                        <div className="absolute bottom-2 right-2 bg-foreground/50 text-foreground text-[10px] px-2 py-0.5 rounded-full pointer-events-none">
                                             {images.length} images (scroll ➡️)
                                         </div>
                                     )}
@@ -215,7 +215,7 @@ function CustomerDashboardContent() {
                                         <a href={product.product_link} target="_blank" rel="noreferrer" className="flex-1">
                                             <Button variant="outline" className="w-full border-blue-200 text-blue-700 hover:bg-blue-50">Buy Now</Button>
                                         </a>
-                                        <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white" onClick={() => openSubmitModal(product)}>Submit ID</Button>
+                                        <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-foreground" onClick={() => openSubmitModal(product)}>Submit ID</Button>
                                     </div>
                                 </CardContent>
                             </Card>

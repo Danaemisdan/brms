@@ -156,24 +156,24 @@ export default function AdminDashboard() {
 
     return (
         <div className="space-y-10 relative z-10">
-            <div className="border-b border-white/5 pb-6">
-                <h1 className="text-4xl font-heading text-[#d4af37] tracking-wider uppercase">Admin Portal</h1>
-                <p className="text-white/40 mt-2 font-sans tracking-wide text-sm">Full command over campaigns, vendors, customers, and financials.</p>
+            <div className="border-b border-border/5 pb-6">
+                <h1 className="text-4xl font-sans font-bold text-primary tracking-wider uppercase">Admin Portal</h1>
+                <p className="text-foreground/40 mt-2 font-sans tracking-wide text-sm">Full command over campaigns, vendors, customers, and financials.</p>
             </div>
 
             {isLoading ? (
-                <p className="text-[#d4af37]/70 py-8 font-sans tracking-widest text-xs uppercase animate-pulse">Loading intelligence...</p>
+                <p className="text-primary/70 py-8 font-sans tracking-widest text-xs uppercase animate-pulse">Loading intelligence...</p>
             ) : (
                 <>
                     {/* Metrics */}
                     <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
                         {metrics.map((m, i) => (
-                            <Card key={i} className="glass-panel hover:bg-white/5 transition-colors border-white/5 shadow-none">
+                            <Card key={i} className="glass-panel hover:bg-white/5 transition-colors border-border/5 shadow-none">
                                 <CardHeader className="pb-2">
-                                    <CardTitle className="text-[10px] font-sans tracking-widest text-white/50 uppercase">{m.label}</CardTitle>
+                                    <CardTitle className="text-[10px] font-sans tracking-widest text-foreground/50 uppercase">{m.label}</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-3xl font-heading text-[#d4af37]">{m.value}</div>
+                                    <div className="text-3xl font-sans font-bold text-primary">{m.value}</div>
                                 </CardContent>
                             </Card>
                         ))}
@@ -181,23 +181,23 @@ export default function AdminDashboard() {
 
                     {/* Pending Vendor Requests */}
                     <div className="space-y-6 pt-6">
-                        <h2 className="text-xl font-heading text-white tracking-widest uppercase border-b border-white/5 pb-4">Pending Authorization</h2>
+                        <h2 className="text-xl font-sans font-bold text-foreground tracking-widest uppercase border-b border-border/5 pb-4">Pending Authorization</h2>
                         {pendingRequests.length === 0 ? (
-                            <p className="text-sm font-sans tracking-wide text-white/40">No pending products require authorization.</p>
+                            <p className="text-sm font-sans tracking-wide text-foreground/40">No pending products require authorization.</p>
                         ) : (
                             pendingRequests.map((req) => (
-                                <Card key={req.id} className="p-6 glass-panel border-[#d4af37]/20 flex flex-col md:flex-row md:items-center md:justify-between gap-6 shadow-[0_0_20px_rgba(212,175,55,0.05)]">
+                                <Card key={req.id} className="p-6 glass-panel border-primary/20 flex flex-col md:flex-row md:items-center md:justify-between gap-6 shadow-[0_0_20px_rgba(212,175,55,0.05)]">
                                     <div>
-                                        <h3 className="font-heading text-xl text-[#d4af37] tracking-wide">{req.product_name}</h3>
-                                        <p className="text-xs font-sans tracking-widest text-white/50 uppercase mt-2">
-                                            By <span className="text-white font-medium">{req.brand}</span> • {req.platform} • {req.total_slots} Slots • ₹{req.refund_amount}/Review
+                                        <h3 className="font-sans font-bold text-xl text-primary tracking-wide">{req.product_name}</h3>
+                                        <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase mt-2">
+                                            By <span className="text-foreground font-medium">{req.brand}</span> • {req.platform} • {req.total_slots} Slots • ₹{req.refund_amount}/Review
                                         </p>
                                     </div>
                                     <div className="flex gap-4">
                                         <Button variant="outline" className="border-red-500/50 text-red-400 hover:bg-red-900/20 hover:text-red-300 font-sans tracking-widest uppercase text-[10px] h-10 px-6 rounded-sm" onClick={() => handleAction(req.id, "decline")}>
                                             Reject
                                         </Button>
-                                        <Button className="bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/50 hover:bg-[#d4af37]/20 font-sans tracking-widest uppercase text-[10px] h-10 px-6 rounded-sm transition-all" onClick={() => handleAction(req.id, "approve")}>
+                                        <Button className="bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20 font-sans tracking-widest uppercase text-[10px] h-10 px-6 rounded-sm transition-all" onClick={() => handleAction(req.id, "approve")}>
                                             Authorize
                                         </Button>
                                     </div>
@@ -208,22 +208,22 @@ export default function AdminDashboard() {
 
                     {/* Action Required: Pending Refunds */}
                     <div className="space-y-6 pt-8">
-                        <h2 className="text-xl font-heading text-white tracking-widest uppercase border-b border-white/5 pb-4">
+                        <h2 className="text-xl font-sans font-bold text-foreground tracking-widest uppercase border-b border-border/5 pb-4">
                             Refunds Escrow ({stats.pendingRefunds})
                         </h2>
                         {pendingRefundOrders.length === 0 ? (
-                            <p className="text-sm font-sans tracking-wide text-white/40">No escrow operations pending.</p>
+                            <p className="text-sm font-sans tracking-wide text-foreground/40">No escrow operations pending.</p>
                         ) : (
                             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                                 {pendingRefundOrders.map((req) => (
                                     <Card key={req.id} className="p-5 glass-panel border-yellow-500/30 bg-yellow-900/5 hover:bg-yellow-900/10 transition-colors">
                                         <CardHeader className="p-0 pb-4">
-                                            <CardTitle className="text-lg font-heading text-yellow-500">Escrow: ₹{req.product?.refund_amount}</CardTitle>
+                                            <CardTitle className="text-lg font-sans font-bold text-yellow-500">Escrow: ₹{req.product?.refund_amount}</CardTitle>
                                         </CardHeader>
                                         <CardContent className="p-0 space-y-3">
-                                            <p className="text-xs font-sans tracking-widest text-white/50 uppercase">Product: <span className="text-white ml-1">{req.product?.product_name}</span></p>
-                                            <p className="text-xs font-sans tracking-widest text-white/50 uppercase">Order ID: <span className="text-white ml-1">{req.order_id}</span></p>
-                                            <p className="text-xs font-sans tracking-widest text-white/50 uppercase">Customer: <span className="text-white ml-1">{req.user?.mobile}</span></p>
+                                            <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase">Product: <span className="text-foreground ml-1">{req.product?.product_name}</span></p>
+                                            <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase">Order ID: <span className="text-foreground ml-1">{req.order_id}</span></p>
+                                            <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase">Customer: <span className="text-foreground ml-1">{req.user?.mobile}</span></p>
                                             <Button className="w-full mt-4 bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 hover:bg-yellow-500/20 font-sans tracking-widest uppercase text-[10px] h-10 rounded-sm" onClick={() => window.location.href = '/admin/refunds'}>
                                                 Process Escrow
                                             </Button>
@@ -236,21 +236,21 @@ export default function AdminDashboard() {
 
                     {/* Recent Order Submissions */}
                     <div className="space-y-6 pt-8 pb-12">
-                        <h2 className="text-xl font-heading text-white tracking-widest uppercase border-b border-white/5 pb-4">Recent Campaign Activity</h2>
+                        <h2 className="text-xl font-sans font-bold text-foreground tracking-widest uppercase border-b border-border/5 pb-4">Recent Campaign Activity</h2>
                         {recentOrders.length === 0 ? (
-                            <p className="text-sm font-sans tracking-wide text-white/40">No recent activity detected.</p>
+                            <p className="text-sm font-sans tracking-wide text-foreground/40">No recent activity detected.</p>
                         ) : (
                             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                                 {recentOrders.map((req) => (
-                                    <Card key={req.id} className="p-5 glass-panel border-[#d4af37]/20 hover:border-[#d4af37]/40 transition-all">
+                                    <Card key={req.id} className="p-5 glass-panel border-primary/20 hover:border-primary/40 transition-all">
                                         <CardHeader className="p-0 pb-4">
-                                            <CardTitle className="text-sm font-sans tracking-widest text-white/70 uppercase">Order: <span className="text-[#d4af37]">{req.order_id}</span></CardTitle>
+                                            <CardTitle className="text-sm font-sans tracking-widest text-foreground/70 uppercase">Order: <span className="text-primary">{req.order_id}</span></CardTitle>
                                         </CardHeader>
                                         <CardContent className="p-0 space-y-3">
-                                            <p className="text-xs font-sans tracking-widest text-white/50 uppercase">Product: <span className="text-white ml-1">{req.product?.product_name}</span></p>
-                                            <p className="text-xs font-sans tracking-widest text-white/50 uppercase">Customer: <span className="text-white ml-1">{req.user?.mobile}</span></p>
-                                            <p className="text-xs font-sans tracking-widest text-white/50 uppercase">Amount: <span className="text-[#d4af37] ml-1">₹{req.amount}</span></p>
-                                            <Button className="w-full mt-4 bg-white/5 text-white/70 border border-white/10 hover:bg-white/10 hover:text-white font-sans tracking-widest uppercase text-[10px] h-10 rounded-sm" onClick={() => window.location.href = '/admin/orders'}>
+                                            <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase">Product: <span className="text-foreground ml-1">{req.product?.product_name}</span></p>
+                                            <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase">Customer: <span className="text-foreground ml-1">{req.user?.mobile}</span></p>
+                                            <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase">Amount: <span className="text-primary ml-1">₹{req.amount}</span></p>
+                                            <Button className="w-full mt-4 bg-white/5 text-foreground/70 border border-border/10 hover:bg-white/10 hover:text-foreground font-sans tracking-widest uppercase text-[10px] h-10 rounded-sm" onClick={() => window.location.href = '/admin/orders'}>
                                                 View Dossier
                                             </Button>
                                         </CardContent>

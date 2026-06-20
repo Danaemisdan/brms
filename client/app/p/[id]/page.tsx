@@ -86,8 +86,8 @@ export default function ProductCampaignPage() {
             <div className="max-w-2xl w-full space-y-8">
                 {/* Product Header */}
                 <Card className="overflow-hidden border-0 shadow-lg">
-                    <div className="bg-blue-600 p-8 text-white">
-                        <Badge variant="outline" className="text-white border-white mb-4">
+                    <div className="bg-blue-600 p-8 text-foreground">
+                        <Badge variant="outline" className="text-foreground border-border mb-4">
                             {product.platform}
                         </Badge>
                         <h1 className="text-3xl font-bold mb-2">{product.product_name}</h1>
@@ -126,7 +126,7 @@ export default function ProductCampaignPage() {
                             <h3 className="text-lg font-semibold mb-2">Want to participate and earn a full refund?</h3>
                             <p className="text-sm text-gray-500 mb-6">You need an account to join campaigns, submit order proofs, and claim your refund.</p>
                             <Button
-                                className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700 text-white"
+                                className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700 text-foreground"
                                 onClick={() => router.push('/login')}
                             >
                                 Login or Register to Participate

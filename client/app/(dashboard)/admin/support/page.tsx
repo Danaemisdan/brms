@@ -137,7 +137,7 @@ export default function AdminSupport() {
                                     selectedThread.messages.map((msg) => (
                                         <div key={msg.id} className={`flex ${msg.from === "admin" ? "justify-end" : "justify-start"}`}>
                                             <div className={`max-w-xs lg:max-w-md px-4 py-2.5 rounded-2xl text-sm shadow-sm ${msg.from === "admin"
-                                                ? "bg-blue-600 text-white rounded-br-sm"
+                                                ? "bg-blue-600 text-foreground rounded-br-sm"
                                                 : "bg-gray-100 text-gray-900 rounded-bl-sm border border-gray-200/50"
                                                 }`}>
                                                 <p className="leading-relaxed">{msg.text}</p>
@@ -155,7 +155,7 @@ export default function AdminSupport() {
                                         onChange={(e) => setReply(e.target.value)}
                                         className="flex-1 bg-white border-gray-200 focus-visible:ring-blue-500"
                                     />
-                                    <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm">Send</Button>
+                                    <Button type="submit" className="bg-blue-600 hover:bg-blue-700 text-foreground shadow-sm">Send</Button>
                                 </form>
                             </div>
                         </>

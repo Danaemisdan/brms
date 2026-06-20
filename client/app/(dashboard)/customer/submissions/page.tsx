@@ -520,7 +520,7 @@ function CustomerSubmissionsContent() {
 
                             <DialogFooter className="mt-6">
                                 <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => setIsRefundModalOpen(false)}>Back</Button>
-                                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white">
+                                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-foreground">
                                     {isSubmitting ? "Submitting..." : "Apply for Refund"}
                                 </Button>
                             </DialogFooter>

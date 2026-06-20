@@ -265,7 +265,7 @@ export default function CustomerPaymentInfo() {
                             type="submit"
                             form="payment-form"
                             disabled={isLoading}
-                            className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm px-8"
+                            className="bg-blue-600 hover:bg-blue-700 text-foreground shadow-sm px-8"
                         >
                             {isLoading ? "Saving details..." : "Save All Payment Details"}
                         </Button>
