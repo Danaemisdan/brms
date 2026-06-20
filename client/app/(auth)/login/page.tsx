@@ -156,24 +156,25 @@ function LoginComponent() {
 
     if (resetToken) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-                <Card className="w-full max-w-md shadow-lg border-0">
+            <div className="min-h-screen flex items-center justify-center bg-background px-4 relative overflow-hidden">
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#d4af37]/5 rounded-full blur-[120px] pointer-events-none" />
+                <Card className="w-full max-w-md glass-panel">
                     <CardHeader className="text-center pb-6">
-                        <CardTitle className="text-2xl font-bold">Reset Password</CardTitle>
+                        <CardTitle className="text-2xl font-heading text-[#d4af37] tracking-widest uppercase">Reset Password</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        {error && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded">{error}</div>}
-                        {successMsg && <div className="mb-4 p-3 bg-green-50 text-green-600 rounded">{successMsg}</div>}
+                        {error && <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 text-red-400 text-xs rounded uppercase tracking-wider">{error}</div>}
+                        {successMsg && <div className="mb-4 p-3 bg-green-900/20 border border-green-500/50 text-green-400 text-xs rounded uppercase tracking-wider">{successMsg}</div>}
                         <form onSubmit={handleResetPassword} className="space-y-4">
                             <div className="space-y-2">
-                                <Label>New Password</Label>
-                                <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">New Password</Label>
+                                <Input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required className="bg-white/5 border-white/10 text-white focus:border-[#d4af37]/50" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Confirm Password</Label>
-                                <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Confirm Password</Label>
+                                <Input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required className="bg-white/5 border-white/10 text-white focus:border-[#d4af37]/50" />
                             </div>
-                            <Button className="w-full" type="submit" disabled={isLoading}>{isLoading ? "Resetting..." : "Reset Password"}</Button>
+                            <Button className="w-full bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/50 hover:bg-[#d4af37]/20 transition-all uppercase tracking-[0.2em] text-xs h-12" type="submit" disabled={isLoading}>{isLoading ? "Resetting..." : "Reset Password"}</Button>
                         </form>
                     </CardContent>
                 </Card>
@@ -183,22 +184,23 @@ function LoginComponent() {
 
     if (isForgotPassword) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-                <Card className="w-full max-w-md shadow-lg border-0">
+            <div className="min-h-screen flex items-center justify-center bg-background px-4 relative overflow-hidden">
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#d4af37]/5 rounded-full blur-[120px] pointer-events-none" />
+                <Card className="w-full max-w-md glass-panel">
                     <CardHeader className="text-center pb-6">
-                        <CardTitle className="text-2xl font-bold">Forgot Password</CardTitle>
-                        <CardDescription>Enter your email to receive a reset link.</CardDescription>
+                        <CardTitle className="text-2xl font-heading text-[#d4af37] tracking-widest uppercase">Forgot Password</CardTitle>
+                        <CardDescription className="text-white/40 font-sans text-xs tracking-wider">Enter your email to receive a reset link.</CardDescription>
                     </CardHeader>
                     <CardContent>
-                        {error && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded">{error}</div>}
-                        {successMsg && <div className="mb-4 p-3 bg-green-50 text-green-600 rounded">{successMsg}</div>}
+                        {error && <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 text-red-400 text-xs rounded uppercase tracking-wider">{error}</div>}
+                        {successMsg && <div className="mb-4 p-3 bg-green-900/20 border border-green-500/50 text-green-400 text-xs rounded uppercase tracking-wider">{successMsg}</div>}
                         <form onSubmit={handleForgotPassword} className="space-y-4">
                             <div className="space-y-2">
-                                <Label>Email</Label>
-                                <Input type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} required />
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Email</Label>
+                                <Input type="email" value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} required className="bg-white/5 border-white/10 text-white focus:border-[#d4af37]/50" />
                             </div>
-                            <Button className="w-full bg-gray-900" type="submit" disabled={isLoading}>{isLoading ? "Sending..." : "Send Reset Link"}</Button>
-                            <Button type="button" variant="ghost" className="w-full mt-2" onClick={() => setIsForgotPassword(false)}>Back to Login</Button>
+                            <Button className="w-full bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/50 hover:bg-[#d4af37]/20 transition-all uppercase tracking-[0.2em] text-xs h-12" type="submit" disabled={isLoading}>{isLoading ? "Sending..." : "Send Reset Link"}</Button>
+                            <Button type="button" variant="ghost" className="w-full mt-2 text-white/40 hover:text-white uppercase tracking-widest text-[10px]" onClick={() => setIsForgotPassword(false)}>Back to Login</Button>
                         </form>
                     </CardContent>
                 </Card>
@@ -207,43 +209,49 @@ function LoginComponent() {
     }
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-            <Card className="w-full max-w-md shadow-lg border-0">
-                <CardHeader className="space-y-4 text-center pb-6">
-                    <div className="flex justify-center w-full">
-                        <img src="/logo.svg" alt="BRMS Logo" className="h-16 w-auto" />
+        <div className="min-h-screen flex items-center justify-center bg-background px-4 relative overflow-hidden">
+            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#d4af37]/5 rounded-full blur-[120px] pointer-events-none" />
+            
+            <Card className="w-full max-w-md glass-panel">
+                <CardHeader className="space-y-6 text-center pb-8 pt-8">
+                    <div className="flex flex-col items-center justify-center w-full">
+                        <h2 className="font-heading text-4xl font-bold tracking-widest text-[#d4af37] uppercase">
+                            BRMS
+                        </h2>
+                        <div className="h-[1px] w-16 bg-[#d4af37]/50 mt-2 mb-1" />
+                        <p className="font-sans text-[9px] tracking-[0.3em] text-[#d4af37]/70 uppercase">Brand For You</p>
                     </div>
                     <div>
-                        <CardTitle className="text-3xl font-extrabold tracking-tight">Welcome Back</CardTitle>
-                        <CardDescription className="text-gray-500 mt-2">
-                            Sign in to your BRMS account
+                        <CardTitle className="text-xl font-heading text-white tracking-widest uppercase">Portal Access</CardTitle>
+                        <CardDescription className="text-white/40 mt-3 font-sans text-xs tracking-wider">
+                            Provide your credentials to enter
                         </CardDescription>
                     </div>
                 </CardHeader>
                 <CardContent>
                     {error && (
-                        <div className="mb-4 p-3 rounded-lg bg-red-50 text-red-600 text-sm border border-red-100 font-medium">
+                        <div className="mb-6 p-3 rounded bg-red-900/20 text-red-400 text-xs border border-red-500/50 font-sans tracking-wider uppercase text-center">
                             {error}
                         </div>
                     )}
 
-                    <form onSubmit={handleLogin} className="space-y-5">
-                        <div className="space-y-2">
-                            <Label htmlFor="identifier" className="font-semibold text-gray-700">Mobile Number or Email</Label>
+                    <form onSubmit={handleLogin} className="space-y-6">
+                        <div className="space-y-3">
+                            <Label htmlFor="identifier" className="text-white/60 uppercase tracking-widest text-[10px]">Identification</Label>
                             <Input
                                 id="identifier"
                                 type="text"
-                                placeholder="Enter mobile or email"
+                                placeholder="Email or Mobile"
                                 value={identifier}
-                                className="h-12"
+                                className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans"
                                 onChange={(e) => setIdentifier(e.target.value)}
                                 required
                             />
                         </div>
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                             <div className="flex items-center justify-between">
-                                <Label htmlFor="password" className="font-semibold text-gray-700">Password</Label>
-                                <button type="button" onClick={() => setIsForgotPassword(true)} className="text-sm font-semibold text-blue-600 hover:underline">Forgot password?</button>
+                                <Label htmlFor="password" className="text-white/60 uppercase tracking-widest text-[10px]">Passcode</Label>
+                                <button type="button" onClick={() => setIsForgotPassword(true)} className="text-[10px] tracking-widest uppercase text-[#d4af37]/70 hover:text-[#d4af37] transition-colors">Recover</button>
                             </div>
                             <div className="relative">
                                 <Input
@@ -251,33 +259,33 @@ function LoginComponent() {
                                     type={showPassword ? "text" : "password"}
                                     placeholder="••••••••"
                                     value={password}
-                                    className="h-12 pr-10"
+                                    className="h-12 pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans"
                                     onChange={(e) => setPassword(e.target.value)}
                                     required
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+                                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-white/30 hover:text-[#d4af37] transition-colors focus:outline-none"
                                 >
                                     {showPassword ? (
-                                        <EyeOff className="h-5 w-5" aria-hidden="true" />
+                                        <EyeOff className="h-4 w-4" aria-hidden="true" />
                                     ) : (
-                                        <Eye className="h-5 w-5" aria-hidden="true" />
+                                        <Eye className="h-4 w-4" aria-hidden="true" />
                                     )}
                                 </button>
                             </div>
                         </div>
-                        <Button className="w-full h-12 text-lg font-semibold tracking-wide rounded-xl shadow-md bg-gray-900 hover:bg-gray-800" type="submit" disabled={isLoading}>
-                            {isLoading ? "Signing in..." : "Sign In"}
+                        <Button className="w-full h-14 mt-4 text-xs font-sans uppercase tracking-[0.2em] rounded-sm bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/50 hover:bg-[#d4af37]/20 transition-all" type="submit" disabled={isLoading}>
+                            {isLoading ? "Authenticating..." : "Authorize"}
                         </Button>
                     </form>
                 </CardContent>
-                <CardFooter className="flex justify-center border-t py-6 bg-gray-50/50 rounded-b-xl">
-                    <p className="text-sm text-gray-500">
-                        New Customer?{" "}
-                        <Link href={returnUrl ? `/register?returnUrl=${encodeURIComponent(returnUrl)}` : "/register"} className="text-blue-600 font-semibold hover:underline">
-                            Register Here
+                <CardFooter className="flex justify-center border-t border-white/5 py-6 bg-black/20">
+                    <p className="text-[10px] text-white/40 uppercase tracking-widest font-sans">
+                        New Client?{" "}
+                        <Link href={returnUrl ? `/register?returnUrl=${encodeURIComponent(returnUrl)}` : "/register"} className="text-[#d4af37]/80 hover:text-[#d4af37] transition-colors ml-1">
+                            Inquire Here
                         </Link>
                     </p>
                 </CardFooter>

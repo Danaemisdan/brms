@@ -1,9 +1,33 @@
-2026/06/04-01:00:59.425 f07a5 Reusing MANIFEST /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Local Storage/leveldb/MANIFEST-000001
-2026/06/04-01:00:59.431 f07a5 Recovering log #43
-2026/06/04-01:00:59.431 f07a5 Reusing old log /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Local Storage/leveldb/000043.log 
-2026/06/04-04:51:23.058 f07ad Level-0 table #47: started
-2026/06/04-04:51:23.072 f07ad Level-0 table #47: 14294 bytes OK
-2026/06/04-04:51:23.096 f07ad Delete type=0 #43
-2026/06/04-13:01:49.631 f07ad Level-0 table #49: started
-2026/06/04-13:01:49.637 f07ad Level-0 table #49: 13347 bytes OK
-2026/06/04-13:01:49.644 f07ad Delete type=0 #46
+2026/06/08-23:19:05.005 658e5 Reusing MANIFEST /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Local Storage/leveldb/MANIFEST-000001
+2026/06/08-23:19:05.008 658e5 Recovering log #3
+2026/06/08-23:19:05.008 658e5 Reusing old log /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Local Storage/leveldb/000003.log 
+2026/06/09-00:36:19.536 658e8 Level-0 table #5: started
+2026/06/09-00:36:19.543 658e8 Level-0 table #5: 17953 bytes OK
+2026/06/09-00:36:19.572 658e8 Delete type=0 #3
+2026/06/09-08:15:52.713 658e8 Level-0 table #7: started
+2026/06/09-08:15:52.741 658e8 Level-0 table #7: 13529 bytes OK
+2026/06/09-08:15:52.748 658e8 Delete type=0 #4
+2026/06/09-09:01:06.865 658e8 Level-0 table #9: started
+2026/06/09-09:01:06.870 658e8 Level-0 table #9: 14510 bytes OK
+2026/06/09-09:01:06.874 658e8 Delete type=0 #6
+2026/06/09-09:02:21.724 658e8 Level-0 table #11: started
+2026/06/09-09:02:21.727 658e8 Level-0 table #11: 14285 bytes OK
+2026/06/09-09:02:21.729 658e8 Delete type=0 #8
+2026/06/09-12:50:40.397 658e8 Level-0 table #13: started
+2026/06/09-12:50:40.405 658e8 Level-0 table #13: 12976 bytes OK
+2026/06/09-12:50:40.432 658e8 Delete type=0 #10
+2026/06/09-16:09:01.185 658e8 Level-0 table #15: started
+2026/06/09-16:09:01.192 658e8 Level-0 table #15: 14864 bytes OK
+2026/06/09-16:09:01.196 658e8 Delete type=0 #12
+2026/06/09-16:09:01.199 658e8 Compacting 4@0 + 1@1 files
+2026/06/09-16:09:01.207 658e8 Generated table #16@0: 98 keys, 6876 bytes
+2026/06/09-16:09:01.207 658e8 Compacted 4@0 + 1@1 files => 6876 bytes
+2026/06/09-16:09:01.208 658e8 compacted to: files[ 0 1 1 0 0 0 0 ]
+2026/06/09-16:09:01.209 658e8 Delete type=2 #15
+2026/06/09-16:09:01.209 658e8 Delete type=2 #7
+2026/06/09-16:09:01.209 658e8 Delete type=2 #13
+2026/06/09-16:09:01.209 658e8 Delete type=2 #11
+2026/06/09-16:09:01.209 658e8 Delete type=2 #9
+2026/06/10-23:42:30.485 658e8 Level-0 table #18: started
+2026/06/10-23:42:30.488 658e8 Level-0 table #18: 17095 bytes OK
+2026/06/10-23:42:30.500 658e8 Delete type=0 #14

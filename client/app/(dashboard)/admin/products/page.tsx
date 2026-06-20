@@ -430,27 +430,31 @@ export default function AdminProducts() {
     };
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="space-y-10 relative z-10">
+            <div className="flex items-center justify-between border-b border-white/5 pb-6">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Manage Products</h1>
-                    <p className="text-gray-500">Add, edit, or deactivate product campaigns.</p>
+                    <h1 className="text-4xl font-heading text-[#d4af37] tracking-wider uppercase">Manage Campaigns</h1>
+                    <p className="text-white/40 mt-2 font-sans tracking-wide text-sm">Deploy and orchestrate product intelligence operations.</p>
                 </div>
                 <Button onClick={() => {
                     if (showForm) resetForm();
                     else setShowForm(true);
-                }} className="text-white">{showForm ? "Cancel" : "Add New Product"}</Button>
+                }} className="bg-[#d4af37]/10 text-[#d4af37] border border-[#d4af37]/50 hover:bg-[#d4af37]/20 font-sans tracking-widest uppercase text-xs h-12 px-6 rounded-sm transition-all shadow-[0_0_15px_rgba(212,175,55,0.1)]">
+                    {showForm ? "Abort Operation" : "Deploy New Campaign"}
+                </Button>
             </div>
 
             {showForm && (
-                <Card>
-                    <CardHeader><CardTitle>{editingId ? "Edit Product" : "New Product"}</CardTitle></CardHeader>
+                <Card className="glass-panel border-[#d4af37]/30 shadow-[0_0_30px_rgba(212,175,55,0.05)]">
+                    <CardHeader className="border-b border-white/5 pb-4 mb-4">
+                        <CardTitle className="text-xl font-heading text-white tracking-widest uppercase">{editingId ? "Modify Operation Parameter" : "Initialize Operation Dossier"}</CardTitle>
+                    </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2">
                             <div className="space-y-2 md:col-span-2">
-                                <Label>Brand / Vendor <span className="text-red-500">*</span></Label>
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Brand / Vendor <span className="text-red-500">*</span></Label>
                                 <select
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    className="h-12 w-full rounded-sm border border-white/10 bg-black/40 px-3 text-white text-sm font-sans outline-none focus:border-[#d4af37]/50"
                                     value={form.brand}
                                     onChange={e => setForm({ ...form, brand: e.target.value })}
                                     required
@@ -462,10 +466,10 @@ export default function AdminProducts() {
                                 </select>
                             </div>
                             <div className="space-y-2 md:col-span-2">
-                                <Label>Type of Deal <span className="text-red-500">*</span></Label>
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Type of Deal <span className="text-red-500">*</span></Label>
                                 <div className="flex flex-wrap gap-2 mt-2">
                                     {["Only Order", "Rating Deal", "Review Deal", "Seller Feedback Deal"].map(type => (
-                                        <label key={type} className="flex items-center space-x-2 bg-gray-50 border px-3 py-2 rounded-md cursor-pointer hover:bg-gray-100">
+                                        <label key={type} className="flex items-center space-x-2 bg-white/5 border-white/10 text-white px-3 py-2 rounded-md cursor-pointer hover:bg-white/10 hover:border-[#d4af37]/50">
                                             <input
                                                 type="checkbox"
                                                 checked={form.deal_type.includes(type)}
@@ -484,11 +488,11 @@ export default function AdminProducts() {
                                 </div>
                             </div>
                             <div className="space-y-2 md:col-span-2">
-                                <Label>Product Name <span className="text-red-500">*</span></Label>
-                                <Input placeholder="e.g., Wireless Mouse" required value={form.product_name} onChange={e => setForm({ ...form, product_name: e.target.value })} />
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Product Name <span className="text-red-500">*</span></Label>
+                                <Input placeholder="e.g., Wireless Mouse" required value={form.product_name} onChange={e => setForm({ ...form, product_name: e.target.value })} className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" />
                             </div>
                             <div className="space-y-2 md:col-span-2">
-                                <Label>Product Images (Up to 6) {!editingId && <span className="text-red-500">*</span>}</Label>
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Product Images (Up to 6) {!editingId && <span className="text-red-500">*</span>}</Label>
                                 <MultiImageDropzone
                                     onFilesAdded={handleImageChange}
                                     disabled={existingImages.length + imageFiles.length >= 6}
@@ -497,7 +501,7 @@ export default function AdminProducts() {
                                 />
                                 {existingImages.length > 0 && (
                                     <div className="flex flex-col mt-2 gap-1">
-                                        <p className="text-xs text-gray-500">Current Images:</p>
+                                        <p className="text-xs text-white/50">Current Images:</p>
                                         <div className="flex gap-2 overflow-x-auto p-2 bg-gray-50 rounded border">
                                             {existingImages.map((src, idx) => {
                                                 const displaySrc = getImageUrl(src);
@@ -519,7 +523,7 @@ export default function AdminProducts() {
                                 )}
                                 {imagePreviews.length > 0 && (
                                     <div className="flex flex-col mt-2 gap-1">
-                                        <p className="text-xs text-blue-500">New Uploads:</p>
+                                        <p className="text-xs text-[#d4af37]">New Uploads:</p>
                                         <div className="flex gap-2 overflow-x-auto p-2 bg-blue-50 rounded border border-blue-100">
                                             {imagePreviews.map((src, idx) => (
                                                 <div key={`new-${idx}`} className="relative group shrink-0">
@@ -538,13 +542,13 @@ export default function AdminProducts() {
                                 )}
                             </div>
                             <div className="space-y-2 md:col-span-2">
-                                <Label>Affiliate / Product Link <span className="text-red-500">*</span></Label>
-                                <Input placeholder="https://amazon.in/dp/B000000000?tag=my-affiliate" required value={form.product_link} onChange={e => setForm({ ...form, product_link: e.target.value })} />
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Affiliate / Product Link <span className="text-red-500">*</span></Label>
+                                <Input placeholder="https://amazon.in/dp/B000000000?tag=my-affiliate" required value={form.product_link} onChange={e => setForm({ ...form, product_link: e.target.value })} className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Platform <span className="text-red-500">*</span></Label>
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Platform <span className="text-red-500">*</span></Label>
                                 <select
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    className="h-12 w-full rounded-sm border border-white/10 bg-black/40 px-3 text-white text-sm font-sans outline-none focus:border-[#d4af37]/50"
                                     value={form.platform}
                                     onChange={e => setForm({ ...form, platform: e.target.value })}
                                 >
@@ -554,29 +558,29 @@ export default function AdminProducts() {
                                 </select>
                             </div>
                             <div className="space-y-2">
-                                <Label>Real Price (₹) <span className="text-red-500">*</span></Label>
-                                <Input type="number" placeholder="Original MRP" required min="0" value={form.real_price} onChange={e => setForm({ ...form, real_price: e.target.value })} />
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Real Price (₹) <span className="text-red-500">*</span></Label>
+                                <Input type="number" placeholder="Original MRP" required min="0" value={form.real_price} onChange={e => setForm({ ...form, real_price: e.target.value })} className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Offer Price (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
-                                <Input type="number" placeholder="Discounted Price" min="0" value={form.offer_price} onChange={e => setForm({ ...form, offer_price: e.target.value })} />
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Offer Price (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
+                                <Input type="number" placeholder="Discounted Price" min="0" value={form.offer_price} onChange={e => setForm({ ...form, offer_price: e.target.value })} className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Refund Amount (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
-                                <Input type="number" placeholder="1000" min="0" value={form.refund_amount} onChange={e => setForm({ ...form, refund_amount: e.target.value })} />
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Refund Amount (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
+                                <Input type="number" placeholder="1000" min="0" value={form.refund_amount} onChange={e => setForm({ ...form, refund_amount: e.target.value })} className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Deal End Date <span className="text-red-500">*</span></Label>
-                                <Input type="date" required value={form.deadline} onChange={e => setForm({ ...form, deadline: e.target.value })} />
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Deal End Date <span className="text-red-500">*</span></Label>
+                                <Input type="date" required value={form.deadline} onChange={e => setForm({ ...form, deadline: e.target.value })} className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Total Slots <span className="text-red-500">*</span></Label>
-                                <Input type="number" placeholder="50" required min="1" value={form.total_slots} onChange={e => setForm({ ...form, total_slots: e.target.value })} />
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Total Slots <span className="text-red-500">*</span></Label>
+                                <Input type="number" placeholder="50" required min="1" value={form.total_slots} onChange={e => setForm({ ...form, total_slots: e.target.value })} className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-[#d4af37]/50 font-sans" />
                             </div>
                             <div className="space-y-2">
-                                <Label>Visibility <span className="text-red-500">*</span></Label>
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Visibility <span className="text-red-500">*</span></Label>
                                 <select
-                                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                    className="h-12 w-full rounded-sm border border-white/10 bg-black/40 px-3 text-white text-sm font-sans outline-none focus:border-[#d4af37]/50"
                                     value={form.is_public ? "true" : "false"}
                                     onChange={e => setForm({ ...form, is_public: e.target.value === "true" })}
                                 >
@@ -590,14 +594,14 @@ export default function AdminProducts() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label>Target Audience (Select multiple)</Label>
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Target Audience (Select multiple)</Label>
                                 <div className="flex flex-wrap gap-2 mt-2">
                                     {[
                                         { id: "all_customers", label: "All Registered Customers" },
                                         { id: "verified_customers", label: "Verified Customers" },
                                         { id: "custom", label: "Custom (Select specific groups or numbers)" }
                                     ].map(option => (
-                                        <label key={option.id} className="flex items-center space-x-2 bg-gray-50 border px-3 py-2 rounded-md cursor-pointer hover:bg-gray-100">
+                                        <label key={option.id} className="flex items-center space-x-2 bg-white/5 border-white/10 text-white px-3 py-2 rounded-md cursor-pointer hover:bg-white/10 hover:border-[#d4af37]/50">
                                             <input
                                                 type="checkbox"
                                                 checked={form.wa_target.includes(option.id)}
@@ -616,11 +620,11 @@ export default function AdminProducts() {
                                 </div>
                             </div>
 
-                            <div className="space-y-4 md:col-span-2 p-4 bg-gray-50 border rounded-lg mt-2 mb-4">
+                            <div className="space-y-4 md:col-span-2 p-4 bg-white/5 border-white/10 text-white rounded-lg mt-2 mb-4">
                                 <h4 className="font-medium">Scheduling & Automation</h4>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                     <div className="space-y-2">
-                                        <Label>Start Date (Optional)</Label>
+                                        <Label className="text-white/60 uppercase tracking-widest text-[10px]">Start Date (Optional)</Label>
                                         <Input
                                             type="date"
                                             value={form.wa_start_date}
@@ -628,7 +632,7 @@ export default function AdminProducts() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>End Date (Optional)</Label>
+                                        <Label className="text-white/60 uppercase tracking-widest text-[10px]">End Date (Optional)</Label>
                                         <Input
                                             type="date"
                                             value={form.wa_end_date}
@@ -636,9 +640,9 @@ export default function AdminProducts() {
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <Label>Times per Day</Label>
+                                        <Label className="text-white/60 uppercase tracking-widest text-[10px]">Times per Day</Label>
                                         <select
-                                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                                            className="h-12 w-full rounded-sm border border-white/10 bg-black/40 px-3 text-white text-sm font-sans outline-none focus:border-[#d4af37]/50"
                                             value={form.wa_times_per_day}
                                             onChange={(e) => setForm({ ...form, wa_times_per_day: e.target.value })}
                                         >
@@ -648,7 +652,7 @@ export default function AdminProducts() {
                                         </select>
                                     </div>
                                     <div className="space-y-2 mt-auto">
-                                        <Label>Attachment Image</Label>
+                                        <Label className="text-white/60 uppercase tracking-widest text-[10px]">Attachment Image</Label>
                                         <div className="flex items-center gap-2">
                                             <Input
                                                 type="file"
@@ -678,7 +682,7 @@ export default function AdminProducts() {
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="space-y-2">
-                                        <Label>Time 1</Label>
+                                        <Label className="text-white/60 uppercase tracking-widest text-[10px]">Time 1</Label>
                                         <Input
                                             type="time"
                                             value={form.wa_time_1}
@@ -687,7 +691,7 @@ export default function AdminProducts() {
                                     </div>
                                     {Number(form.wa_times_per_day) >= 2 && (
                                         <div className="space-y-2">
-                                            <Label>Time 2</Label>
+                                            <Label className="text-white/60 uppercase tracking-widest text-[10px]">Time 2</Label>
                                             <Input
                                                 type="time"
                                                 value={form.wa_time_2}
@@ -697,7 +701,7 @@ export default function AdminProducts() {
                                     )}
                                     {Number(form.wa_times_per_day) >= 3 && (
                                         <div className="space-y-2">
-                                            <Label>Time 3</Label>
+                                            <Label className="text-white/60 uppercase tracking-widest text-[10px]">Time 3</Label>
                                             <Input
                                                 type="time"
                                                 value={form.wa_time_3}
@@ -709,22 +713,22 @@ export default function AdminProducts() {
                             </div>
 
                             {form.wa_target.includes("custom") && (
-                                <div className="space-y-2 md:col-span-2 p-4 bg-gray-50 border rounded-lg">
-                                    <Label>Phone Numbers or Group Names <span className="text-red-500">*</span></Label>
+                                <div className="space-y-2 md:col-span-2 p-4 bg-white/5 border-white/10 text-white rounded-lg">
+                                    <Label className="text-white/60 uppercase tracking-widest text-[10px]">Phone Numbers or Group Names <span className="text-red-500">*</span></Label>
                                     <Textarea
                                         className="font-mono text-sm min-h-[80px]"
                                         placeholder="e.g. 919876543210, +1 555-0100, Freebie Reviewers Group"
                                         value={form.wa_custom_phones}
                                         onChange={(e) => setForm({ ...form, wa_custom_phones: e.target.value })}
                                     />
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-xs text-white/50">
                                         Enter comma-separated phone numbers or exact WhatsApp group names. The local agent will automatically search for and message each one.
                                     </p>
                                 </div>
                             )}
 
                             <div className="space-y-2 md:col-span-2">
-                                <Label>Message Template</Label>
+                                <Label className="text-white/60 uppercase tracking-widest text-[10px]">Message Template</Label>
                                 <div className="flex flex-wrap gap-2 mb-2">
                                     {['product_name', 'platform', 'real_price', 'offer_price', 'refund_amount', 'available_slots', 'product_link', 'deadline'].map(v => (
                                         <button
@@ -742,7 +746,7 @@ export default function AdminProducts() {
                                     value={form.wa_template}
                                     onChange={(e) => setForm({ ...form, wa_template: e.target.value })}
                                 />
-                                <p className="text-xs text-gray-500 mb-2">
+                                <p className="text-xs text-white/50 mb-2">
                                     You can blast this natively via "Chat on WhatsApp" from the product list table. If dates are set, it will automatically fire in the background according to the times specified.
                                 </p>
                             </div>
@@ -792,11 +796,11 @@ export default function AdminProducts() {
                         });
 
                         if (filteredProducts.length === 0) {
-                            return <p className="text-gray-500 text-center py-8">{products.length === 0 ? "No products listed yet." : "No products found matching your filters."}</p>;
+                            return <p className="text-white/50 text-center py-8">{products.length === 0 ? "No products listed yet." : "No products found matching your filters."}</p>;
                         }
 
                         return filteredProducts.map((p) => (
-                            <Card key={p.id} className="p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <Card key={p.id} className="p-6 glass-panel border-[#d4af37]/20 hover:border-[#d4af37]/40 transition-colors flex flex-col md:flex-row md:items-center md:justify-between gap-6 shadow-[0_0_20px_rgba(212,175,55,0.02)]">
                                 <div className="flex items-center gap-4">
                                     {(() => {
                                         let firstImg = "";
@@ -828,12 +832,12 @@ export default function AdminProducts() {
                                                 </span>
                                             )}
                                         </h3>
-                                        <p className="text-sm text-gray-500">{p.platform} • ₹{p.refund_amount}/review • Ends {new Date(p.deadline).toLocaleDateString()}</p>
-                                        <p className="text-sm text-gray-500 mt-1">Slots: {p.filled_slots}/{p.total_slots} filled</p>
+                                        <p className="text-sm text-white/50">{p.platform} • ₹{p.refund_amount}/review • Ends {new Date(p.deadline).toLocaleDateString()}</p>
+                                        <p className="text-sm text-white/50 mt-1">Slots: {p.filled_slots}/{p.total_slots} filled</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${p.status === "ACTIVE" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-500"}`}>
+                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${p.status === "ACTIVE" ? "bg-green-100 text-green-800" : "bg-gray-100 text-white/50"}`}>
                                         {p.status}
                                     </span>
                                     {p.status === "REQUESTED" ? (
@@ -888,7 +892,7 @@ export default function AdminProducts() {
                             </div>
 
                             <div className="space-y-4">
-                                <div className="space-y-2 p-4 bg-gray-50 border rounded-lg">
+                                <div className="space-y-2 p-4 bg-white/5 border-white/10 text-white rounded-lg">
                                     <h4 className="font-medium text-sm text-gray-700">Message Preview</h4>
                                     <Textarea 
                                         className="min-h-[200px] whitespace-pre-wrap font-mono text-sm bg-white p-3 border rounded text-gray-800"
@@ -897,12 +901,12 @@ export default function AdminProducts() {
                                     />
                                     {selectedWaProduct.wa_attachment_url && (
                                         <div className="mt-2">
-                                            <p className="text-xs text-gray-500 mb-1">Attachment:</p>
+                                            <p className="text-xs text-white/50 mb-1">Attachment:</p>
                                             <img src={selectedWaProduct.wa_attachment_url.startsWith('/') ? `${API_URL}${selectedWaProduct.wa_attachment_url}` : selectedWaProduct.wa_attachment_url} alt="Attachment" className="h-20 w-20 object-cover rounded border" />
                                         </div>
                                     )}
                                 </div>
-                                <div className="space-y-4 p-4 bg-gray-50 border rounded-lg">
+                                <div className="space-y-4 p-4 bg-white/5 border-white/10 text-white rounded-lg">
                                     <div>
                                         <h4 className="font-medium text-sm text-gray-700 mb-2">Target Audience</h4>
                                         <select
