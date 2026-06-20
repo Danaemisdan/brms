@@ -283,3 +283,85 @@ export async function syncBrandToSheet(vendorUserId: string) {
         console.error(`[Google Sheets] Failed to sync brand ${vendorUserId}:`, error);
     }
 }
+
+/**
+ * Pull updates from Google Sheets into the Database
+ */
+export async function pullUpdatesFromSheet() {
+    const sheets = getSheetsClient();
+    const spreadsheetId = getSpreadsheetId();
+    if (!sheets || !spreadsheetId) return;
+
+    try {
+        console.log('[Google Sheets] Starting two-way sync pull...');
+
+        // 1. Pull Orders
+        const ordersRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: 'Orders!A2:N' });
+        const orderRows = ordersRes.data.values || [];
+        for (const row of orderRows) {
+            const dbId = row[0];
+            const status = row[6];
+            const remarks = row[9];
+            if (dbId) {
+                // Update Order in DB
+                await prisma.order.updateMany({
+                    where: { id: dbId },
+                    data: {
+                        status: status || 'SUBMITTED',
+                        remarks: remarks || null
+                    }
+                });
+            }
+        }
+
+        // 2. Pull Products
+        const productsRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: 'Products!A2:I' });
+        const productRows = productsRes.data.values || [];
+        for (const row of productRows) {
+            const dbId = row[0];
+            const productName = row[1];
+            const brand = row[2];
+            const status = row[3];
+            const platform = row[4];
+            const realPrice = parseFloat(row[5]) || 0;
+            
+            if (dbId) {
+                await prisma.product.updateMany({
+                    where: { id: dbId },
+                    data: {
+                        product_name: productName,
+                        brand: brand,
+                        status: status || 'DRAFT',
+                        platform: platform || 'AMAZON',
+                        real_price: realPrice
+                    }
+                });
+            }
+        }
+
+        // 3. Pull Brands (Vendors)
+        const brandsRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: 'Brands!A2:G' });
+        const brandRows = brandsRes.data.values || [];
+        for (const row of brandRows) {
+            const dbId = row[0]; // This is user.id
+            const status = row[4];
+            const walletBalance = parseFloat(row[5]) || 0;
+            const commission = parseFloat(row[6]) || 0;
+
+            if (dbId) {
+                await prisma.vendor.updateMany({
+                    where: { user_id: dbId },
+                    data: {
+                        status: status || 'active',
+                        wallet_balance: walletBalance,
+                        commission: commission
+                    }
+                });
+            }
+        }
+
+        console.log('[Google Sheets] Two-way sync pull completed successfully.');
+    } catch (error) {
+        console.error('[Google Sheets] Error pulling updates:', error);
+    }
+}

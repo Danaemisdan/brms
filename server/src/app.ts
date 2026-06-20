@@ -14,8 +14,10 @@ import supportRoutes from './modules/support/support.routes';
 import whatsappRoutes from './modules/whatsapp/whatsapp.routes';
 import agentRoutes from './modules/refunds/agent.routes';
 import analyticsRoutes from './modules/analytics/analytics.routes';
+import adminRoutes from './modules/admin/admin.routes';
 import webhooksRoutes from './modules/webhooks/webhooks.routes';
 import { startWhatsAppScheduler } from './jobs/wa_scheduler';
+import { startGoogleSheetsSyncJob } from './jobs/gsheets_sync';
 import path from 'path';
 
 const app = express();
@@ -54,10 +56,12 @@ app.use('/api/support', supportRoutes);
 app.use('/api/whatsapp', whatsappRoutes);
 app.use('/api/refunds', agentRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/webhooks', webhooksRoutes);
 
 // Start Background Jobs
 startWhatsAppScheduler();
+startGoogleSheetsSyncJob();
 
 // Start Server
 const server = app.listen(PORT, () => {

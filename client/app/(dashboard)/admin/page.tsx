@@ -143,6 +143,29 @@ export default function AdminDashboard() {
         }
     };
 
+    const handleForceSync = async () => {
+        setIsLoading(true);
+        try {
+            const token = localStorage.getItem("token");
+            const res = await apiFetch(`${API_URL}/api/admin/sync-sheets`, {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            
+            if (res.ok) {
+                toast.success("Successfully synced with Google Sheets!");
+                await fetchDashboardData();
+            } else {
+                toast.error("Failed to sync with Google Sheets.");
+            }
+        } catch (error) {
+            console.error("Sync failed:", error);
+            toast.error("Error connecting to server for sync.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     const metrics = [
         { label: "Active Products", value: stats.activeProducts },
         { label: "Pending Products", value: stats.pendingProducts },
@@ -156,9 +179,19 @@ export default function AdminDashboard() {
 
     return (
         <div className="space-y-10 relative z-10">
-            <div className="border-b border-border/5 pb-6">
-                <h1 className="text-4xl font-sans font-bold text-primary tracking-wider uppercase">Admin Portal</h1>
-                <p className="text-foreground/40 mt-2 font-sans tracking-wide text-sm">Full command over campaigns, vendors, customers, and financials.</p>
+            <div className="border-b border-border/5 pb-6 flex justify-between items-end">
+                <div>
+                    <h1 className="text-4xl font-sans font-bold text-primary tracking-wider uppercase">Admin Portal</h1>
+                    <p className="text-sm font-sans tracking-widest text-foreground/40 mt-2 uppercase">Platform Overview & Command Center</p>
+                </div>
+                <Button 
+                    variant="outline" 
+                    onClick={handleForceSync} 
+                    disabled={isLoading}
+                    className="border-primary/50 text-primary hover:bg-primary/10 tracking-[0.2em] uppercase text-xs rounded-sm"
+                >
+                    {isLoading ? "Syncing..." : "Sync Sheets"}
+                </Button>
             </div>
 
             {isLoading ? (
