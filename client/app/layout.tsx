@@ -1,15 +1,10 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
 import { Toaster } from "sonner";
-import { SplashScreen } from "@/components/SplashScreen";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
-const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-heading" });
-
 export const metadata: Metadata = {
-  title: "BRMS | Brand For You",
-  description: "Premium Brand Review Management System",
+  title: "BRMS | From Brand for you",
+  description: "Brand Review Management System - From Brand for you",
 };
 
 export default function RootLayout({
@@ -18,14 +13,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${playfair.variable} font-sans antialiased bg-background text-foreground`}
+        className={`font-sans antialiased`}
       >
-        <SplashScreen>
-            {children}
-        </SplashScreen>
-        <Toaster position="top-center" richColors theme="dark" />
+        {children}
+        <Toaster position="top-center" richColors />
       </body>
     </html>
   );

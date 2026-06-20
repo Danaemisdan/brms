@@ -17,4 +17,3 @@ backend.log
 *.log
 local_agent/Agent/LocalManager/agent.log
 
-credentials.json

@@ -1,2 +1,6 @@
-2026/06/08-23:16:36.806 1f742 Creating DB /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Local Storage/leveldb since it was missing.
-2026/06/08-23:16:36.823 1f742 Reusing MANIFEST /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Local Storage/leveldb/MANIFEST-000001
+2026/06/03-19:22:57.840 9746c Reusing MANIFEST /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Local Storage/leveldb/MANIFEST-000001
+2026/06/03-19:22:57.842 9746c Recovering log #38
+2026/06/03-19:22:57.845 9746c Reusing old log /Users/sanjeevn/Downloads/review process/brms/chrome_data_whatsapp/Default/Local Storage/leveldb/000038.log 
+2026/06/03-19:25:04.156 97470 Level-0 table #44: started
+2026/06/03-19:25:04.168 97470 Level-0 table #44: 16062 bytes OK
+2026/06/03-19:25:04.171 97470 Delete type=0 #38

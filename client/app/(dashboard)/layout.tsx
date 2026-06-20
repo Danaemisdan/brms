@@ -5,7 +5,6 @@ import { apiFetch } from "@/lib/apiFetch";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 
 const brandNav = [
     { label: "Dashboard", href: "/brand" },
@@ -84,33 +83,29 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     if (!isAuthorized) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-background">
+            <div className="min-h-screen flex items-center justify-center bg-gray-50">
                 <div className="flex flex-col items-center gap-4">
-                    <div className="h-8 w-8 rounded-full border-4 border-t-[#d4af37] border-r-[#d4af37] border-b-[#d4af37]/20 border-l-[#d4af37]/20 animate-spin"></div>
-                    <p className="text-[#d4af37]/70 text-xs uppercase tracking-[0.2em] font-sans">Authenticating Session</p>
+                    <div className="h-8 w-8 rounded-full border-4 border-t-blue-600 border-r-blue-600 border-b-blue-600/20 border-l-blue-600/20 animate-spin"></div>
+                    <p className="text-gray-500 text-sm font-medium tracking-wide">Authenticating secure session...</p>
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="flex min-h-screen bg-background text-foreground font-sans selection:bg-[#d4af37]/20">
+        <div className="flex min-h-screen bg-gray-50 text-gray-900 font-sans selection:bg-blue-100">
             {/* Sidebar */}
-            <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-card/60 backdrop-blur-xl border-r border-white/5 shadow-[0_4px_30px_rgba(0,0,0,0.5)] hidden md:flex flex-col">
+            <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-gray-200 shadow-sm hidden md:flex flex-col">
                 {/* Logo Area */}
-                <div className="flex items-center justify-center h-24 border-b border-white/5 shrink-0">
-                    <Link href={nav[0].href} className="flex flex-col items-center justify-center w-full group transition-transform hover:scale-105">
-                        <h2 className="font-heading text-3xl font-bold tracking-widest text-[#d4af37] uppercase">
-                            BRMS
-                        </h2>
-                        <div className="h-[1px] w-12 bg-[#d4af37]/50 mt-1 mb-1" />
-                        <p className="font-sans text-[9px] tracking-[0.2em] text-[#d4af37]/70 uppercase">Brand For You</p>
+                <div className="flex items-center justify-start h-20 px-6 border-b border-gray-100 shrink-0">
+                    <Link href={nav[0].href} className="flex items-center justify-start w-full group transition-transform hover:scale-105">
+                        <img src="/logo.svg" alt="BRMS Logo" className="h-16 w-auto" />
                     </Link>
                 </div>
 
                 {/* Navigation Links */}
-                <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto hide-scrollbar">
-                    <div className="px-3 mb-4 text-[10px] font-sans text-white/30 uppercase tracking-[0.2em]">
+                <nav className="flex-1 px-3 py-6 space-y-1.5 overflow-y-auto hide-scrollbar">
+                    <div className="px-3 mb-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">
                         {title}
                     </div>
                     {nav.map((item) => {
@@ -119,18 +114,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             <Link
                                 key={item.href}
                                 href={item.href}
-                                className={`flex items-center px-4 py-3 text-sm font-sans rounded-sm transition-all duration-300 group relative overflow-hidden ${isActive
-                                    ? "text-[#d4af37] bg-white/5 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1)]"
-                                    : "text-white/60 hover:bg-white/5 hover:text-white"
+                                className={`flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 group relative overflow-hidden ${isActive
+                                    ? "text-blue-700 bg-blue-50 ring-1 ring-inset ring-blue-100"
+                                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                                     }`}
                             >
                                 {isActive && (
-                                    <motion.div 
-                                        layoutId="activeNav"
-                                        className="absolute left-0 top-0 bottom-0 w-[2px] bg-[#d4af37] shadow-[0_0_10px_#d4af37]"
-                                    />
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-5 bg-blue-600 rounded-r-full shadow-sm"></div>
                                 )}
-                                <span className={isActive ? "translate-x-2 transition-transform" : "transition-transform group-hover:translate-x-2"}>
+                                <span className={isActive ? "translate-x-1 transition-transform" : "transition-transform group-hover:translate-x-1"}>
                                     {item.label}
                                 </span>
                             </Link>
@@ -138,23 +130,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     })}
                 </nav>
                 {/* Profile & Logout Section */}
-                <div className="p-4 border-t border-white/5 bg-black/20 shrink-0">
-                    <div className="flex items-center mb-5 px-2">
-                        <div className="h-10 w-10 flex-shrink-0 bg-gradient-to-br from-[#d4af37] to-[#8a7322] rounded-full flex items-center justify-center text-black font-bold text-sm shadow-[0_0_15px_rgba(212,175,55,0.3)] ring-1 ring-white/20">
+                <div className="p-4 border-t border-gray-100 bg-gray-50/50 shrink-0">
+                    <div className="flex items-center mb-4 px-2">
+                        <div className="h-9 w-9 flex-shrink-0 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-sm ring-2 ring-white">
                             {userProfile.name.charAt(0).toUpperCase()}
                         </div>
                         <div className="ml-3 truncate">
-                            <p className="text-sm font-sans text-white truncate leading-tight">
+                            <p className="text-sm font-medium text-gray-900 truncate leading-tight">
                                 {userProfile.name}
                             </p>
-                            <p className="text-[10px] font-sans text-[#d4af37]/80 uppercase tracking-[0.1em] mt-1">
+                            <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mt-0.5">
                                 {userProfile.role}
                             </p>
                         </div>
                     </div>
                     <button
                         onClick={handleLogout}
-                        className="w-full flex justify-center items-center px-4 py-2.5 text-xs font-sans uppercase tracking-widest text-white/70 hover:text-white bg-transparent border border-white/10 hover:border-[#d4af37]/50 hover:bg-[#d4af37]/10 transition-all focus:outline-none focus:ring-1 focus:ring-[#d4af37] active:scale-[0.98]"
+                        className="w-full flex justify-center items-center px-4 py-2 text-sm font-medium rounded-lg text-gray-600 bg-white hover:bg-gray-50 border border-gray-200 shadow-sm transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 active:scale-[0.98]"
                     >
                         Sign Out
                     </button>
@@ -162,23 +154,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-1 md:pl-64 relative min-h-screen">
-                {/* Background ambient glow */}
-                <div className="fixed top-0 inset-x-0 h-[500px] bg-gradient-to-b from-[#d4af37]/5 to-transparent pointer-events-none opacity-50 z-0"></div>
+            <main className="flex-1 md:pl-64 relative">
+                <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-white to-transparent pointer-events-none opacity-50 z-0"></div>
 
-                <div className="py-10 px-4 sm:px-8 md:px-12 mx-auto max-w-[1600px] relative z-10 w-full min-h-screen">
-                    <AnimatePresence mode="wait">
-                        <motion.div
-                            key={pathname}
-                            initial={{ opacity: 0, y: 15 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -15 }}
-                            transition={{ duration: 0.4, ease: "easeOut" }}
-                            className="w-full"
-                        >
-                            {children}
-                        </motion.div>
-                    </AnimatePresence>
+                <div className="py-8 px-4 sm:px-6 md:px-10 mx-auto max-w-[1600px] relative z-10 w-full min-h-screen">
+                    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        {children}
+                    </div>
                 </div>
             </main>
         </div>
