@@ -280,7 +280,7 @@ function LoginComponent() {
                     </form>
                 </CardContent>
                 <CardFooter className="flex justify-center border-t border-border/5 py-6 bg-foreground/20">
-                    <p className="text-[10px] text-white uppercase tracking-widest font-sans">
+                    <p className="text-[10px] text-black uppercase tracking-widest font-sans">
                         New Client?{" "}
                         <Link href={returnUrl ? `/register?returnUrl=${encodeURIComponent(returnUrl)}` : "/register"} className="text-primary hover:text-primary/80 transition-colors ml-1 font-bold">
                             Inquire Here
