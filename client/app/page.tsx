@@ -23,9 +23,7 @@ export default function Home() {
             transition={{ duration: 1, delay: 1.8 }}
             className="flex flex-col items-center justify-center w-full mb-4"
         >
-          <h2 className="font-sans text-5xl md:text-7xl font-bold tracking-[0.2em] text-primary uppercase">
-            BRMS
-          </h2>
+          <img src="/logo.svg" alt="Brand For You Logo" className="h-24 md:h-36 w-auto -mb-4" />
           <div className="h-[2px] w-24 bg-primary/50 mt-3 mb-2" />
           <p className="font-sans text-xs font-semibold tracking-[0.4em] text-primary/80 uppercase">Brand For You</p>
         </motion.div>

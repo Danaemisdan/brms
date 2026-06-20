@@ -82,9 +82,7 @@ export default function RegisterPage() {
             <Card className="w-full max-w-lg glass-panel">
                 <CardHeader className="space-y-6 text-center pb-8 pt-8">
                     <div className="flex flex-col items-center justify-center w-full">
-                        <h2 className="font-sans font-bold text-4xl font-bold tracking-widest text-primary uppercase">
-                            BRMS
-                        </h2>
+                            <img src="/logo.svg" alt="Brand For You Logo" className="h-10 w-auto -mb-1" />
                         <div className="h-[1px] w-16 bg-primary/50 mt-2 mb-1" />
                         <p className="font-sans text-[9px] tracking-[0.3em] text-primary/70 uppercase">Brand For You</p>
                     </div>
