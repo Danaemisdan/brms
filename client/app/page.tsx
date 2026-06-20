@@ -32,55 +32,66 @@ export default function Home() {
             </header>
 
             {/* Hero Section */}
-            <section className="relative z-10 container mx-auto px-6 pt-20 pb-32 flex flex-col items-center text-center">
+            <section className="relative z-10 container mx-auto px-6 min-h-[calc(100vh-100px)] flex flex-col items-center justify-center text-center pb-24">
+                <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 1, delay: 0.2 }}
+                    className="flex flex-col items-center justify-center w-full mb-8"
+                >
+                    <img src="/logo.svg" alt="Brand For You Logo" className="h-20 md:h-28 w-auto mb-4" />
+                    <div className="h-[2px] w-24 bg-primary/50 mt-1 mb-2" />
+                    <p className="font-sans text-[10px] font-semibold tracking-[0.4em] text-primary/80 uppercase">Brand For You</p>
+                </motion.div>
+
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    transition={{ duration: 0.8, delay: 0.4 }}
                     className="max-w-4xl"
                 >
-                    <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.1] mb-6">
-                        Elevate Your Brand. <br/>
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">Get Rewarded for Your Voice.</span>
+                    <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-foreground mb-4">
+                        Elevate Your Brand. <br className="hidden md:block" />
+                        <span className="text-primary italic font-serif font-medium">Get Rewarded for Your Voice.</span>
                     </h1>
-                    <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">
-                        The premier ecosystem connecting ambitious brands seeking authentic growth with passionate reviewers looking for exclusive rewards.
+                    <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto tracking-wide font-sans mb-12">
+                        The premier ecosystem connecting ambitious brands seeking
+                        authentic growth with passionate reviewers looking for exclusive rewards.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-10">
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                         <Link href="/login">
-                            <Button className="w-full sm:w-auto h-16 px-12 bg-transparent text-primary border border-primary hover:bg-primary/10 font-bold tracking-[0.2em] uppercase text-sm rounded-sm transition-all shadow-[0_0_20px_rgba(207,46,46,0.15)] flex items-center gap-3">
+                            <Button className="w-full sm:w-auto h-16 px-12 bg-transparent text-primary border border-primary hover:bg-primary/10 font-sans font-bold tracking-[0.2em] uppercase text-sm rounded-sm transition-all shadow-[0_0_15px_rgba(207,46,46,0.15)]">
                                 Access Portal
                             </Button>
                         </Link>
                         <Link href="/register?role=vendor">
-                            <Button variant="outline" className="w-full sm:w-auto h-16 px-12 border-border hover:bg-accent text-foreground font-bold tracking-[0.2em] uppercase text-sm rounded-sm transition-all flex items-center gap-3">
+                            <Button variant="outline" className="w-full sm:w-auto h-16 px-12 border-border hover:bg-accent text-foreground font-sans font-bold tracking-[0.2em] uppercase text-sm rounded-sm transition-all">
                                 New Client Inquiry
                             </Button>
                         </Link>
                     </div>
                 </motion.div>
 
-                {/* Scroll Indicator */}
+                {/* Mobile Swipe / Desktop Scroll Indicator at absolute bottom */}
                 <motion.div 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ delay: 1, duration: 1 }}
-                    className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer"
+                    transition={{ delay: 1.5, duration: 1 }}
+                    className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
                     onClick={() => document.getElementById('reviewers')?.scrollIntoView({ behavior: 'smooth' })}
                 >
-                    <span className="text-[10px] font-bold tracking-[0.3em] text-muted-foreground uppercase">Discover More</span>
-                    <motion.div
-                        animate={{ y: [0, 10, 0] }}
-                        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                        className="w-8 h-12 rounded-full border-2 border-muted-foreground/30 flex justify-center p-1"
-                    >
-                        <motion.div 
-                            animate={{ y: [0, 16, 0], opacity: [1, 0, 1] }}
-                            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-                            className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(207,46,46,0.8)]"
+                    <span className="text-[9px] font-bold tracking-[0.3em] text-muted-foreground uppercase hidden md:block">Discover More</span>
+                    <span className="text-[9px] font-bold tracking-[0.3em] text-muted-foreground uppercase md:hidden">Swipe Up</span>
+                    
+                    {/* The animated swiping line */}
+                    <div className="w-[1px] h-12 bg-border relative overflow-hidden mt-1">
+                        <motion.div
+                            className="absolute top-0 left-0 w-full h-1/2 bg-primary"
+                            animate={{ y: ['-100%', '200%'] }}
+                            transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
                         />
-                    </motion.div>
+                    </div>
                 </motion.div>
             </section>
 
