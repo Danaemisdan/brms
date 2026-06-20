@@ -47,20 +47,40 @@ export default function Home() {
                         The premier ecosystem connecting ambitious brands seeking authentic growth with passionate reviewers looking for exclusive rewards.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                        <Link href="#reviewers">
-                            <Button className="w-full sm:w-auto h-14 px-8 bg-foreground text-background hover:bg-foreground/90 font-bold tracking-widest uppercase text-xs rounded-sm transition-all group flex items-center gap-3">
-                                <Gift className="w-4 h-4 text-primary" />
-                                For Reviewers
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-10">
+                        <Link href="/login">
+                            <Button className="w-full sm:w-auto h-16 px-12 bg-transparent text-primary border border-primary hover:bg-primary/10 font-bold tracking-[0.2em] uppercase text-sm rounded-sm transition-all shadow-[0_0_20px_rgba(207,46,46,0.15)] flex items-center gap-3">
+                                Access Portal
                             </Button>
                         </Link>
-                        <Link href="#brands">
-                            <Button variant="outline" className="w-full sm:w-auto h-14 px-8 border-border hover:bg-accent text-foreground font-bold tracking-widest uppercase text-xs rounded-sm transition-all flex items-center gap-3">
-                                <TrendingUp className="w-4 h-4 text-primary" />
-                                For Brands
+                        <Link href="/register?role=vendor">
+                            <Button variant="outline" className="w-full sm:w-auto h-16 px-12 border-border hover:bg-accent text-foreground font-bold tracking-[0.2em] uppercase text-sm rounded-sm transition-all flex items-center gap-3">
+                                New Client Inquiry
                             </Button>
                         </Link>
                     </div>
+                </motion.div>
+
+                {/* Scroll Indicator */}
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1, duration: 1 }}
+                    className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 cursor-pointer"
+                    onClick={() => document.getElementById('reviewers')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                    <span className="text-[10px] font-bold tracking-[0.3em] text-muted-foreground uppercase">Discover More</span>
+                    <motion.div
+                        animate={{ y: [0, 10, 0] }}
+                        transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                        className="w-8 h-12 rounded-full border-2 border-muted-foreground/30 flex justify-center p-1"
+                    >
+                        <motion.div 
+                            animate={{ y: [0, 16, 0], opacity: [1, 0, 1] }}
+                            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                            className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(207,46,46,0.8)]"
+                        />
+                    </motion.div>
                 </motion.div>
             </section>
 
