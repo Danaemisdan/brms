@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Search, Package, Headphones, Scissors, User, Truck, Smartphone, Gift, ShoppingBag, ShoppingCart, PenTool, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ProductCard";
+import { HeroAnimation } from "@/components/HeroAnimation";
 
 const CATEGORIES = [
   { name: "Categories", icon: <Package className="w-8 h-8" strokeWidth={1.5} /> },
@@ -83,15 +84,7 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="flex justify-center"
           >
-            {/* Hero Illustration Placeholder */}
-            <div className="relative w-[400px] h-[300px] bg-[#2a2a36] rounded-2xl flex items-center justify-center p-8">
-              <div className="text-gray-400 text-center">
-                <p className="text-sm">Illustration Placeholder</p>
-                <div className="flex gap-4 justify-center mt-4 text-4xl">
-                  <span>👩‍💻</span><span>🎧</span><span>📱</span>
-                </div>
-              </div>
-            </div>
+            <HeroAnimation />
           </motion.div>
         </div>
       </section>
