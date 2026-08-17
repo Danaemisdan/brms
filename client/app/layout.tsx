@@ -10,8 +10,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-heading" });
 
 export const metadata: Metadata = {
-  title: "BRMS | Brand For You",
-  description: "Premium Brand Review Management System",
+  title: "Sample Lelo | Get Free Products",
+  description: "Get Free Products & Review Deals",
 };
 
 import { ThemeProvider } from "next-themes";
