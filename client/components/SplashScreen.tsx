@@ -33,7 +33,6 @@ export function SplashScreen({ children }: { children: React.ReactNode }) {
                             className="flex flex-col items-center"
                         >
                             <img src="/sample-lelo-logo.png" alt="Sample Lelo Logo" className="h-32 md:h-48 w-auto -mb-4 object-contain" />
-                            <img src="/sample-lelo-logo.png" alt="Sample Lelo Logo" className="h-32 md:h-48 w-auto -mb-4 object-contain" />
                         </motion.div>
                     </motion.div>
                 )}
