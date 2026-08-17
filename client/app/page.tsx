@@ -1,18 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Search } from "lucide-react";
+import { Search, Package, Headphones, Scissors, User, Truck, Smartphone, Gift, ShoppingBag, ShoppingCart, PenTool, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/ProductCard";
 
 const CATEGORIES = [
-  { name: "Categories", icon: "📦" },
-  { name: "Scars", icon: "🎧" },
-  { name: "Categories", icon: "✂️" },
-  { name: "Features", icon: "👤" },
-  { name: "Delivery", icon: "🚚" },
-  { name: "Product", icon: "📱" },
-  { name: "Markethop", icon: "🎁" },
+  { name: "Categories", icon: <Package className="w-8 h-8" strokeWidth={1.5} /> },
+  { name: "Scars", icon: <Headphones className="w-8 h-8" strokeWidth={1.5} /> },
+  { name: "Categories", icon: <Scissors className="w-8 h-8" strokeWidth={1.5} /> },
+  { name: "Features", icon: <User className="w-8 h-8" strokeWidth={1.5} /> },
+  { name: "Delivery", icon: <Truck className="w-8 h-8" strokeWidth={1.5} /> },
+  { name: "Product", icon: <Smartphone className="w-8 h-8" strokeWidth={1.5} /> },
+  { name: "Markethop", icon: <Gift className="w-8 h-8" strokeWidth={1.5} /> },
 ];
 
 const FEATURED_DEALS = [
@@ -131,7 +131,7 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-4 relative">
             <div className="flex flex-col items-center max-w-[200px]">
               <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-3xl mb-4 border border-border shadow-sm text-black">
-                🛍️
+                <ShoppingBag className="w-8 h-8 text-black" strokeWidth={1.5} />
               </div>
               <h3 className="font-bold mb-2">Browse</h3>
               <p className="text-xs text-muted-foreground">Browse your preferred product</p>
@@ -140,7 +140,7 @@ export default function Home() {
             
             <div className="flex flex-col items-center max-w-[200px]">
               <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-3xl mb-4 border border-border shadow-sm text-black">
-                🛒
+                <ShoppingCart className="w-8 h-8 text-black" strokeWidth={1.5} />
               </div>
               <h3 className="font-bold mb-2">Buy</h3>
               <p className="text-xs text-muted-foreground">Shop and buy your product</p>
@@ -149,7 +149,7 @@ export default function Home() {
             
             <div className="flex flex-col items-center max-w-[200px]">
               <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-3xl mb-4 border border-border shadow-sm text-black">
-                📝
+                <PenTool className="w-8 h-8 text-black" strokeWidth={1.5} />
               </div>
               <h3 className="font-bold mb-2">Review</h3>
               <p className="text-xs text-muted-foreground">Post a review for the product</p>
@@ -158,7 +158,7 @@ export default function Home() {
             
             <div className="flex flex-col items-center max-w-[200px]">
               <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-3xl mb-4 border border-border shadow-sm text-black">
-                💰
+                <DollarSign className="w-8 h-8 text-black" strokeWidth={1.5} />
               </div>
               <h3 className="font-bold mb-2">Earn</h3>
               <p className="text-xs text-muted-foreground">Earn your money back</p>

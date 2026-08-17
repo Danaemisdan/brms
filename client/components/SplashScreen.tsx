@@ -32,7 +32,7 @@ export function SplashScreen({ children }: { children: React.ReactNode }) {
                             transition={{ duration: 1, ease: "easeOut" }}
                             className="flex flex-col items-center"
                         >
-                            <img src="/logo.svg" alt="BRMS Logo" className="h-24 md:h-36 w-auto -mb-4" />
+                            <img src="/sample-lelo-logo.png" alt="Sample Lelo Logo" className="h-32 md:h-48 w-auto -mb-4 object-contain" />
                             <motion.div 
                                 initial={{ width: 0 }}
                                 animate={{ width: "100%" }}
@@ -45,7 +45,7 @@ export function SplashScreen({ children }: { children: React.ReactNode }) {
                                 transition={{ delay: 0.8, duration: 0.5 }}
                                 className="font-sans text-xs font-semibold tracking-[0.3em] text-primary/80 uppercase"
                             >
-                                Brand For You
+                                Sample Lelo
                             </motion.p>
                         </motion.div>
                     </motion.div>

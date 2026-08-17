@@ -8,8 +8,7 @@ export function Navbar() {
     <nav className="w-full bg-background border-b border-border">
       <div className="container mx-auto px-6 h-20 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <img src="/sample-lelo-logo.png" alt="Sample Lelo Logo" className="h-8 w-auto object-contain" />
-          {/* <span className="text-2xl font-bold tracking-tight">sample lelo</span> */}
+          <img src="/sample-lelo-logo.png" alt="Sample Lelo Logo" className="h-20 w-auto object-contain origin-left scale-[1.5]" />
         </Link>
         
         <div className="hidden md:flex items-center gap-8">
