@@ -7,11 +7,10 @@ import { CommunityVoices } from "@/components/CommunityVoices";
 import { ShopByBrand } from "@/components/ShopByBrand";
 import { TrendingDeals } from "@/components/TrendingDeals";
 import { HotSamples } from "@/components/HotSamples";
-import { TrustedPartners } from "@/components/TrustedPartners";
-import { FaqSection } from "@/components/FaqSection";
-import { Search, ShoppingBag, ShoppingCart, PenTool, DollarSign } from "lucide-react";
+import { Search, ShoppingBag, ShoppingCart, PenTool, DollarSign, Star } from "lucide-react";
 import { ShinyText } from "@/components/ui/ShinyText";
 import { MagicCard } from "@/components/ui/MagicCard";
+import { VelocityScroll } from "@/components/ui/VelocityScroll";
 
 export default function Home() {
   return (
@@ -49,66 +48,96 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-            className="flex justify-center items-center relative h-[350px] md:h-[450px]"
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="flex justify-center items-center relative h-[400px] md:h-[500px] perspective-[1000px]"
           >
-            <div className="relative w-full max-w-md h-full flex items-center justify-center">
-              
-              {/* Subtle background glow */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gray-50 rounded-full blur-[60px]"></div>
+            {/* Ambient Background Glow */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-tr from-red-200 to-orange-100 rounded-full blur-[80px] opacity-70"></div>
 
-              {/* Back Left Card */}
-              <motion.div 
-                animate={{ y: [0, -4, 0], rotate: [-12, -12, -12] }}
-                transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-                className="absolute z-10 w-40 bg-white border border-gray-100 shadow-[0_10px_40px_rgb(0,0,0,0.03)] rounded-3xl p-3 pb-6 flex flex-col items-center -left-6 md:-left-12 top-12"
-              >
-                <div className="w-full aspect-square bg-[#f8f9fa] rounded-2xl mb-4 flex flex-col items-center justify-center text-gray-400">
-                   <div className="w-6 h-6 border-2 border-gray-200 rounded mb-1 flex items-center justify-center overflow-hidden">
-                     <div className="w-full h-full bg-blue-100 rotate-45 translate-y-2"></div>
-                   </div>
-                   <span className="text-sm font-semibold text-gray-500">Snack</span>
+            {/* Main Center UI Mockup */}
+            <motion.div 
+              animate={{ y: [0, -15, 0], rotateY: [-5, 5, -5], rotateX: [2, -2, 2] }}
+              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+              className="relative w-full max-w-[320px] bg-white/80 backdrop-blur-2xl border border-white/50 shadow-[0_30px_60px_rgba(0,0,0,0.08)] rounded-[32px] p-2 overflow-hidden z-20"
+            >
+              {/* Inner content simulating an app feed */}
+              <div className="bg-[#f8f9fa] w-full h-[380px] rounded-[24px] overflow-hidden relative flex flex-col">
+                <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-black/60 to-transparent z-10 pointer-events-none"></div>
+                
+                {/* Hero Image */}
+                <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop" alt="Premium Cosmetic" className="w-full h-56 object-cover" />
+                
+                {/* Floating Tag */}
+                <div className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] font-bold text-[#eb5757] tracking-widest shadow-sm">
+                  NEW DROP
                 </div>
-                <div className="w-3/4 h-1.5 bg-gray-100 rounded-full mb-2.5"></div>
-                <div className="w-1/2 h-1.5 bg-gray-100 rounded-full"></div>
-              </motion.div>
 
-              {/* Back Right Card */}
-              <motion.div 
-                animate={{ y: [0, -6, 0], rotate: [12, 12, 12] }}
-                transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: 1 }}
-                className="absolute z-10 w-40 bg-white border border-gray-100 shadow-[0_10px_40px_rgb(0,0,0,0.03)] rounded-3xl p-3 pb-6 flex flex-col items-center -right-6 md:-right-12 top-20"
-              >
-                <div className="w-full aspect-square bg-white rounded-2xl mb-4 flex items-center justify-center overflow-hidden">
-                  <div className="w-20 h-16 bg-[#ffd166] rounded-md flex items-center justify-center text-2xl">
-                    🎧
+                {/* Content Area */}
+                <div className="flex-1 bg-white p-5 flex flex-col justify-between relative -mt-4 rounded-t-[20px] shadow-[0_-10px_20px_rgba(0,0,0,0.03)] z-20">
+                  <div>
+                    <h3 className="font-bold text-lg leading-tight mb-1">Anti-Aging Serum Mini</h3>
+                    <p className="text-xs text-gray-500 line-clamp-2">Experience the revitalizing power of organic ingredients.</p>
+                  </div>
+                  
+                  <div className="flex justify-between items-end">
+                    <div className="flex gap-1 items-center bg-gray-50 px-2 py-1 rounded-md border border-gray-100">
+                       <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                       <span className="text-xs font-bold">4.9</span>
+                    </div>
+                    <button className="bg-[#1a1a24] text-white text-xs font-bold px-4 py-2 rounded-full shadow-md">
+                      Claim Sample
+                    </button>
                   </div>
                 </div>
-                <div className="w-3/4 h-1.5 bg-gray-100 rounded-full mb-2.5"></div>
-                <div className="w-1/2 h-1.5 bg-gray-100 rounded-full"></div>
-              </motion.div>
+              </div>
+            </motion.div>
 
-              {/* Center Main Card */}
-              <motion.div 
-                animate={{ y: [0, -8, 0] }}
-                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0.5 }}
-                className="absolute z-20 w-48 bg-white border border-gray-100 shadow-[0_20px_50px_rgb(0,0,0,0.08)] rounded-[32px] p-4 pb-8 flex flex-col items-center top-8"
-              >
-                <div className="w-full aspect-square bg-[#f7f5ee] rounded-2xl mb-6 overflow-hidden p-3 flex items-center justify-center">
-                  <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=300&auto=format&fit=crop" alt="Serum" className="w-full h-full object-contain mix-blend-multiply drop-shadow-sm" />
-                </div>
-                <div className="w-4/5 h-2 bg-gray-100 rounded-full mb-3"></div>
-                <div className="w-3/5 h-2 bg-gray-100 rounded-full"></div>
-                
-                {/* Red Pill overlapping bottom */}
-                <div className="absolute -bottom-4 bg-[#eb5757] text-white text-[11px] font-bold px-4 py-2 rounded-full shadow-lg">
-                  100% Refund
-                </div>
-              </motion.div>
+            {/* Back Floating Element Left */}
+            <motion.div 
+              animate={{ y: [0, -10, 0], rotate: [-6, -6, -6] }}
+              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+              className="absolute z-10 w-48 h-32 bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_20px_40px_rgba(0,0,0,0.05)] rounded-[24px] p-4 flex flex-col justify-between -left-4 md:-left-12 top-24"
+            >
+              <div className="flex items-center gap-3">
+                 <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-xl">🎉</div>
+                 <div>
+                   <div className="w-16 h-2 bg-gray-200 rounded-full mb-1.5"></div>
+                   <div className="w-10 h-1.5 bg-gray-100 rounded-full"></div>
+                 </div>
+              </div>
+              <div className="w-full h-8 bg-gray-50 rounded-lg border border-gray-100 flex items-center px-3">
+                 <div className="w-3/4 h-1.5 bg-gray-200 rounded-full"></div>
+              </div>
+            </motion.div>
 
-            </div>
+            {/* Back Floating Element Right */}
+            <motion.div 
+              animate={{ y: [0, -8, 0], rotate: [8, 8, 8] }}
+              transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: 0.5 }}
+              className="absolute z-10 w-44 bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_20px_40px_rgba(0,0,0,0.05)] rounded-[24px] p-3 -right-4 md:-right-8 top-16"
+            >
+               <div className="w-full h-32 bg-[#fdfaf5] rounded-[16px] mb-3 overflow-hidden relative">
+                  <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=300&auto=format&fit=crop" className="w-full h-full object-cover mix-blend-multiply opacity-80" />
+               </div>
+               <div className="w-24 h-2 bg-gray-200 rounded-full mb-2 mx-auto"></div>
+               <div className="w-16 h-1.5 bg-gray-100 rounded-full mx-auto"></div>
+            </motion.div>
           </motion.div>
         </div>
+      </section>
+
+      {/* Velocity Scroll Section */}
+      <section className="py-12 bg-[#1a1a24] text-white overflow-hidden border-b border-gray-800">
+        <VelocityScroll 
+          text="FREE SAMPLES • TOP BRANDS • DAILY DROPS •" 
+          defaultVelocity={3} 
+          className="text-[4rem] md:text-[6rem] font-black opacity-90"
+        />
+        <VelocityScroll 
+          text="DISCOVER REWARDS • SHOP PREMIUM •" 
+          defaultVelocity={-3} 
+          className="text-[4rem] md:text-[6rem] font-black opacity-40 mt-2"
+        />
       </section>
 
       {/* New Mockup Sections */}
