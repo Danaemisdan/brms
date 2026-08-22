@@ -7,6 +7,8 @@ import { CommunityVoices } from "@/components/CommunityVoices";
 import { ShopByBrand } from "@/components/ShopByBrand";
 import { TrendingDeals } from "@/components/TrendingDeals";
 import { HotSamples } from "@/components/HotSamples";
+import { TrustedPartners } from "@/components/TrustedPartners";
+import { FaqSection } from "@/components/FaqSection";
 import { Search, ShoppingBag, ShoppingCart, PenTool, DollarSign, Star } from "lucide-react";
 import { ShinyText } from "@/components/ui/ShinyText";
 import { MagicCard } from "@/components/ui/MagicCard";
