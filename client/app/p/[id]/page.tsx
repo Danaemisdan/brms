@@ -5,42 +5,48 @@ import { Button } from "@/components/ui/button";
 
 export default function ProductDetailPage() {
   return (
-    <div className="container mx-auto px-6 py-12">
-      {/* Breadcrumbs */}
-      <div className="text-xs text-muted-foreground mb-8 flex items-center gap-2 font-semibold">
-        <Link href="/" className="hover:text-primary transition-colors">Home</Link> 
-        <span>&gt;</span> 
-        <Link href="/browse" className="hover:text-primary transition-colors">Samples</Link> 
-        <span>&gt;</span> 
-        <span className="text-foreground">Request Sample</span>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
-        {/* Product Image */}
-        <div className="bg-[#e0d6c8] rounded-2xl p-12 flex items-center justify-center aspect-square">
-          <img 
-            src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=600&auto=format&fit=crop" 
-            alt="Wireless Earbuds" 
-            className="w-full h-full object-contain mix-blend-multiply drop-shadow-2xl"
-          />
+    <div className="bg-white min-h-screen">
+      <div className="container mx-auto px-6 py-10">
+        {/* Breadcrumbs */}
+        <div className="text-[11px] text-gray-500 mb-10 flex items-center gap-2 font-medium">
+          <Link href="/" className="hover:text-black transition-colors">Home</Link> 
+          <span>&gt;</span> 
+          <Link href="/browse" className="hover:text-black transition-colors">Samples</Link> 
+          <span>&gt;</span> 
+          <span className="text-gray-900 font-semibold">Sample Detail</span>
         </div>
 
-        {/* Product Info */}
-        <div className="flex flex-col justify-center">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6 leading-tight">
-            Wireless Earbuds: 100%<br />Refund for Feedback
-          </h1>
-          <p className="text-muted-foreground text-sm leading-relaxed mb-8">
-            Get our amazing product free via a personal assured proper process and transaction rebate refund as soon as you provide your feedback. Try the wireless earbuds today and share your thoughts to get a 100% refund.
-          </p>
-          
-          <div className="mb-4">
-            <span className="text-sm font-bold text-foreground">Give us your honest thoughts after trying. (for logged in users)</span>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
+          {/* Product Image */}
+          <div className="bg-[#e8e0d5] rounded-[24px] p-12 flex items-center justify-center aspect-[4/3] md:aspect-square overflow-hidden border border-[#d6ccbe]/30">
+            <img 
+              src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop" 
+              alt="Brand Sample" 
+              className="w-full h-full object-contain mix-blend-multiply"
+            />
           </div>
-          
-          <Button className="bg-primary hover:bg-primary/90 text-white rounded-full py-6 text-sm font-semibold w-full sm:w-auto px-12 shadow-md">
-            Request Sample
-          </Button>
+
+          {/* Product Info */}
+          <div className="flex flex-col justify-center max-w-md">
+            <h1 className="text-[2rem] font-bold text-gray-900 leading-tight mb-2 tracking-tight">
+              Brand A Sample Set
+            </h1>
+            <h2 className="text-xl font-bold text-gray-800 mb-4">
+              Deluxe Mini Kit
+            </h2>
+            <p className="text-[13px] text-gray-600 leading-relaxed mb-6">
+              This includes sample 100% skin process concept review of macromanagement origin: from root natural environmental performance proteins and nutrition value. Find out basic choices with the most softness and other details.
+            </p>
+            
+            <div className="mb-6">
+              <span className="text-[13px] font-bold text-gray-900 block mb-1">Give us your honest thoughts after trying.</span>
+              <span className="text-[11px] text-gray-500">(for logged in users)</span>
+            </div>
+            
+            <Button className="bg-[#eb5757] hover:bg-[#d64c4c] text-white rounded-full py-6 text-[13px] font-bold w-full shadow-sm">
+              Request Sample
+            </Button>
+          </div>
         </div>
       </div>
     </div>
