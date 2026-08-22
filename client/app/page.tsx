@@ -45,58 +45,65 @@ export default function Home() {
           </motion.div>
           
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="flex justify-center items-center relative h-[300px] md:h-[400px]"
+            transition={{ duration: 0.7, ease: "easeOut" }}
+            className="flex justify-center items-center relative h-[350px] md:h-[450px]"
           >
-            {/* Clean, 21st.dev inspired animated hero graphic */}
-            <div className="relative w-full max-w-sm h-full flex items-center justify-center">
-              {/* Decorative elements */}
-              <div className="absolute top-10 left-10 w-24 h-24 bg-[#f3f0e9] rounded-full blur-2xl opacity-60"></div>
-              <div className="absolute bottom-10 right-10 w-32 h-32 bg-red-100 rounded-full blur-2xl opacity-60"></div>
+            <div className="relative w-full max-w-md h-full flex items-center justify-center">
               
-              {/* Main floating card */}
+              {/* Subtle background glow */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-gray-50 rounded-full blur-[60px]"></div>
+
+              {/* Back Left Card */}
               <motion.div 
-                animate={{ y: [0, -10, 0] }}
-                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                className="absolute z-20 w-48 h-56 bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-2xl flex flex-col items-center justify-center p-4"
+                animate={{ y: [0, -4, 0], rotate: [-12, -12, -12] }}
+                transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
+                className="absolute z-10 w-40 bg-white border border-gray-100 shadow-[0_10px_40px_rgb(0,0,0,0.03)] rounded-3xl p-3 pb-6 flex flex-col items-center -left-6 md:-left-12 top-12"
               >
-                <div className="w-24 h-24 bg-[#f9f6f0] rounded-xl mb-4 overflow-hidden p-2">
-                  <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=300&auto=format&fit=crop" alt="Serum" className="w-full h-full object-contain mix-blend-multiply" />
+                <div className="w-full aspect-square bg-[#f8f9fa] rounded-2xl mb-4 flex flex-col items-center justify-center text-gray-400">
+                   <div className="w-6 h-6 border-2 border-gray-200 rounded mb-1 flex items-center justify-center overflow-hidden">
+                     <div className="w-full h-full bg-blue-100 rotate-45 translate-y-2"></div>
+                   </div>
+                   <span className="text-sm font-semibold text-gray-500">Snack</span>
                 </div>
-                <div className="w-3/4 h-2 bg-gray-100 rounded-full mb-2"></div>
-                <div className="w-1/2 h-2 bg-gray-100 rounded-full"></div>
-                <div className="absolute -bottom-4 bg-[#eb5757] text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-md">
+                <div className="w-3/4 h-1.5 bg-gray-100 rounded-full mb-2.5"></div>
+                <div className="w-1/2 h-1.5 bg-gray-100 rounded-full"></div>
+              </motion.div>
+
+              {/* Back Right Card */}
+              <motion.div 
+                animate={{ y: [0, -6, 0], rotate: [12, 12, 12] }}
+                transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: 1 }}
+                className="absolute z-10 w-40 bg-white border border-gray-100 shadow-[0_10px_40px_rgb(0,0,0,0.03)] rounded-3xl p-3 pb-6 flex flex-col items-center -right-6 md:-right-12 top-20"
+              >
+                <div className="w-full aspect-square bg-white rounded-2xl mb-4 flex items-center justify-center overflow-hidden">
+                  <div className="w-20 h-16 bg-[#ffd166] rounded-md flex items-center justify-center text-2xl">
+                    🎧
+                  </div>
+                </div>
+                <div className="w-3/4 h-1.5 bg-gray-100 rounded-full mb-2.5"></div>
+                <div className="w-1/2 h-1.5 bg-gray-100 rounded-full"></div>
+              </motion.div>
+
+              {/* Center Main Card */}
+              <motion.div 
+                animate={{ y: [0, -8, 0] }}
+                transition={{ repeat: Infinity, duration: 4, ease: "easeInOut", delay: 0.5 }}
+                className="absolute z-20 w-48 bg-white border border-gray-100 shadow-[0_20px_50px_rgb(0,0,0,0.08)] rounded-[32px] p-4 pb-8 flex flex-col items-center top-8"
+              >
+                <div className="w-full aspect-square bg-[#f7f5ee] rounded-2xl mb-6 overflow-hidden p-3 flex items-center justify-center">
+                  <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=300&auto=format&fit=crop" alt="Serum" className="w-full h-full object-contain mix-blend-multiply drop-shadow-sm" />
+                </div>
+                <div className="w-4/5 h-2 bg-gray-100 rounded-full mb-3"></div>
+                <div className="w-3/5 h-2 bg-gray-100 rounded-full"></div>
+                
+                {/* Red Pill overlapping bottom */}
+                <div className="absolute -bottom-4 bg-[#eb5757] text-white text-[11px] font-bold px-4 py-2 rounded-full shadow-lg">
                   100% Refund
                 </div>
               </motion.div>
 
-              {/* Background floating card (Left) */}
-              <motion.div 
-                animate={{ y: [0, -8, 0], rotate: [-6, -6, -6] }}
-                transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
-                className="absolute z-10 w-40 h-48 bg-white/80 backdrop-blur-sm border border-gray-100 shadow-sm rounded-2xl -left-4 top-8 flex flex-col items-center justify-center p-4"
-              >
-                <div className="w-16 h-16 bg-gray-50 rounded-xl mb-3 overflow-hidden p-2">
-                   <img src="https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=300&auto=format&fit=crop" alt="Snack" className="w-full h-full object-contain mix-blend-multiply opacity-50" />
-                </div>
-                <div className="w-2/3 h-1.5 bg-gray-100 rounded-full mb-2"></div>
-                <div className="w-1/3 h-1.5 bg-gray-100 rounded-full"></div>
-              </motion.div>
-
-              {/* Background floating card (Right) */}
-              <motion.div 
-                animate={{ y: [0, -6, 0], rotate: [8, 8, 8] }}
-                transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: 2 }}
-                className="absolute z-10 w-40 h-48 bg-white/80 backdrop-blur-sm border border-gray-100 shadow-sm rounded-2xl -right-4 bottom-12 flex flex-col items-center justify-center p-4"
-              >
-                <div className="w-16 h-16 bg-gray-50 rounded-xl mb-3 overflow-hidden p-2 opacity-50">
-                  <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=300&auto=format&fit=crop" alt="Earbuds" className="w-full h-full object-contain mix-blend-multiply" />
-                </div>
-                <div className="w-2/3 h-1.5 bg-gray-100 rounded-full mb-2"></div>
-                <div className="w-1/3 h-1.5 bg-gray-100 rounded-full"></div>
-              </motion.div>
             </div>
           </motion.div>
         </div>
