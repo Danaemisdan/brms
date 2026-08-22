@@ -1,38 +1,29 @@
 "use client";
 
-import { Clock, TrendingUp, Droplets, Sparkles, Croissant } from "lucide-react";
 import { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
 
 const TRENDING_ITEMS = [
   {
-    tag: "HYDRATING OFFER",
+    tag: "HYDRATING",
     title: "Tender Coconut Water - 1L",
     price: "₹10",
     originalPrice: "₹187",
-    refund: "₹110 REFUND",
-    icon: Droplets,
-    bgColor: "bg-blue-50/50",
-    iconColor: "text-blue-500"
+    image: "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400&auto=format&fit=crop"
   },
   {
-    tag: "SKINCARE MINI",
-    title: "Anti-Aging Serum Mini Pack",
+    tag: "MINI PACK",
+    title: "Anti-Aging Serum Pack",
     price: "₹49",
     originalPrice: "₹299",
-    refund: "₹250 REFUND",
-    icon: Sparkles,
-    bgColor: "bg-amber-50/50",
-    iconColor: "text-amber-500"
+    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop"
   },
   {
-    tag: "HEALTHY SNACK",
-    title: "Organic Snack Bar Multipack",
+    tag: "ORGANIC",
+    title: "Snack Bar Multipack",
     price: "₹25",
     originalPrice: "₹150",
-    refund: "₹125 REFUND",
-    icon: Croissant,
-    bgColor: "bg-green-50/50",
-    iconColor: "text-green-500"
+    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400&auto=format&fit=crop"
   }
 ];
 
@@ -40,7 +31,6 @@ export function TrendingDeals() {
   const [timeLeft, setTimeLeft] = useState("08:21:07");
 
   useEffect(() => {
-    // Simple timer mock
     const timer = setInterval(() => {
       setTimeLeft(prev => {
         let [h, m, s] = prev.split(":").map(Number);
@@ -60,38 +50,47 @@ export function TrendingDeals() {
   }, []);
 
   return (
-    <section className="py-20 bg-[#fcfcfc]">
-      <div className="container mx-auto px-6">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-4">
-          <h2 className="text-[26px] font-bold tracking-tight text-gray-900 flex items-center">
-            <TrendingUp className="w-6 h-6 mr-3 text-[#eb5757]" /> Today's Trending
-          </h2>
-          <div className="flex items-center bg-white px-5 py-2.5 rounded-full shadow-[0_2px_10px_rgb(0,0,0,0.04)] border border-gray-100">
-            <Clock className="w-4 h-4 text-[#eb5757] mr-2" />
-            <span className="font-mono font-bold text-[15px]">{timeLeft}</span>
-            <span className="text-[10px] text-gray-400 ml-3 uppercase font-bold tracking-wider">Ends In</span>
+    <section className="py-32 bg-white relative">
+      <div className="container mx-auto px-6 max-w-6xl relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
+          <div>
+            <h2 className="text-[36px] font-bold tracking-tighter text-gray-900 leading-none mb-4">
+              Trending Today
+            </h2>
+            <p className="text-gray-500 text-sm max-w-sm">Discover the most sought-after sample drops happening right now.</p>
+          </div>
+          
+          <div className="flex items-center bg-gray-50/80 backdrop-blur-md px-6 py-3 rounded-full border border-gray-100/50">
+            <span className="text-[11px] text-gray-500 uppercase font-bold tracking-widest mr-4">Ends In</span>
+            <span className="font-mono font-bold text-lg text-gray-900">{timeLeft}</span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {TRENDING_ITEMS.map((item, idx) => (
-            <div key={idx} className="bg-white rounded-[24px] p-6 shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-gray-100 flex relative overflow-hidden group cursor-pointer hover:shadow-[0_8px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300">
-              <div className="flex-1 pr-6 flex flex-col">
-                <span className="text-[10px] font-bold text-gray-400 tracking-wider mb-3">{item.tag}</span>
-                <h3 className="font-bold text-[15px] text-gray-900 mb-4 line-clamp-2 leading-snug">{item.title}</h3>
-                
-                <div className="mt-auto">
-                  <div className="flex items-baseline gap-2 mb-3">
-                    <span className="text-xl font-bold tracking-tight text-gray-900">{item.price}</span>
+            <div key={idx} className="group cursor-pointer">
+              <div className="w-full aspect-[4/3] bg-[#f8f9fa] rounded-3xl mb-6 overflow-hidden relative">
+                <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur text-[10px] font-bold px-3 py-1.5 rounded-full tracking-wider text-gray-600">
+                  {item.tag}
+                </div>
+                <img 
+                  src={item.image} 
+                  alt={item.title} 
+                  className="w-full h-full object-cover mix-blend-multiply opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out" 
+                />
+              </div>
+              
+              <div className="flex justify-between items-start px-2">
+                <div>
+                  <h3 className="font-bold text-[16px] text-gray-900 mb-2 tracking-tight">{item.title}</h3>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-lg font-bold tracking-tight text-gray-900">{item.price}</span>
                     <span className="text-[13px] text-gray-400 line-through font-medium">{item.originalPrice}</span>
                   </div>
-                  <div className="inline-block bg-[#fdf3e7] text-[#d98528] text-[11px] font-bold px-2.5 py-1 rounded-md">
-                    {item.refund}
-                  </div>
                 </div>
-              </div>
-              <div className={`w-[110px] h-[110px] rounded-2xl flex items-center justify-center ${item.bgColor}`}>
-                <item.icon className={`w-10 h-10 ${item.iconColor} stroke-[1.5px]`} />
+                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#1a1a24] group-hover:text-white transition-colors duration-300">
+                  <ArrowRight className="w-4 h-4" />
+                </div>
               </div>
             </div>
           ))}

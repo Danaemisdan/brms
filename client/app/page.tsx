@@ -18,17 +18,17 @@ export default function Home() {
       <section className="bg-[#fcfcfc] text-gray-900 pt-16 pb-20 relative overflow-hidden">
         <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="flex flex-col items-start"
           >
-            <h1 className="text-4xl md:text-[3.5rem] font-bold leading-[1.1] mb-6 tracking-tight">
+            <h1 className="text-5xl md:text-[5.5rem] font-black leading-[1.05] mb-8 tracking-tighter text-[#1a1a24]">
               Discover New Brands.<br />
               Sample for Free.
             </h1>
-            <p className="text-sm md:text-base text-gray-600 mb-8 max-w-sm leading-relaxed">
-              Register to explore a world of free product samples from brands you'll love.
+            <p className="text-base md:text-lg text-gray-500 mb-12 max-w-md leading-relaxed tracking-tight">
+              Register to explore a world of free product samples from premium brands you'll love.
             </p>
             
             <div className="flex w-full max-w-md items-center bg-white border border-gray-200 rounded-full p-1.5 mb-8 shadow-sm">
