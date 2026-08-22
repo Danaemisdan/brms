@@ -214,10 +214,8 @@ function LoginComponent() {
             
             <Card className="w-full max-w-md glass-panel">
                 <CardHeader className="space-y-6 text-center pb-8 pt-8">
-                    <div className="flex flex-col items-center justify-center w-full">
-                        <img src="/logo.svg" alt="Brand For You Logo" className="h-10 w-auto -mb-1" />
-                        <div className="h-[1px] w-16 bg-primary/50 mt-2 mb-1" />
-                        <p className="font-sans text-[9px] tracking-[0.3em] text-primary/70 uppercase">Brand For You</p>
+                    <div className="flex flex-col items-center">
+                        <h1 className="text-2xl font-bold tracking-tight text-gray-900 mb-1">Sample Lelo</h1>
                     </div>
                     <div>
                         <CardTitle className="text-xl font-sans font-bold text-foreground tracking-widest uppercase">Portal Access</CardTitle>

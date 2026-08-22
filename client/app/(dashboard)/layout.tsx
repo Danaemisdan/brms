@@ -106,10 +106,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-card/80 backdrop-blur-xl border-r border-border shadow-sm hidden md:flex flex-col">
                 {/* Logo Area */}
                 <div className="flex items-center justify-center h-24 border-b border-border shrink-0">
-                    <Link href={nav[0]?.href || "/"} className="flex flex-col items-center justify-center w-full group transition-transform hover:scale-105">
-                        <img src="/logo.svg" alt="Brand For You Logo" className="h-10 w-auto -mb-1" />
-                        <div className="h-[2px] w-12 bg-primary/50 mt-1 mb-1" />
-                        <p className="font-sans text-[9px] tracking-[0.2em] text-primary/70 font-semibold uppercase">Brand For You</p>
+                    <Link href="/" className="flex flex-col items-center hover:opacity-90 transition-opacity">
+                        <h1 className="text-xl font-bold tracking-tight text-gray-900 mb-1">Sample Lelo</h1>
                     </Link>
                 </div>
 

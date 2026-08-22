@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Twitter, Instagram, Facebook, MessageCircle, Send } from "lucide-react";
+import { Instagram, Facebook, MessageCircle, Send, Linkedin } from "lucide-react";
+import { TelegramLink } from "./TelegramLink";
 
 export function Footer() {
   return (
@@ -12,14 +13,14 @@ export function Footer() {
             We help online stores build trust, get noticed, and sell more on every shopping website using smart technology and data.
           </p>
           <div className="flex gap-4">
-            <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
-              <Twitter className="w-5 h-5 text-white" />
+            <a href="https://www.linkedin.com/company/sample-lelo/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#0077b5] hover:text-white transition-colors">
+              <Linkedin className="w-5 h-5" />
             </a>
-            <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
-              <Instagram className="w-5 h-5 text-white" />
+            <a href="https://www.instagram.com/samplelelo.in/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#E1306C] hover:text-white transition-colors">
+              <Instagram className="w-5 h-5" />
             </a>
-            <a href="#" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors">
-              <Facebook className="w-5 h-5 text-white" />
+            <a href="https://facebook.com/share/1D2NZ1szk5/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-[#1877F2] hover:text-white transition-colors">
+              <Facebook className="w-5 h-5" />
             </a>
           </div>
         </div>
@@ -41,9 +42,7 @@ export function Footer() {
           <h4 className="font-bold text-lg mb-6">Join Community</h4>
           <ul className="space-y-4 text-sm text-gray-400 mb-8">
             <li>
-              <a href="#" className="flex items-center gap-3 hover:text-primary transition-colors">
-                <Send className="w-5 h-5" /> Telegram Community
-              </a>
+              <TelegramLink />
             </li>
             <li>
               <a href="#" className="flex items-center gap-3 hover:text-primary transition-colors">
