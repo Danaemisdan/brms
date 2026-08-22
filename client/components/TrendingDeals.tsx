@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { ArrowRight } from "lucide-react";
+import { MagicCard } from "./ui/MagicCard";
+import { ShinyText } from "./ui/ShinyText";
 
 const TRENDING_ITEMS = [
   {
@@ -51,16 +53,18 @@ export function TrendingDeals() {
 
   return (
     <section className="py-32 bg-white relative">
+      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 pointer-events-none"></div>
+      
       <div className="container mx-auto px-6 max-w-6xl relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
           <div>
-            <h2 className="text-[36px] font-bold tracking-tighter text-gray-900 leading-none mb-4">
-              Trending Today
+            <h2 className="text-[40px] font-black tracking-tighter text-gray-900 leading-none mb-4">
+              Trending <ShinyText text="Today" />
             </h2>
-            <p className="text-gray-500 text-sm max-w-sm">Discover the most sought-after sample drops happening right now.</p>
+            <p className="text-gray-500 text-sm max-w-sm leading-relaxed">Discover the most sought-after sample drops happening right now, before they run out.</p>
           </div>
           
-          <div className="flex items-center bg-gray-50/80 backdrop-blur-md px-6 py-3 rounded-full border border-gray-100/50">
+          <div className="flex items-center bg-white/60 backdrop-blur-xl px-6 py-3 rounded-full border border-gray-200/50 shadow-sm">
             <span className="text-[11px] text-gray-500 uppercase font-bold tracking-widest mr-4">Ends In</span>
             <span className="font-mono font-bold text-lg text-gray-900">{timeLeft}</span>
           </div>
@@ -68,9 +72,9 @@ export function TrendingDeals() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {TRENDING_ITEMS.map((item, idx) => (
-            <div key={idx} className="group cursor-pointer">
-              <div className="w-full aspect-[4/3] bg-[#f8f9fa] rounded-3xl mb-6 overflow-hidden relative">
-                <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur text-[10px] font-bold px-3 py-1.5 rounded-full tracking-wider text-gray-600">
+            <MagicCard key={idx} className="group cursor-pointer p-2 flex flex-col">
+              <div className="w-full aspect-[4/3] bg-[#f8f9fa] rounded-[20px] mb-6 overflow-hidden relative">
+                <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-md text-[10px] font-bold px-3 py-1.5 rounded-full tracking-wider text-gray-700 shadow-sm">
                   {item.tag}
                 </div>
                 <img 
@@ -80,19 +84,19 @@ export function TrendingDeals() {
                 />
               </div>
               
-              <div className="flex justify-between items-start px-2">
+              <div className="flex justify-between items-start px-4 pb-4">
                 <div>
-                  <h3 className="font-bold text-[16px] text-gray-900 mb-2 tracking-tight">{item.title}</h3>
+                  <h3 className="font-bold text-[18px] text-gray-900 mb-2 tracking-tight leading-tight">{item.title}</h3>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-lg font-bold tracking-tight text-gray-900">{item.price}</span>
-                    <span className="text-[13px] text-gray-400 line-through font-medium">{item.originalPrice}</span>
+                    <span className="text-xl font-bold tracking-tight text-gray-900">{item.price}</span>
+                    <span className="text-[14px] text-gray-400 line-through font-medium">{item.originalPrice}</span>
                   </div>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center group-hover:bg-[#1a1a24] group-hover:text-white transition-colors duration-300">
+                <div className="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center group-hover:bg-[#eb5757] group-hover:text-white group-hover:border-[#eb5757] transition-all duration-300 shadow-sm mt-1">
                   <ArrowRight className="w-4 h-4" />
                 </div>
               </div>
-            </div>
+            </MagicCard>
           ))}
         </div>
       </div>

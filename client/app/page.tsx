@@ -10,6 +10,8 @@ import { HotSamples } from "@/components/HotSamples";
 import { TrustedPartners } from "@/components/TrustedPartners";
 import { FaqSection } from "@/components/FaqSection";
 import { Search, ShoppingBag, ShoppingCart, PenTool, DollarSign } from "lucide-react";
+import { ShinyText } from "@/components/ui/ShinyText";
+import { MagicCard } from "@/components/ui/MagicCard";
 
 export default function Home() {
   return (
@@ -23,8 +25,8 @@ export default function Home() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="flex flex-col items-start"
           >
-            <h1 className="text-5xl md:text-[5.5rem] font-black leading-[1.05] mb-8 tracking-tighter text-[#1a1a24]">
-              Discover New Brands.<br />
+            <h1 className="text-5xl md:text-[6rem] font-black leading-[1.05] mb-8 tracking-tighter text-[#1a1a24]">
+              Discover <ShinyText text="New Brands." /><br />
               Sample for Free.
             </h1>
             <p className="text-base md:text-lg text-gray-500 mb-12 max-w-md leading-relaxed tracking-tight">
