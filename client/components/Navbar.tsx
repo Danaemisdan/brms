@@ -13,8 +13,9 @@ export function Navbar() {
         
         <div className="hidden md:flex items-center gap-8">
           <Link href="/" className="text-sm font-semibold text-primary">Home</Link>
-          <Link href="/browse" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">Browse Deals</Link>
-          <Link href="/#categories" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">categories</Link>
+          <Link href="/browse" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">Sample Directory</Link>
+          <Link href="/#how-it-works" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">How to Get Samples</Link>
+          <Link href="/#community" className="text-sm font-semibold text-foreground hover:text-primary transition-colors">Community</Link>
         </div>
 
         <div className="flex items-center gap-6">
@@ -23,7 +24,7 @@ export function Navbar() {
           </Link>
           <Link href="/submit-review">
             <Button className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-6 font-semibold">
-              Submit Review
+              Submit Feedback
             </Button>
           </Link>
         </div>

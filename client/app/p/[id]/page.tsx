@@ -10,9 +10,9 @@ export default function ProductDetailPage() {
       <div className="text-xs text-muted-foreground mb-8 flex items-center gap-2 font-semibold">
         <Link href="/" className="hover:text-primary transition-colors">Home</Link> 
         <span>&gt;</span> 
-        <span>Deals</span> 
+        <Link href="/browse" className="hover:text-primary transition-colors">Samples</Link> 
         <span>&gt;</span> 
-        <span className="text-foreground">Review Deal</span>
+        <span className="text-foreground">Request Sample</span>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
@@ -28,18 +28,18 @@ export default function ProductDetailPage() {
         {/* Product Info */}
         <div className="flex flex-col justify-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-6 leading-tight">
-            Wireless Earbuds: 100%<br />Cashback for Review
+            Wireless Earbuds: 100%<br />Refund for Feedback
           </h1>
           <p className="text-muted-foreground text-sm leading-relaxed mb-8">
-            The wireless earbuds 100% cashback deal review product for you. Get our amazing product free via a personal assured proper process and transaction rebate cashback soon as you review. Other products come out on standard devices and more details on our website and other details.
+            Get our amazing product free via a personal assured proper process and transaction rebate refund as soon as you provide your feedback. Try the wireless earbuds today and share your thoughts to get a 100% refund.
           </p>
           
           <div className="mb-4">
-            <span className="text-sm font-bold text-foreground">Claim Review Spot (1 Left)</span>
+            <span className="text-sm font-bold text-foreground">Give us your honest thoughts after trying. (for logged in users)</span>
           </div>
           
           <Button className="bg-primary hover:bg-primary/90 text-white rounded-full py-6 text-sm font-semibold w-full sm:w-auto px-12 shadow-md">
-            Claim Review Spot (1 Left)
+            Request Sample
           </Button>
         </div>
       </div>
