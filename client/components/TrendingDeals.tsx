@@ -5,32 +5,40 @@ import { ArrowRight } from "lucide-react";
 import { MagicCard } from "./ui/MagicCard";
 import { ShinyText } from "./ui/ShinyText";
 
-const TRENDING_ITEMS = [
-  {
-    tag: "HYDRATING",
-    title: "Tender Coconut Water - 1L",
-    price: "₹10",
-    originalPrice: "₹187",
-    image: "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400&auto=format&fit=crop"
-  },
-  {
-    tag: "MINI PACK",
-    title: "Anti-Aging Serum Pack",
-    price: "₹49",
-    originalPrice: "₹299",
-    image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop"
-  },
-  {
-    tag: "ORGANIC",
-    title: "Snack Bar Multipack",
-    price: "₹25",
-    originalPrice: "₹150",
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=400&auto=format&fit=crop"
-  }
-];
+import { api } from "@/lib/api";
+
+interface Product {
+  id: string;
+  brand: string;
+  product_name: string;
+  product_image: string;
+  real_price: number;
+  offer_price: number;
+  refund_amount: number;
+  deal_type: string;
+}
 
 export function TrendingDeals() {
   const [timeLeft, setTimeLeft] = useState("08:21:07");
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get("/products/public", { requiresAuth: false });
+        if (res.data) {
+          // Take the first 3 products for trending section
+          setProducts(res.data.slice(0, 3));
+        }
+      } catch (err) {
+        console.error("Failed to load trending products", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -71,33 +79,39 @@ export function TrendingDeals() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {TRENDING_ITEMS.map((item, idx) => (
-            <MagicCard key={idx} className="group cursor-pointer p-2 flex flex-col">
-              <div className="w-full aspect-[4/3] bg-[#f8f9fa] rounded-[20px] mb-6 overflow-hidden relative">
-                <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-md text-[10px] font-bold px-3 py-1.5 rounded-full tracking-wider text-gray-700 shadow-sm">
-                  {item.tag}
+          {loading ? (
+             <div className="col-span-3 text-center py-10 text-gray-500 text-sm tracking-widest uppercase">Loading latest drops...</div>
+          ) : products.length === 0 ? (
+             <div className="col-span-3 text-center py-10 text-gray-500 text-sm tracking-widest uppercase">No trending drops right now.</div>
+          ) : (
+            products.map((item, idx) => (
+              <MagicCard key={item.id} className="group cursor-pointer p-2 flex flex-col">
+                <div className="w-full aspect-[4/3] bg-[#f8f9fa] rounded-[20px] mb-6 overflow-hidden relative">
+                  <div className="absolute top-4 left-4 z-10 bg-white/90 backdrop-blur-md text-[10px] font-bold px-3 py-1.5 rounded-full tracking-wider text-gray-700 shadow-sm uppercase">
+                    {item.deal_type || item.brand}
+                  </div>
+                  <img 
+                    src={item.product_image || "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400&auto=format&fit=crop"} 
+                    alt={item.product_name} 
+                    className="w-full h-full object-cover mix-blend-multiply opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out" 
+                  />
                 </div>
-                <img 
-                  src={item.image} 
-                  alt={item.title} 
-                  className="w-full h-full object-cover mix-blend-multiply opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out" 
-                />
-              </div>
-              
-              <div className="flex justify-between items-start px-4 pb-4">
-                <div>
-                  <h3 className="font-bold text-[18px] text-gray-900 mb-2 tracking-tight leading-tight">{item.title}</h3>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-xl font-bold tracking-tight text-gray-900">{item.price}</span>
-                    <span className="text-[14px] text-gray-400 line-through font-medium">{item.originalPrice}</span>
+                
+                <div className="flex justify-between items-start px-4 pb-4">
+                  <div>
+                    <h3 className="font-bold text-[18px] text-gray-900 mb-2 tracking-tight leading-tight line-clamp-1">{item.product_name}</h3>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-xl font-bold tracking-tight text-gray-900">₹{item.offer_price || 0}</span>
+                      <span className="text-[14px] text-gray-400 line-through font-medium">₹{item.real_price || 0}</span>
+                    </div>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center group-hover:bg-[#eb5757] group-hover:text-white group-hover:border-[#eb5757] transition-all duration-300 shadow-sm mt-1 shrink-0">
+                    <ArrowRight className="w-4 h-4" />
                   </div>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center group-hover:bg-[#eb5757] group-hover:text-white group-hover:border-[#eb5757] transition-all duration-300 shadow-sm mt-1">
-                  <ArrowRight className="w-4 h-4" />
-                </div>
-              </div>
-            </MagicCard>
-          ))}
+              </MagicCard>
+            ))
+          )}
         </div>
       </div>
     </section>

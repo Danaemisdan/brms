@@ -5,6 +5,9 @@ import { roleGuard } from "../../middleware/roleGuard";
 
 const router = Router();
 
+// Public route for the homepage
+router.get("/public", ProductController.getPublicCampaigns);
+
 // Public route for the /p/[id] landing page
 router.get("/:id/campaign", ProductController.getCampaignDetails);
 

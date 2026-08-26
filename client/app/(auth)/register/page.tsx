@@ -9,8 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+import { api } from "@/lib/api";
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -47,20 +46,7 @@ export default function RegisterPage() {
         setIsLoading(true);
 
         try {
-            const res = await fetch(`${API_URL}/api/auth/register`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({
-                    ...formData,
-                }),
-            });
-            const data = await res.json();
-
-            if (!res.ok) {
-                setError(data.error || "Registration failed");
-                return;
-            }
+            const data = await api.post("/auth/register", formData, { requiresAuth: false });
 
             if (data.token) {
                 localStorage.setItem("token", data.token);

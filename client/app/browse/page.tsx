@@ -1,17 +1,38 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { ProductCard } from "@/components/ProductCard";
+import { api } from "@/lib/api";
 
-const FEATURED_SAMPLES = [
-  { id: "1", title: "Anti-Aging Serum Mini", image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=300&auto=format&fit=crop" },
-  { id: "2", title: "Organic Snack Bar Mini", image: "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=300&auto=format&fit=crop" },
-  { id: "3", title: "Organic Snack Bar", image: "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=300&auto=format&fit=crop" },
-  { id: "4", title: "Anti-Aging Serum Mini", image: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=300&auto=format&fit=crop" },
-  { id: "5", title: "Organic Serum Bar Mini", image: "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=300&auto=format&fit=crop" },
-  { id: "6", title: "Organic Snack Bar", image: "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=300&auto=format&fit=crop" },
-];
+interface Product {
+  id: string;
+  brand: string;
+  product_name: string;
+  product_image: string;
+  real_price: number;
+  offer_price: number;
+}
 
 export default function BrowsePage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await api.get("/products/public", { requiresAuth: false });
+        if (res.data) {
+          setProducts(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to load products", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, []);
+
   return (
     <div className="bg-white min-h-screen">
       <div className="container mx-auto px-6 py-12">
@@ -55,11 +76,17 @@ export default function BrowsePage() {
 
           {/* Product Grid */}
           <div className="flex-1">
-            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
-              {FEATURED_SAMPLES.map((sample) => (
-                <ProductCard key={sample.id} {...sample} />
-              ))}
-            </div>
+            {loading ? (
+               <div className="text-center py-20 text-gray-400 font-semibold tracking-widest uppercase">Loading directory...</div>
+            ) : products.length === 0 ? (
+               <div className="text-center py-20 text-gray-400 font-semibold tracking-widest uppercase">No samples available at the moment.</div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+                {products.map((sample) => (
+                  <ProductCard key={sample.id} {...sample} />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

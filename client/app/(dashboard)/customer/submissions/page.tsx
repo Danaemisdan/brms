@@ -33,12 +33,7 @@ function CustomerSubmissionsContent() {
 
     const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
     const [activeOrder, setActiveOrder] = useState<any>(null);
-    const [reviewLink, setReviewLink] = useState("");
     const [reviewScreenshot, setReviewScreenshot] = useState("");
-    const [refundMethod, setRefundMethod] = useState<"UPI" | "BANK" | "QR">("UPI");
-    const [upiId, setUpiId] = useState("");
-    const [qrCodeUrl, setQrCodeUrl] = useState("");
-    const [bankDetails, setBankDetails] = useState({ accountName: "", accountNumber: "", ifsc: "" });
 
     // Add New Modal State
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -152,33 +147,7 @@ function CustomerSubmissionsContent() {
     const openRefundModal = (order: any) => {
         setActiveOrder(order);
         setIsRefundModalOpen(true);
-        setReviewLink("");
         setReviewScreenshot("");
-
-        let initialMethod: "UPI" | "BANK" = "UPI";
-        let initialUpi = "";
-        const initialBank = { accountName: "", accountNumber: "", ifsc: "" };
-
-        if (userProfile?.encrypted_bank_data) {
-            const bankStr = userProfile.encrypted_bank_data;
-            if (bankStr.includes("Bank AC:")) {
-                initialMethod = "BANK";
-                // Regex or split to extract: `Bank AC: ${acc}, IFSC: ${ifsc}, Name: ${name}`
-                const acMatch = bankStr.match(/Bank AC:\s*([^,]+)/);
-                const ifscMatch = bankStr.match(/IFSC:\s*([^,]+)/);
-                const nameMatch = bankStr.match(/Name:\s*(.+)/);
-                if (acMatch) initialBank.accountNumber = acMatch[1].trim();
-                if (ifscMatch) initialBank.ifsc = ifscMatch[1].trim();
-                if (nameMatch) initialBank.accountName = nameMatch[1].trim();
-            } else {
-                initialMethod = "UPI";
-                initialUpi = bankStr;
-            }
-        }
-
-        setRefundMethod(initialMethod);
-        setUpiId(initialUpi);
-        setBankDetails(initialBank);
     };
 
     const handleApplyRefundSubmit = async (e: React.FormEvent) => {
@@ -189,15 +158,11 @@ function CustomerSubmissionsContent() {
         }
         setIsSubmitting(true);
         try {
-            // Need the customer's mobile from their profile, but we can just ask for it or let backend infer from token
-            // Wait, the backend endpoint `api/orders/:id/refund` currently requires `mobile` to verify ownership in the public route, but since they are logged in, we could pass a dummy mobile if needed, or update backend?
-            // Actually, we can get the user profile first, or let backend just use the order's user_id directly. For now, passing a dummy '9999999999' or extracting mobile from their token if possible. Let's send a dummy mobile for now, wait the backend public route currently requires `mobile`.
-            // Let's change the backend public route later or just pass dummy mobile.
-            // Oh right, we can parse the JWT to get their mobile if needed.
-
-            // To be safe, let's just make the request.
             const token = localStorage.getItem("token") || "";
             const payload = JSON.parse(atob(token.split('.')[1]));
+
+            // We default to the profile's encrypted bank data for the refund method
+            const defaultUpiId = userProfile?.encrypted_bank_data || "Default Account";
 
             const res = await apiFetch(`${API_URL}/api/orders/${activeOrder.id}/refund`, {
                 method: "POST",
@@ -206,10 +171,10 @@ function CustomerSubmissionsContent() {
                     Authorization: `Bearer ${token}`
                 },
                 body: JSON.stringify({
-                    review_url: reviewLink,
+                    review_url: "",
                     review_screenshot: reviewScreenshot,
-                    upi_id: refundMethod === "UPI" ? upiId : refundMethod === "QR" ? "QR Code Provided" : `Bank AC: ${bankDetails.accountNumber}, IFSC: ${bankDetails.ifsc}, Name: ${bankDetails.accountName}`,
-                    qr_code_url: refundMethod === "QR" ? qrCodeUrl : "",
+                    upi_id: defaultUpiId,
+                    qr_code_url: "",
                     mobile: payload.mobile || ""
                 })
             });
@@ -448,19 +413,11 @@ function CustomerSubmissionsContent() {
                         <form onSubmit={handleApplyRefundSubmit} className="space-y-4 pt-4">
                             <div>
                                 <h4 className="font-semibold text-lg">{activeOrder.productName}</h4>
-                                <p className="text-sm text-gray-500 mb-4">Submit your review link and claim your ₹{activeOrder.refundAmount} refund.</p>
-                            </div>
-                            <div className="space-y-1">
-                                <Label>Review URL Link</Label>
-                                <Input placeholder={`Link to your ${activeOrder.platform} review (Optional)`} value={reviewLink} onChange={e => setReviewLink(e.target.value)} />
+                                <p className="text-sm text-gray-500 mb-4">Upload your review screenshot and claim your ₹{activeOrder.refundAmount} refund instantly.</p>
                             </div>
 
                             <div className="space-y-1 mt-4">
                                 <Label>Review Screenshot <span className="text-red-500">*</span></Label>
-                                <p className="text-xs text-red-600 font-medium my-1.5 flex items-start gap-1 p-2 bg-red-50 rounded-md border border-red-100">
-                                    <span className="text-red-600 mt-0.5">⚠️</span>
-                                    Please upload a "Full Long Screenshot" showing your published review along with your actual Order ID, Customer Name, and Total Order Value. Uncropped full screenshots are required for AI verification.
-                                </p>
                                 <div className="mt-2">
                                     <ImageUpload
                                         value={reviewScreenshot}
@@ -468,55 +425,6 @@ function CustomerSubmissionsContent() {
                                     />
                                 </div>
                             </div>
-
-                            <div className="space-y-3 pt-2">
-                                <Label>Refund Method <span className="text-red-500">*</span></Label>
-                                <div className="flex gap-4">
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <input type="radio" className="w-4 h-4 text-blue-600" checked={refundMethod === "UPI"} onChange={() => setRefundMethod("UPI")} />
-                                        <span className="text-sm">UPI</span>
-                                    </label>
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <input type="radio" className="w-4 h-4 text-blue-600" checked={refundMethod === "BANK"} onChange={() => setRefundMethod("BANK")} />
-                                        <span className="text-sm">Bank Account</span>
-                                    </label>
-                                    <label className="flex items-center gap-2 cursor-pointer">
-                                        <input type="radio" className="w-4 h-4 text-blue-600" checked={refundMethod === "QR"} onChange={() => setRefundMethod("QR")} />
-                                        <span className="text-sm">QR Code</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            {refundMethod === "UPI" ? (
-                                <div className="space-y-1">
-                                    <Label>UPI ID <span className="text-red-500">*</span></Label>
-                                    <Input required placeholder="Enter UPI ID (e.g. yourname@upi)" value={upiId} onChange={e => setUpiId(e.target.value)} />
-                                </div>
-                            ) : refundMethod === "QR" ? (
-                                <div className="space-y-2 border p-4 rounded-lg bg-gray-50">
-                                    <Label>Upload Payment QR Code <span className="text-red-500">*</span></Label>
-                                    <p className="text-xs text-gray-500 mb-2">Upload a clear image of your PhonePe/GPay/Paytm QR Code.</p>
-                                    <ImageUpload
-                                        value={qrCodeUrl}
-                                        onChange={setQrCodeUrl}
-                                    />
-                                </div>
-                            ) : (
-                                <div className="space-y-3 border p-4 rounded-lg bg-gray-50">
-                                    <div className="space-y-1">
-                                        <Label>Account Holder Name <span className="text-red-500">*</span></Label>
-                                        <Input required placeholder="e.g. John Doe" value={bankDetails.accountName} onChange={e => setBankDetails({ ...bankDetails, accountName: e.target.value })} />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <Label>Account Number <span className="text-red-500">*</span></Label>
-                                        <Input required placeholder="Enter Account Number" type="password" value={bankDetails.accountNumber} onChange={e => setBankDetails({ ...bankDetails, accountNumber: e.target.value })} />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <Label>IFSC Code <span className="text-red-500">*</span></Label>
-                                        <Input required placeholder="e.g. HDFC0001234" value={bankDetails.ifsc} onChange={e => setBankDetails({ ...bankDetails, ifsc: e.target.value })} />
-                                    </div>
-                                </div>
-                            )}
 
                             <DialogFooter className="mt-6">
                                 <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => setIsRefundModalOpen(false)}>Back</Button>

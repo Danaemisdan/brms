@@ -8,8 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+import { api } from "@/lib/api";
 
 export default function LoginPage() {
     return (
@@ -65,19 +64,8 @@ function LoginComponent() {
         setIsLoading(true);
 
         try {
-            const res = await fetch(`${API_URL}/api/auth/login`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({ identifier, password }),
-            });
-            const data = await res.json();
-
-            if (!res.ok) {
-                setError(data.error || "Login failed");
-                return;
-            }
-
+            const data = await api.post("/auth/login", { identifier, password }, { requiresAuth: false });
+            
             if (data.token) {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("role", data.user.role.toUpperCase());
@@ -106,18 +94,9 @@ function LoginComponent() {
         setSuccessMsg("");
         setIsLoading(true);
         try {
-            const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email: forgotEmail }),
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                setError(data.error || "Request failed");
-            } else {
-                setSuccessMsg("If that email exists, a reset link has been sent to it.");
-                setForgotEmail("");
-            }
+            const data = await api.post("/auth/forgot-password", { email: forgotEmail }, { requiresAuth: false });
+            setSuccessMsg("If that email exists, a reset link has been sent to it.");
+            setForgotEmail("");
         } catch {
             setError("Network error");
         } finally {
@@ -135,18 +114,9 @@ function LoginComponent() {
         setSuccessMsg("");
         setIsLoading(true);
         try {
-            const res = await fetch(`${API_URL}/api/auth/reset-password`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token: resetToken, newPassword }),
-            });
-            const data = await res.json();
-            if (!res.ok) {
-                setError(data.error || "Reset failed");
-            } else {
-                setSuccessMsg("Password successfully reset! You can now log in.");
-                setTimeout(() => router.push("/login"), 3000);
-            }
+            const data = await api.post("/auth/reset-password", { token: resetToken, newPassword }, { requiresAuth: false });
+            setSuccessMsg("Password successfully reset! You can now log in.");
+            setTimeout(() => router.push("/login"), 3000);
         } catch {
             setError("Network error");
         } finally {

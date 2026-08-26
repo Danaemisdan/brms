@@ -5,6 +5,42 @@ import { resolveRecipients } from "../whatsapp/targeting";
 const prisma = new PrismaClient();
 
 export class ProductController {
+    /**
+     * Get active, public campaigns for the homepage (No auth required)
+     */
+    static async getPublicCampaigns(req: Request, res: Response) {
+        try {
+            const campaigns = await prisma.product.findMany({
+                where: {
+                    status: "ACTIVE",
+                    is_public: true,
+                },
+                orderBy: {
+                    created_at: "desc",
+                },
+                take: 12, // Limit to 12 for the homepage display
+                select: {
+                    id: true,
+                    product_name: true,
+                    product_image: true,
+                    brand: true,
+                    real_price: true,
+                    offer_price: true,
+                    refund_amount: true,
+                    total_slots: true,
+                    filled_slots: true,
+                    deadline: true,
+                    deal_type: true
+                }
+            });
+
+            return res.status(200).json({ message: "Public campaigns fetched successfully", data: campaigns });
+        } catch (error) {
+            console.error("Error fetching public campaigns:", error);
+            return res.status(500).json({ error: "Error fetching campaigns" });
+        }
+    }
+
     // PUBLIC: Get product details for the /p/[id] landing page
     static async getCampaignDetails(req: Request, res: Response) {
         try {
