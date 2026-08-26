@@ -13,6 +13,7 @@ import { Search, ShoppingBag, ShoppingCart, PenTool, DollarSign, Star } from "lu
 import { ShinyText } from "@/components/ui/ShinyText";
 import { MagicCard } from "@/components/ui/MagicCard";
 import { VelocityScroll } from "@/components/ui/VelocityScroll";
+import { HeroScroller } from "@/components/HeroScroller";
 
 export default function Home() {
   return (
@@ -51,52 +52,12 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="flex justify-center items-center relative h-[400px] md:h-[500px] w-full"
+            className="flex justify-center items-center relative w-full"
           >
             {/* Decorative background blur */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-to-tr from-[#eb5757]/20 to-orange-400/20 rounded-full blur-[100px] pointer-events-none"></div>
 
-            <motion.div 
-              whileHover={{ scale: 1.02, rotateY: 5, rotateX: 5 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="relative w-full max-w-[420px] h-[480px] bg-white rounded-[40px] p-4 shadow-[0_40px_80px_rgba(0,0,0,0.07)] border border-gray-100 z-20 overflow-hidden cursor-pointer group perspective-[1000px]"
-            >
-              <div className="absolute inset-0 bg-[#f8f6f5] rounded-[36px] overflow-hidden m-2">
-                <img 
-                  src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=800&auto=format&fit=crop" 
-                  alt="Premium Collection" 
-                  className="w-full h-full object-cover opacity-90 mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out" 
-                />
-                
-                {/* Top badges */}
-                <div className="absolute top-6 left-6 right-6 flex justify-between items-start">
-                  <span className="bg-white/90 backdrop-blur-md text-black text-[10px] font-bold px-4 py-2 rounded-full shadow-sm tracking-widest uppercase">
-                    New Drop
-                  </span>
-                  <div className="w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm">
-                    <Star className="w-4 h-4 text-black" fill="currentColor" />
-                  </div>
-                </div>
-                
-                {/* Bottom Card Content */}
-                <div className="absolute bottom-6 left-6 right-6">
-                  <div className="bg-white/80 backdrop-blur-xl p-6 rounded-[24px] border border-white/50 shadow-xl transform group-hover:-translate-y-2 transition-transform duration-500">
-                     <p className="text-[#eb5757] text-[10px] font-bold uppercase tracking-widest mb-1">Premium Fragrance</p>
-                     <h3 className="text-2xl font-black tracking-tighter text-gray-900 mb-1">L'Eau de Parfum</h3>
-                     <p className="text-sm text-gray-500 mb-4 font-medium line-clamp-1">Experience notes of vanilla and cedarwood.</p>
-                     
-                     <div className="flex items-center justify-between">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-2xl font-black text-gray-900 tracking-tighter">100% Free</span>
-                        </div>
-                        <div className="bg-black text-white text-xs font-bold px-4 py-2 rounded-full">
-                          Claim Now
-                        </div>
-                     </div>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            <HeroScroller />
           </motion.div>
         </div>
       </section>
