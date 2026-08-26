@@ -51,48 +51,49 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="flex justify-center items-center relative h-[400px] md:h-[500px] perspective-[1000px]"
+            className="flex justify-center items-center relative h-[400px] md:h-[500px] w-full"
           >
-            {/* Ambient Background Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-red-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+            {/* Decorative background blur */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-gradient-to-tr from-[#eb5757]/20 to-orange-400/20 rounded-full blur-[100px] pointer-events-none"></div>
 
             <motion.div 
-              animate={{ y: [-15, 15, -15], rotateZ: [-2, 2, -2] }}
-              transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
-              className="relative z-30"
+              whileHover={{ scale: 1.02, rotateY: 5, rotateX: 5 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              className="relative w-full max-w-[420px] h-[480px] bg-white rounded-[40px] p-4 shadow-[0_40px_80px_rgba(0,0,0,0.07)] border border-gray-100 z-20 overflow-hidden cursor-pointer group perspective-[1000px]"
             >
-              <div className="w-[280px] h-[380px] bg-white/60 backdrop-blur-3xl rounded-[32px] p-3 border border-white/60 shadow-[0_30px_60px_rgba(0,0,0,0.08)] flex flex-col group">
-                <div className="flex-1 w-full rounded-[24px] overflow-hidden relative">
-                  <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=800&auto=format&fit=crop" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Premium Cosmetic" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-                  <div className="absolute bottom-5 left-5 right-5">
-                     <p className="text-white/80 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Premium Collection</p>
-                     <p className="text-white text-xl font-black tracking-tight leading-tight">L'Eau de Parfum</p>
+              <div className="absolute inset-0 bg-[#f8f6f5] rounded-[36px] overflow-hidden m-2">
+                <img 
+                  src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=800&auto=format&fit=crop" 
+                  alt="Premium Collection" 
+                  className="w-full h-full object-cover opacity-90 mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out" 
+                />
+                
+                {/* Top badges */}
+                <div className="absolute top-6 left-6 right-6 flex justify-between items-start">
+                  <span className="bg-white/90 backdrop-blur-md text-black text-[10px] font-bold px-4 py-2 rounded-full shadow-sm tracking-widest uppercase">
+                    New Drop
+                  </span>
+                  <div className="w-10 h-10 bg-white/90 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm">
+                    <Star className="w-4 h-4 text-black" fill="currentColor" />
                   </div>
                 </div>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              animate={{ y: [15, -15, 15], x: [-5, 5, -5], rotateZ: [6, 3, 6] }}
-              transition={{ repeat: Infinity, duration: 7, ease: "easeInOut" }}
-              className="absolute z-20 -right-4 md:right-4 top-10"
-            >
-              <div className="w-[200px] h-[280px] bg-white/40 backdrop-blur-2xl rounded-[28px] p-2.5 border border-white/50 shadow-xl opacity-95 flex flex-col group">
-                <div className="flex-1 w-full rounded-[20px] overflow-hidden relative">
-                  <img src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=800&auto=format&fit=crop" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Skincare" />
-                </div>
-              </div>
-            </motion.div>
-
-            <motion.div 
-              animate={{ y: [10, -10, 10], x: [5, -5, 5], rotateZ: [-12, -8, -12] }}
-              transition={{ repeat: Infinity, duration: 9, ease: "easeInOut" }}
-              className="absolute z-10 -left-4 md:left-4 bottom-10"
-            >
-              <div className="w-[180px] h-[240px] bg-white/30 backdrop-blur-xl rounded-[24px] p-2 border border-white/40 shadow-lg opacity-80 flex flex-col group">
-                <div className="flex-1 w-full rounded-[18px] overflow-hidden relative">
-                  <img src="https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=800&auto=format&fit=crop" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Organic Bar" />
+                
+                {/* Bottom Card Content */}
+                <div className="absolute bottom-6 left-6 right-6">
+                  <div className="bg-white/80 backdrop-blur-xl p-6 rounded-[24px] border border-white/50 shadow-xl transform group-hover:-translate-y-2 transition-transform duration-500">
+                     <p className="text-[#eb5757] text-[10px] font-bold uppercase tracking-widest mb-1">Premium Fragrance</p>
+                     <h3 className="text-2xl font-black tracking-tighter text-gray-900 mb-1">L'Eau de Parfum</h3>
+                     <p className="text-sm text-gray-500 mb-4 font-medium line-clamp-1">Experience notes of vanilla and cedarwood.</p>
+                     
+                     <div className="flex items-center justify-between">
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-2xl font-black text-gray-900 tracking-tighter">100% Free</span>
+                        </div>
+                        <div className="bg-black text-white text-xs font-bold px-4 py-2 rounded-full">
+                          Claim Now
+                        </div>
+                     </div>
+                  </div>
                 </div>
               </div>
             </motion.div>

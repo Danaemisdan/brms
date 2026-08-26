@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 
 const BRANDS = [
   { name: "Amazon", offer: "Upto 5% Refund", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg", bgColor: "bg-white" },
-  { name: "AJIO", offer: "Upto 8% Refund", logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Ajio-Logo.svg", bgColor: "bg-[#003B5C]" },
-  { name: "Nykaa", offer: "Upto 10% Refund", logo: "https://upload.wikimedia.org/wikipedia/commons/6/63/Nykaa_logo.svg", bgColor: "bg-white" },
-  { name: "Tata CLiQ", offer: "Upto 4% Refund", logo: "https://upload.wikimedia.org/wikipedia/commons/9/91/Tata_Cliq_Logo.png", bgColor: "bg-white" },
-  { name: "Mamaearth", offer: "Upto 12% Refund", logo: "https://upload.wikimedia.org/wikipedia/commons/8/87/Mamaearth_logo.png", bgColor: "bg-white" },
+  { name: "AJIO", offer: "Upto 8% Refund", logo: "https://logo.clearbit.com/ajio.com", bgColor: "bg-white" },
+  { name: "Nykaa", offer: "Upto 10% Refund", logo: "https://logo.clearbit.com/nykaa.com", bgColor: "bg-white" },
+  { name: "Tata CLiQ", offer: "Upto 4% Refund", logo: "https://logo.clearbit.com/tatacliq.com", bgColor: "bg-white" },
+  { name: "Mamaearth", offer: "Upto 12% Refund", logo: "https://logo.clearbit.com/mamaearth.in", bgColor: "bg-white" },
 ];
 
 export function ShopByBrand() {
