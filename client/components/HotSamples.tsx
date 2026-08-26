@@ -36,13 +36,16 @@ export function HotSamples() {
     };
     fetchProducts();
   }, []);
+
+  if (!loading && products.length === 0) return null;
+
   return (
-    <section className="py-32 bg-[#fcfcfc] relative overflow-hidden">
+    <section className="py-24 bg-[#fcfcfc] relative overflow-hidden">
       {/* Decorative gradient orb */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-100/50 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
 
       <div className="container mx-auto px-6 max-w-6xl relative z-10">
-        <div className="flex justify-between items-end mb-16">
+        <div className="flex justify-between items-end mb-12">
           <h2 className="text-[40px] font-black tracking-tighter text-gray-900 leading-none">
             Curated <ShinyText text="For You" />
           </h2>
@@ -55,7 +58,7 @@ export function HotSamples() {
         <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-6 h-auto md:h-[600px]">
           
           {loading ? (
-            <div className="md:col-span-4 flex items-center justify-center text-gray-500 uppercase tracking-widest text-sm">Loading curated samples...</div>
+            <div className="md:col-span-4 flex items-center justify-center text-gray-500 uppercase tracking-widest text-sm py-10">Loading curated samples...</div>
           ) : (
             <>
               {/* Main Large Card (Spans 2 columns, 2 rows) */}

@@ -54,75 +54,47 @@ export default function Home() {
             className="flex justify-center items-center relative h-[400px] md:h-[500px] perspective-[1000px]"
           >
             {/* Ambient Background Glow */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-gradient-to-tr from-red-200 to-orange-100 rounded-full blur-[80px] opacity-70"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-red-500/10 rounded-full blur-[100px] pointer-events-none"></div>
 
-            {/* Main Center UI Mockup */}
             <motion.div 
-              animate={{ y: [0, -15, 0], rotateY: [-5, 5, -5], rotateX: [2, -2, 2] }}
-              transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
-              className="relative w-full max-w-[320px] bg-white/80 backdrop-blur-2xl border border-white/50 shadow-[0_30px_60px_rgba(0,0,0,0.08)] rounded-[32px] p-2 overflow-hidden z-20"
+              animate={{ y: [-15, 15, -15], rotateZ: [-2, 2, -2] }}
+              transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
+              className="relative z-30"
             >
-              {/* Inner content simulating an app feed */}
-              <div className="bg-[#f8f9fa] w-full h-[380px] rounded-[24px] overflow-hidden relative flex flex-col">
-                <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-black/60 to-transparent z-10 pointer-events-none"></div>
-                
-                {/* Hero Image */}
-                <img src="https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=600&auto=format&fit=crop" alt="Premium Cosmetic" className="w-full h-56 object-cover" />
-                
-                {/* Floating Tag */}
-                <div className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-md px-3 py-1.5 rounded-full text-[10px] font-bold text-[#eb5757] tracking-widest shadow-sm">
-                  NEW DROP
-                </div>
-
-                {/* Content Area */}
-                <div className="flex-1 bg-white p-5 flex flex-col justify-between relative -mt-4 rounded-t-[20px] shadow-[0_-10px_20px_rgba(0,0,0,0.03)] z-20">
-                  <div>
-                    <h3 className="font-bold text-lg leading-tight mb-1">Anti-Aging Serum Mini</h3>
-                    <p className="text-xs text-gray-500 line-clamp-2">Experience the revitalizing power of organic ingredients.</p>
-                  </div>
-                  
-                  <div className="flex justify-between items-end">
-                    <div className="flex gap-1 items-center bg-gray-50 px-2 py-1 rounded-md border border-gray-100">
-                       <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                       <span className="text-xs font-bold">4.9</span>
-                    </div>
-                    <button className="bg-[#1a1a24] text-white text-xs font-bold px-4 py-2 rounded-full shadow-md">
-                      Claim Sample
-                    </button>
+              <div className="w-[280px] h-[380px] bg-white/60 backdrop-blur-3xl rounded-[32px] p-3 border border-white/60 shadow-[0_30px_60px_rgba(0,0,0,0.08)] flex flex-col group">
+                <div className="flex-1 w-full rounded-[24px] overflow-hidden relative">
+                  <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=800&auto=format&fit=crop" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Premium Cosmetic" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+                  <div className="absolute bottom-5 left-5 right-5">
+                     <p className="text-white/80 text-[10px] font-bold uppercase tracking-[0.2em] mb-1">Premium Collection</p>
+                     <p className="text-white text-xl font-black tracking-tight leading-tight">L'Eau de Parfum</p>
                   </div>
                 </div>
               </div>
             </motion.div>
 
-            {/* Back Floating Element Left */}
             <motion.div 
-              animate={{ y: [0, -10, 0], rotate: [-6, -6, -6] }}
-              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
-              className="absolute z-10 w-48 h-32 bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_20px_40px_rgba(0,0,0,0.05)] rounded-[24px] p-4 flex flex-col justify-between -left-4 md:-left-12 top-24"
+              animate={{ y: [15, -15, 15], x: [-5, 5, -5], rotateZ: [6, 3, 6] }}
+              transition={{ repeat: Infinity, duration: 7, ease: "easeInOut" }}
+              className="absolute z-20 -right-4 md:right-4 top-10"
             >
-              <div className="flex items-center gap-3">
-                 <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-xl">🎉</div>
-                 <div>
-                   <div className="w-16 h-2 bg-gray-200 rounded-full mb-1.5"></div>
-                   <div className="w-10 h-1.5 bg-gray-100 rounded-full"></div>
-                 </div>
-              </div>
-              <div className="w-full h-8 bg-gray-50 rounded-lg border border-gray-100 flex items-center px-3">
-                 <div className="w-3/4 h-1.5 bg-gray-200 rounded-full"></div>
+              <div className="w-[200px] h-[280px] bg-white/40 backdrop-blur-2xl rounded-[28px] p-2.5 border border-white/50 shadow-xl opacity-95 flex flex-col group">
+                <div className="flex-1 w-full rounded-[20px] overflow-hidden relative">
+                  <img src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?q=80&w=800&auto=format&fit=crop" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Skincare" />
+                </div>
               </div>
             </motion.div>
 
-            {/* Back Floating Element Right */}
             <motion.div 
-              animate={{ y: [0, -8, 0], rotate: [8, 8, 8] }}
-              transition={{ repeat: Infinity, duration: 4.5, ease: "easeInOut", delay: 0.5 }}
-              className="absolute z-10 w-44 bg-white/60 backdrop-blur-xl border border-white/40 shadow-[0_20px_40px_rgba(0,0,0,0.05)] rounded-[24px] p-3 -right-4 md:-right-8 top-16"
+              animate={{ y: [10, -10, 10], x: [5, -5, 5], rotateZ: [-12, -8, -12] }}
+              transition={{ repeat: Infinity, duration: 9, ease: "easeInOut" }}
+              className="absolute z-10 -left-4 md:left-4 bottom-10"
             >
-               <div className="w-full h-32 bg-[#fdfaf5] rounded-[16px] mb-3 overflow-hidden relative">
-                  <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=300&auto=format&fit=crop" className="w-full h-full object-cover mix-blend-multiply opacity-80" />
-               </div>
-               <div className="w-24 h-2 bg-gray-200 rounded-full mb-2 mx-auto"></div>
-               <div className="w-16 h-1.5 bg-gray-100 rounded-full mx-auto"></div>
+              <div className="w-[180px] h-[240px] bg-white/30 backdrop-blur-xl rounded-[24px] p-2 border border-white/40 shadow-lg opacity-80 flex flex-col group">
+                <div className="flex-1 w-full rounded-[18px] overflow-hidden relative">
+                  <img src="https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=800&auto=format&fit=crop" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Organic Bar" />
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         </div>

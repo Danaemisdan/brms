@@ -4,12 +4,12 @@ import { TelegramLink } from "./TelegramLink";
 
 export function Footer() {
   return (
-    <footer className="w-full bg-[#1a1a24] text-white py-16 mt-auto">
-      <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+    <footer className="bg-[#1a1a24] text-[#8a8a9d] py-16 border-t border-gray-800">
+      <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
         {/* Brand & Description */}
-        <div className="flex flex-col">
-          <img src="/sample-lelo-logo.png" alt="Sample Lelo Logo" className="h-16 w-auto mb-6 invert brightness-0 origin-left object-contain" />
-          <p className="text-sm text-gray-400 mb-6 leading-relaxed max-w-sm">
+        <div className="md:col-span-1">
+          <img src="/sample-lelo-logo.png" alt="Sample Lelo Logo" className="h-28 md:h-32 w-auto mb-6 invert brightness-0 origin-left object-contain" />
+          <p className="text-[13px] leading-relaxed pr-4">
             We help online stores build trust, get noticed, and sell more on every shopping website using smart technology and data.
           </p>
           <div className="flex gap-4">

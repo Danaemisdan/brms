@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { ProductCard } from "@/components/ProductCard";
 import { api } from "@/lib/api";
+import { useSearchParams } from "next/navigation";
 
 interface Product {
   id: string;
@@ -13,16 +14,28 @@ interface Product {
   offer_price: number;
 }
 
-export default function BrowsePage() {
+function BrowsePageContent() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+  const categoryFilter = searchParams.get("category");
+  const brandFilter = searchParams.get("brand");
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await api.get("/products/public", { requiresAuth: false });
         if (res.data) {
-          setProducts(res.data);
+          let data = res.data;
+          
+          if (categoryFilter) {
+             data = data.filter((p: any) => p.platform?.toLowerCase() === categoryFilter.toLowerCase() || p.category?.toLowerCase() === categoryFilter.toLowerCase());
+          }
+          if (brandFilter) {
+             data = data.filter((p: any) => p.brand?.toLowerCase() === brandFilter.toLowerCase());
+          }
+          
+          setProducts(data);
         }
       } catch (err) {
         console.error("Failed to load products", err);
@@ -31,7 +44,7 @@ export default function BrowsePage() {
       }
     };
     fetchProducts();
-  }, []);
+  }, [categoryFilter, brandFilter]);
 
   return (
     <div className="bg-white min-h-screen">
@@ -91,5 +104,13 @@ export default function BrowsePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BrowsePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center text-gray-500 uppercase tracking-widest text-sm">Loading directory...</div>}>
+      <BrowsePageContent />
+    </Suspense>
   );
 }

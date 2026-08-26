@@ -59,12 +59,14 @@ export function TrendingDeals() {
     return () => clearInterval(timer);
   }, []);
 
+  if (!loading && products.length === 0) return null;
+
   return (
-    <section className="py-32 bg-white relative">
+    <section className="py-24 bg-white relative">
       <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-20 pointer-events-none"></div>
       
       <div className="container mx-auto px-6 max-w-6xl relative z-10">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
           <div>
             <h2 className="text-[40px] font-black tracking-tighter text-gray-900 leading-none mb-4">
               Trending <ShinyText text="Today" />
@@ -81,8 +83,6 @@ export function TrendingDeals() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {loading ? (
              <div className="col-span-3 text-center py-10 text-gray-500 text-sm tracking-widest uppercase">Loading latest drops...</div>
-          ) : products.length === 0 ? (
-             <div className="col-span-3 text-center py-10 text-gray-500 text-sm tracking-widest uppercase">No trending drops right now.</div>
           ) : (
             products.map((item, idx) => (
               <MagicCard key={item.id} className="group cursor-pointer p-2 flex flex-col">
