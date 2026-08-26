@@ -3,10 +3,10 @@ import { motion } from "framer-motion";
 
 const BRANDS = [
   { name: "Amazon", offer: "Upto 5% Refund", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg", bgColor: "bg-white" },
-  { name: "AJIO", offer: "Upto 8% Refund", logo: "https://logo.clearbit.com/ajio.com", bgColor: "bg-white" },
-  { name: "Nykaa", offer: "Upto 10% Refund", logo: "https://logo.clearbit.com/nykaa.com", bgColor: "bg-white" },
-  { name: "Tata CLiQ", offer: "Upto 4% Refund", logo: "https://logo.clearbit.com/tatacliq.com", bgColor: "bg-white" },
-  { name: "Mamaearth", offer: "Upto 12% Refund", logo: "https://logo.clearbit.com/mamaearth.in", bgColor: "bg-white" },
+  { name: "AJIO", offer: "Upto 8% Refund", logo: "https://icon.horse/icon/ajio.com", bgColor: "bg-white" },
+  { name: "Nykaa", offer: "Upto 10% Refund", logo: "https://icon.horse/icon/nykaa.com", bgColor: "bg-white" },
+  { name: "Tata CLiQ", offer: "Upto 4% Refund", logo: "https://icon.horse/icon/tatacliq.com", bgColor: "bg-white" },
+  { name: "Mamaearth", offer: "Upto 12% Refund", logo: "https://icon.horse/icon/mamaearth.in", bgColor: "bg-white" },
 ];
 
 export function ShopByBrand() {
@@ -31,7 +31,12 @@ export function ShopByBrand() {
                 className="flex flex-col items-center min-w-[90px] cursor-pointer group"
               >
                 <div className={`w-[90px] h-[90px] ${brand.bgColor} rounded-[28px] flex items-center justify-center mb-4 shadow-sm group-hover:shadow-xl transition-all duration-300 relative overflow-hidden border border-gray-100 p-4`}>
-                  <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain" />
+                  <img 
+                    src={brand.logo} 
+                    alt={brand.name} 
+                    className="w-full h-full object-contain" 
+                    onError={(e) => { e.currentTarget.src = `https://api.dicebear.com/7.x/initials/svg?seed=${brand.name}&backgroundColor=fcfcfc&textColor=111827&bold=true` }}
+                  />
                 </div>
                 <span className="font-bold text-[14px] text-gray-800 text-center mb-2 group-hover:text-black transition-colors">{brand.name}</span>
                 <span className="text-[10px] font-bold text-[#00b341] tracking-wide text-center bg-[#e8faef] px-2.5 py-1.5 rounded-full">{brand.offer}</span>
