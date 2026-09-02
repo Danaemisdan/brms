@@ -42,9 +42,11 @@ export default function Home() {
                 placeholder="Search Sample Brands" 
                 className="flex-1 bg-transparent border-none outline-none px-3 text-sm text-gray-900 placeholder:text-gray-400"
               />
-              <Button className="bg-[#eb5757] hover:bg-[#d64c4c] text-white rounded-full px-8 py-5 text-sm font-semibold flex-shrink-0">
-                Sign up
-              </Button>
+              <Link href="/login" className="flex-shrink-0">
+                <Button className="bg-[#eb5757] hover:bg-[#d64c4c] text-white rounded-full px-8 py-5 text-sm font-semibold w-full">
+                  Sign up
+                </Button>
+              </Link>
             </div>
           </motion.div>
           

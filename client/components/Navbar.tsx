@@ -40,9 +40,11 @@ export function Navbar() {
             Log in
           </Link>
           {!isDark && pathname === "/" ? (
-            <Button className="bg-primary text-white hover:bg-primary/90 rounded-full px-6 font-semibold shadow-md">
-              Sign up
-            </Button>
+            <Link href="/login">
+              <Button className="bg-primary text-white hover:bg-primary/90 rounded-full px-6 font-semibold shadow-md">
+                Sign up
+              </Button>
+            </Link>
           ) : (
             <Link href="/submit-review">
               <Button className="bg-primary text-white hover:bg-primary/90 rounded-full px-6 font-semibold shadow-md">
