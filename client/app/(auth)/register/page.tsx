@@ -54,8 +54,8 @@ export default function RegisterPage() {
 
             toast.success("Registration successful! You can now track products and join campaigns.");
             router.push("/customer");
-        } catch {
-            setError("Cannot connect to server. Please ensure backend is running.");
+        } catch (err: any) {
+            setError(err.message || "Cannot connect to server. Please ensure backend is running.");
         } finally {
             setIsLoading(false);
         }

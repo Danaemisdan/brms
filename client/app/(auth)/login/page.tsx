@@ -81,8 +81,8 @@ function LoginComponent() {
             if (role === "admin") router.push("/admin");
             else if (role === "vendor" || role === "client") router.push("/brand");
             else router.push("/customer");
-        } catch {
-            setError("Cannot connect to server. Make sure the backend is running.");
+        } catch (err: any) {
+            setError(err.message || "Cannot connect to server.");
         } finally {
             setIsLoading(false);
         }

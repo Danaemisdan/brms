@@ -157,8 +157,9 @@ export default function CustomerPaymentInfo() {
 
             setSuccess("All Payment details successfully updated! These will be used for your next seamless refund.");
             toast.success("Payment preferences saved");
-        } catch (error) {
-            setError("Cannot connect to server to update details.");
+        } catch (err: any) {
+            setError(err.message || "Cannot connect to server to update details.");
+            toast.error(err.message || "Failed to update details.");
         } finally {
             setIsLoading(false);
         }
