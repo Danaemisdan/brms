@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { isDateMatch, DateFilterType } from "@/lib/dateUtils";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+const API_URL = "";
 
 export default function AdminOrders() {
     const [orders, setOrders] = useState<any[]>([]);

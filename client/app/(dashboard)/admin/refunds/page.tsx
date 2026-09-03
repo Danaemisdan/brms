@@ -11,7 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { toast } from "sonner";
 import { ExternalLink, CheckCircle, CreditCard, XCircle } from "lucide-react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+const API_URL = "";
 
 export default function AdminRefunds() {
     const [refundRequests, setRefundRequests] = useState<any[]>([]);

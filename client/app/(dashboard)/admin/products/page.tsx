@@ -14,7 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle, Search, Filter } from "lucide-react";
 
-const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001").replace(/\/+$/, "");
+const API_URL = ("").replace(/\/+$/, "");
 
 // Helper to safely display images regardless of relative/absolute DB storage
 const getImageUrl = (src: string) => {

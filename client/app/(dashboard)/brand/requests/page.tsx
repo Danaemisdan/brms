@@ -5,7 +5,7 @@ import { apiFetch } from "@/lib/apiFetch";
 import { useEffect, useState } from "react";
 import { Card, CardTitle, CardDescription } from "@/components/ui/card";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+const API_URL = "";
 
 export default function BrandRequests() {
     const [requests, setRequests] = useState<any[]>([]);

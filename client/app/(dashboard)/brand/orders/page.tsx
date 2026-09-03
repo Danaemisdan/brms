@@ -5,7 +5,7 @@ import { useEffect, useState, Suspense } from "react";
 import { Card, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
+const API_URL = "";
 
 function BrandOrdersContent() {
     const [orders, setOrders] = useState<any[]>([]);
