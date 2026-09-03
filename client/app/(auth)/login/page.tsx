@@ -53,7 +53,7 @@ function LoginComponent() {
         if (token && role && !resetToken) {
             const upperRole = role.toUpperCase();
             if (upperRole === "ADMIN") router.push("/admin");
-            else if (upperRole === "VENDOR") router.push("/brand");
+            else if (upperRole === "VENDOR" || upperRole === "CLIENT") router.push("/brand");
             else router.push("/customer");
         }
     }, [router, returnUrl, resetToken]);
@@ -79,7 +79,7 @@ function LoginComponent() {
 
             const role = data.user.role.toLowerCase();
             if (role === "admin") router.push("/admin");
-            else if (role === "vendor") router.push("/brand");
+            else if (role === "vendor" || role === "client") router.push("/brand");
             else router.push("/customer");
         } catch {
             setError("Cannot connect to server. Make sure the backend is running.");
