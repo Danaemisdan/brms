@@ -5,7 +5,8 @@ import { resolveRecipients } from '@/lib/whatsapp/targeting';
 export async function GET(req: NextRequest) {
     try {
         const authHeader = req.headers.get('authorization');
-        if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+        const expectedSecret = process.env.CRON_SECRET || 'fallback_cron_secret_123';
+        if (authHeader !== `Bearer ${expectedSecret}`) {
             return new NextResponse('Unauthorized', { status: 401 });
         }
 
