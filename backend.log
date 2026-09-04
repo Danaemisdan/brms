@@ -7,4 +7,4 @@
 📅 WhatsApp Campaign Scheduler initialized (Runs daily at 09:00 AM)
 🚀 BRMS Server running on http://localhost:5001
    Health check: http://localhost:5001/health
-[Google Sheets] Created missing tabs: Orders, Products, Brands
+[Google Sheets] Created missing tabs: Orders, Products, Brandss
