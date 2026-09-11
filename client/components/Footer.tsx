@@ -1,8 +1,16 @@
+"use client";
+
 import Link from "next/link";
 import { Instagram, Facebook, MessageCircle, Send, Linkedin } from "lucide-react";
 import { TelegramLink } from "./TelegramLink";
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
+  const isDashboard = pathname?.startsWith("/admin") || pathname?.startsWith("/customer") || pathname?.startsWith("/brand") || pathname?.startsWith("/login") || pathname?.startsWith("/register");
+
+  if (isDashboard) return null;
+
   return (
     <footer className="bg-[#1a1a24] text-[#8a8a9d] py-16 border-t border-gray-800">
       <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">

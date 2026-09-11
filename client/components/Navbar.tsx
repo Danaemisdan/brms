@@ -9,7 +9,10 @@ export function Navbar() {
   const pathname = usePathname();
   
   // Routes that should use the dark navbar
-  const isDark = pathname?.startsWith("/p/") || pathname?.startsWith("/submit-review") || pathname?.startsWith("/dashboard");
+  const isDark = pathname?.startsWith("/p/") || pathname?.startsWith("/submit-review");
+  const isDashboard = pathname?.startsWith("/admin") || pathname?.startsWith("/customer") || pathname?.startsWith("/brand") || pathname?.startsWith("/login") || pathname?.startsWith("/register");
+
+  if (isDashboard) return null;
 
   return (
     <nav className={cn(
