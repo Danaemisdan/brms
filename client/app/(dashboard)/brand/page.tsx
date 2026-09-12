@@ -153,11 +153,27 @@ export default function BrandDashboard() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="realPrice">Real Price (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
-                                    <Input id="realPrice" type="number" placeholder="Original MRP" min="0" value={form.realPrice} onChange={e => setForm({ ...form, realPrice: e.target.value })} />
+                                    <Input id="realPrice" type="number" placeholder="Original MRP" min="0" value={form.realPrice} onChange={e => {
+                                        const newReal = e.target.value;
+                                        let newRefund = form.refundAmount;
+                                        if (newReal && form.offerPrice) {
+                                            const diff = Math.max(0, parseFloat(newReal) - parseFloat(form.offerPrice));
+                                            newRefund = String(diff);
+                                        }
+                                        setForm({ ...form, realPrice: newReal, refundAmount: newRefund });
+                                    }} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="offerPrice">Offer Price (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
-                                    <Input id="offerPrice" type="number" placeholder="Discounted Price" min="0" value={form.offerPrice} onChange={e => setForm({ ...form, offerPrice: e.target.value })} />
+                                    <Input id="offerPrice" type="number" placeholder="Discounted Price" min="0" value={form.offerPrice} onChange={e => {
+                                        const newOffer = e.target.value;
+                                        let newRefund = form.refundAmount;
+                                        if (form.realPrice && newOffer) {
+                                            const diff = Math.max(0, parseFloat(form.realPrice) - parseFloat(newOffer));
+                                            newRefund = String(diff);
+                                        }
+                                        setForm({ ...form, offerPrice: newOffer, refundAmount: newRefund });
+                                    }} />
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="refundAmount">Refund/Review (₹) <span className="text-red-500">*</span></Label>

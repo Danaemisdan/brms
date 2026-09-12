@@ -559,11 +559,27 @@ export default function AdminProducts() {
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-foreground/60 uppercase tracking-widest text-[10px]">Real Price (₹) <span className="text-red-500">*</span></Label>
-                                <Input type="number" placeholder="Original MRP" required min="0" value={form.real_price} onChange={e => setForm({ ...form, real_price: e.target.value })} className="h-12 bg-white/5 border-border/10 text-foreground placeholder:text-foreground/20 focus:border-primary/50 font-sans" />
+                                <Input type="number" placeholder="Original MRP" required min="0" value={form.real_price} onChange={e => {
+                                    const newReal = e.target.value;
+                                    let newRefund = form.refund_amount;
+                                    if (newReal && form.offer_price) {
+                                        const diff = Math.max(0, parseFloat(newReal) - parseFloat(form.offer_price));
+                                        newRefund = String(diff);
+                                    }
+                                    setForm({ ...form, real_price: newReal, refund_amount: newRefund });
+                                }} className="h-12 bg-white/5 border-border/10 text-foreground placeholder:text-foreground/20 focus:border-primary/50 font-sans" />
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-foreground/60 uppercase tracking-widest text-[10px]">Offer Price (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
-                                <Input type="number" placeholder="Discounted Price" min="0" value={form.offer_price} onChange={e => setForm({ ...form, offer_price: e.target.value })} className="h-12 bg-white/5 border-border/10 text-foreground placeholder:text-foreground/20 focus:border-primary/50 font-sans" />
+                                <Input type="number" placeholder="Discounted Price" min="0" value={form.offer_price} onChange={e => {
+                                    const newOffer = e.target.value;
+                                    let newRefund = form.refund_amount;
+                                    if (form.real_price && newOffer) {
+                                        const diff = Math.max(0, parseFloat(form.real_price) - parseFloat(newOffer));
+                                        newRefund = String(diff);
+                                    }
+                                    setForm({ ...form, offer_price: newOffer, refund_amount: newRefund });
+                                }} className="h-12 bg-white/5 border-border/10 text-foreground placeholder:text-foreground/20 focus:border-primary/50 font-sans" />
                             </div>
                             <div className="space-y-2">
                                 <Label className="text-foreground/60 uppercase tracking-widest text-[10px]">Refund Amount (₹) <span className="text-gray-400 font-normal text-xs ml-2">(Optional)</span></Label>
