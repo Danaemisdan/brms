@@ -19,13 +19,15 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             return NextResponse.json({ error: 'Action must be "add" or "remove"' }, { status: 400 });
         }
 
-        const vendor = await prisma.vendor.findUnique({
-            where: { user_id: id }
+        const vendor = await prisma.vendor.upsert({
+            where: { user_id: id },
+            update: {},
+            create: {
+                user_id: id,
+                commission: 0,
+                wallet_balance: 0
+            }
         });
-
-        if (!vendor) {
-            return NextResponse.json({ error: 'Brand profile not found' }, { status: 404 });
-        }
 
         let newBalance = vendor.wallet_balance;
         if (action === 'add') {
