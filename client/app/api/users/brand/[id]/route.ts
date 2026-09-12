@@ -52,9 +52,14 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
         });
 
         if (commission !== undefined) {
-            await prisma.vendor.update({
+            await prisma.vendor.upsert({
                 where: { user_id: id },
-                data: { commission: parseFloat(commission) || 0 }
+                update: { commission: parseFloat(commission) || 0 },
+                create: {
+                    user_id: id,
+                    commission: parseFloat(commission) || 0,
+                    wallet_balance: 0
+                }
             });
         }
 

@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
         const brands = await prisma.user.findMany({
             where: { role: 'VENDOR' },
             include: {
-                vendor: true,
+                managed_vendors: true,
                 _count: {
                     select: {
                         orders: true
@@ -32,9 +32,9 @@ export async function GET(req: NextRequest) {
             country: brand.country,
             category: brand.category,
             registered_at: brand.created_at,
-            status: brand.vendor?.status || 'active',
-            wallet_balance: brand.vendor?.wallet_balance || 0,
-            commission: brand.vendor?.commission || 0,
+            status: brand.managed_vendors[0]?.status || 'active',
+            wallet_balance: brand.managed_vendors[0]?.wallet_balance || 0,
+            commission: brand.managed_vendors[0]?.commission || 0,
             products: brand._count.orders
         }));
 
