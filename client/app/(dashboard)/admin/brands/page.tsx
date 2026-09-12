@@ -76,7 +76,7 @@ export default function AdminBrands() {
         setIsLoading(true);
         try {
             const token = localStorage.getItem("token");
-            const res = await apiFetch(`${API_URL}/api/users/brands`, {
+            const res = await apiFetch(`${API_URL}/api/users/brands?t=${Date.now()}`, {
                 headers: { "Authorization": `Bearer ${token}` }
             });
             if (res.ok) {

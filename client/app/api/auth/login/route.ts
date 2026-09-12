@@ -45,8 +45,15 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
         }
 
-        const accessToken = generateAccessToken({ userId: user.id, role: user.role });
-        const refreshToken = generateRefreshToken({ userId: user.id, role: user.role });
+        if (user.role === 'ADMIN' && user.is_totp_enabled) {
+            return NextResponse.json({
+                requires2FA: true,
+                userId: user.id
+            }, { status: 200 });
+        }
+
+        const accessToken = generateAccessToken({ userId: user.id, role: user.role, token_version: user.token_version });
+        const refreshToken = generateRefreshToken({ userId: user.id, role: user.role, token_version: user.token_version });
 
         const response = NextResponse.json({
             message: 'Login successful',

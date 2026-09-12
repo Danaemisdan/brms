@@ -32,6 +32,10 @@ function LoginComponent() {
     const [error, setError] = useState("");
     const [successMsg, setSuccessMsg] = useState("");
 
+    const [requires2FA, setRequires2FA] = useState(false);
+    const [userIdFor2FA, setUserIdFor2FA] = useState("");
+    const [twoFactorCode, setTwoFactorCode] = useState("");
+
     const [isForgotPassword, setIsForgotPassword] = useState(false);
     const [forgotEmail, setForgotEmail] = useState("");
     
@@ -66,6 +70,12 @@ function LoginComponent() {
         try {
             const data = await api.post("/auth/login", { identifier, password }, { requiresAuth: false });
             
+            if (data.requires2FA) {
+                setRequires2FA(true);
+                setUserIdFor2FA(data.userId);
+                return;
+            }
+
             if (data.token) {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("role", data.user.role.toUpperCase());
@@ -83,6 +93,33 @@ function LoginComponent() {
             else router.push("/customer");
         } catch (err: any) {
             setError(err.message || "Cannot connect to server.");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleVerify2FA = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+        setIsLoading(true);
+
+        try {
+            const data = await api.post("/auth/login/verify-2fa", { userId: userIdFor2FA, code: twoFactorCode }, { requiresAuth: false });
+            
+            if (data.token) {
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("role", data.user.role.toUpperCase());
+                localStorage.setItem("name", data.user.name);
+            }
+
+            if (returnUrl) {
+                router.push(returnUrl);
+                return;
+            }
+
+            router.push("/admin");
+        } catch (err: any) {
+            setError(err.message || "Invalid 2FA code.");
         } finally {
             setIsLoading(false);
         }
@@ -171,6 +208,41 @@ function LoginComponent() {
                             </div>
                             <Button className="w-full bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20 transition-all uppercase tracking-[0.2em] text-xs h-12" type="submit" disabled={isLoading}>{isLoading ? "Sending..." : "Send Reset Link"}</Button>
                             <Button type="button" variant="ghost" className="w-full mt-2 text-foreground/40 hover:text-foreground uppercase tracking-widest text-[10px]" onClick={() => setIsForgotPassword(false)}>Back to Login</Button>
+                        </form>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    if (requires2FA) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-background px-4 relative overflow-hidden">
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
+                <Card className="w-full max-w-md glass-panel">
+                    <CardHeader className="text-center pb-6">
+                        <CardTitle className="text-2xl font-sans font-bold text-primary tracking-widest uppercase">Two-Factor Auth</CardTitle>
+                        <CardDescription className="text-foreground/40 font-sans text-xs tracking-wider">Enter the 6-digit code from your authenticator app.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        {error && <div className="mb-4 p-3 bg-red-900/20 border border-red-500/50 text-red-400 text-xs rounded uppercase tracking-wider">{error}</div>}
+                        <form onSubmit={handleVerify2FA} className="space-y-4">
+                            <div className="space-y-2">
+                                <Label className="text-foreground/60 uppercase tracking-widest text-[10px]">Auth Code</Label>
+                                <Input 
+                                    type="text" 
+                                    value={twoFactorCode} 
+                                    onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, "").slice(0, 6))} 
+                                    required 
+                                    maxLength={6}
+                                    placeholder="000000"
+                                    className="h-14 bg-white/5 border-border/10 text-foreground focus:border-primary/50 font-mono text-xl tracking-[0.5em] text-center" 
+                                />
+                            </div>
+                            <Button className="w-full bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20 transition-all uppercase tracking-[0.2em] text-xs h-12" type="submit" disabled={isLoading || twoFactorCode.length !== 6}>
+                                {isLoading ? "Verifying..." : "Verify"}
+                            </Button>
+                            <Button type="button" variant="ghost" className="w-full mt-2 text-foreground/40 hover:text-foreground uppercase tracking-widest text-[10px]" onClick={() => setRequires2FA(false)}>Back to Login</Button>
                         </form>
                     </CardContent>
                 </Card>

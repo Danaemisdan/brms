@@ -20,10 +20,11 @@ const JWT_REFRESH_SECRET = requireSecret('JWT_REFRESH_SECRET');
 interface TokenPayload {
     userId: string;
     role: string;
+    token_version: number;
 }
 
 export function generateAccessToken(payload: TokenPayload): string {
-    return jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' });
 }
 
 export function generateRefreshToken(payload: TokenPayload): string {

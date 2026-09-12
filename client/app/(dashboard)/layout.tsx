@@ -27,9 +27,11 @@ const adminNav = [
     { label: "Analytics", href: "/admin/analytics" },
     { label: "Products", href: "/admin/products" },
     { label: "Brands", href: "/admin/brands" },
+    { label: "Customers", href: "/admin/customers" },
     { label: "Orders", href: "/admin/orders" },
     { label: "Refund Requests", href: "/admin/refunds" },
     { label: "Support Inbox", href: "/admin/support" },
+    { label: "Security & 2FA", href: "/admin/security" },
 ];
 
 function getNav(pathname: string) {

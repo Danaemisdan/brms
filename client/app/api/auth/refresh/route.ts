@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import { generateAccessToken, verifyRefreshToken } from '@/lib/jwt';
+import prisma from '@/lib/prisma';
 
 const refreshSchema = z.object({
     refreshToken: z.string().min(1),
@@ -30,7 +31,13 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid or expired refresh token' }, { status: 401 });
         }
 
-        const newAccessToken = generateAccessToken({ userId: payload.userId, role: payload.role });
+        const user = await prisma.user.findUnique({ where: { id: payload.userId } });
+        if (!user || user.token_version !== payload.token_version) {
+            return NextResponse.json({ error: 'Session invalidated' }, { status: 401 });
+        }
+
+        const newAccessToken = generateAccessToken({ userId: user.id, role: user.role, token_version: user.token_version });
+        const newRefreshToken = generateRefreshToken({ userId: user.id, role: user.role, token_version: user.token_version });
         
         const response = NextResponse.json({ message: 'Token refreshed', token: newAccessToken }, { status: 200 });
         const isProduction = process.env.NODE_ENV === 'production';
@@ -38,7 +45,13 @@ export async function POST(req: NextRequest) {
             httpOnly: true,
             secure: isProduction,
             sameSite: 'lax',
-            maxAge: 60 * 60,
+            maxAge: 15 * 60, // 15 mins
+        });
+        response.cookies.set('refreshToken', newRefreshToken, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: 'lax',
+            maxAge: 7 * 24 * 60 * 60,
         });
 
         return response;
