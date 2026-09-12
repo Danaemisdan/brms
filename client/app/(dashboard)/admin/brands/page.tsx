@@ -175,7 +175,7 @@ export default function AdminBrands() {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify({ ...formData, mobile: `${formData.country_code}${formData.mobile}` }),
+                body: JSON.stringify(formData),
             });
 
             const data = await res.json();
