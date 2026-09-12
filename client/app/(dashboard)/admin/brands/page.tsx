@@ -379,8 +379,11 @@ export default function AdminBrands() {
                         return <Card className="p-12 text-center glass-panel border-border/5"><p className="text-foreground/40 font-sans tracking-wide">No dossiers match your criteria.</p></Card>;
                     }
 
-                    return filteredBrands.map((v) => (
-                        editingBrand?.id === v.id ? (
+                    return (
+                        <>
+                            <div className="space-y-6">
+                                {filteredBrands.map((v) => (
+                                    editingBrand?.id === v.id ? (
                             <Card key={v.id} className="p-6 glass-panel border-primary/50 shadow-[0_0_30px_rgba(212,175,55,0.1)]">
                                 <div className="flex items-center justify-between mb-6 border-b border-border/5 pb-4">
                                     <h3 className="font-sans font-bold text-xl text-primary uppercase tracking-widest">Update Dossier: {v.name}</h3>
@@ -541,7 +544,19 @@ export default function AdminBrands() {
                                 </div>
                             </Card>
                         )
-                    ));
+                                ))}
+                            </div>
+                            <div className="mt-10 p-6 glass-panel border-primary/30 bg-primary/5 rounded-sm flex flex-col md:flex-row items-center justify-between shadow-[0_0_30px_rgba(212,175,55,0.1)]">
+                                <div>
+                                    <h3 className="font-sans font-bold text-lg text-primary uppercase tracking-widest">Global Treasury Reserves</h3>
+                                    <p className="text-foreground/50 font-sans tracking-wide text-xs mt-1">Aggregated capital across all active brand wallets.</p>
+                                </div>
+                                <div className="mt-4 md:mt-0 text-3xl text-primary font-mono font-bold tracking-wider">
+                                    ₹{brands.reduce((sum, b) => sum + (b.wallet_balance || 0), 0).toLocaleString()}
+                                </div>
+                            </div>
+                        </>
+                    );
                 })()}
             </div>
         </div>
