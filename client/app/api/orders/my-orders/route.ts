@@ -28,7 +28,8 @@ export async function GET(req: NextRequest) {
             hasReview: !!o.review,
             refundStatus: o.refund?.status || null,
             screenshot_url: o.screenshot_url,
-            created_at: o.created_at
+            created_at: o.created_at,
+            remarks: o.remarks
         }));
 
         return NextResponse.json({ orders: formattedOrders }, { status: 200 });
