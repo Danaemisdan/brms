@@ -47,6 +47,9 @@ function CustomerSubmissionsContent() {
     const [submitError, setSubmitError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const [isRetryModalOpen, setIsRetryModalOpen] = useState(false);
+    const [retryForm, setRetryForm] = useState({ orderId: "", amount: "", screenshot: "" });
+
     const searchParams = useSearchParams();
     const autoSubmitId = searchParams.get("submit");
 
@@ -150,6 +153,17 @@ function CustomerSubmissionsContent() {
         setReviewScreenshot("");
     };
 
+    const openRetryModal = (order: any) => {
+        setActiveOrder(order);
+        setRetryForm({
+            orderId: order.order_id || "",
+            amount: order.refundAmount?.toString() || "",
+            screenshot: order.screenshot_url || ""
+        });
+        setSubmitError("");
+        setIsRetryModalOpen(true);
+    };
+
     const handleApplyRefundSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!reviewScreenshot) {
@@ -239,6 +253,47 @@ function CustomerSubmissionsContent() {
             fetchMyOrders();
         } catch (error: any) {
             setSubmitError(error.message || "Failed to submit order proof. Try again.");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleRetrySubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitError("");
+        if (!retryForm.screenshot) {
+            setSubmitError("Please upload an order screenshot.");
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const payload = {
+                order_id: retryForm.orderId,
+                amount: retryForm.amount,
+                screenshot_url: retryForm.screenshot
+            };
+
+            const token = localStorage.getItem("token");
+            const res = await apiFetch(`${API_URL}/api/orders/${activeOrder?.id}/retry`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Retry failed");
+            }
+
+            toast.success("Order Resubmitted Successfully!");
+            setIsRetryModalOpen(false);
+            fetchMyOrders();
+        } catch (error: any) {
+            setSubmitError(error.message || "Failed to retry order. Try again.");
         } finally {
             setIsSubmitting(false);
         }
@@ -385,15 +440,25 @@ function CustomerSubmissionsContent() {
                                                 </td>
                                                 <td className="px-4 py-4 text-right">
                                                     {!req.hasRefund && !req.hasReview ? (
-                                                        <Button
-                                                            size="sm"
-                                                            className="bg-blue-600 hover:bg-blue-700"
-                                                            onClick={() => openRefundModal(req)}
-                                                            disabled={isRefundLocked}
-                                                            title={isRefundLocked ? `Unlocks in ${10 - daysSinceOrder} days` : "Apply for Refund"}
-                                                        >
-                                                            {isRefundLocked ? `🔒 Wait ${10 - daysSinceOrder}d` : "Apply for Refund"}
-                                                        </Button>
+                                                        req.status === 'REJECTED' ? (
+                                                            <Button
+                                                                size="sm"
+                                                                className="bg-red-600 hover:bg-red-700"
+                                                                onClick={() => openRetryModal(req)}
+                                                            >
+                                                                Retry Order
+                                                            </Button>
+                                                        ) : (
+                                                            <Button
+                                                                size="sm"
+                                                                className="bg-blue-600 hover:bg-blue-700"
+                                                                onClick={() => openRefundModal(req)}
+                                                                disabled={isRefundLocked || req.status !== 'VALIDATED'}
+                                                                title={isRefundLocked ? `Unlocks in ${10 - daysSinceOrder} days` : "Apply for Refund"}
+                                                            >
+                                                                {isRefundLocked ? `🔒 Wait ${10 - daysSinceOrder}d` : "Apply for Refund"}
+                                                            </Button>
+                                                        )
                                                     ) : (
                                                         <Button size="sm" variant="outline" disabled className="text-xs">
                                                             {req.refundStatus === 'REFUNDED' ? 'Completed' : req.refundStatus === 'FAILED' ? 'Failed' : req.refundStatus === 'APPROVED' ? 'Approved' : req.refundStatus === 'PROCESSING' ? 'Processing' : 'Requested'}
@@ -437,6 +502,55 @@ function CustomerSubmissionsContent() {
                                 <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => setIsRefundModalOpen(false)}>Back</Button>
                                 <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-foreground">
                                     {isSubmitting ? "Submitting..." : "Apply for Refund"}
+                                </Button>
+                            </DialogFooter>
+                        </form>
+                    )}
+                </DialogContent>
+            </Dialog>
+
+            <Dialog open={isRetryModalOpen} onOpenChange={setIsRetryModalOpen}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Retry Rejected Order</DialogTitle>
+                    </DialogHeader>
+                    {activeOrder && (
+                        <form className="space-y-4 pt-4" onSubmit={handleRetrySubmit}>
+                            <div className="bg-red-50 p-3 rounded-md border border-red-100">
+                                <h4 className="font-semibold text-red-800 text-sm">Reason for Rejection:</h4>
+                                <p className="text-sm text-red-600 mt-1">{activeOrder.remarks || "No reason provided."}</p>
+                            </div>
+                            <div>
+                                <Label>Order ID <span className="text-red-500">*</span></Label>
+                                <Input
+                                    className="mt-1 bg-white"
+                                    placeholder="Enter Order ID"
+                                    required
+                                    value={retryForm.orderId}
+                                    onChange={(e) => setRetryForm({ ...retryForm, orderId: e.target.value })}
+                                />
+                            </div>
+                            <div className="hidden">
+                                <Input
+                                    type="number"
+                                    value={retryForm.amount}
+                                    readOnly
+                                />
+                            </div>
+                            <div className="space-y-1">
+                                <Label>Order Screenshot <span className="text-red-500">*</span></Label>
+                                <div className="mt-2">
+                                    <ImageUpload
+                                        value={retryForm.screenshot}
+                                        onChange={(val) => setRetryForm({ ...retryForm, screenshot: val })}
+                                    />
+                                </div>
+                            </div>
+                            {submitError && <p className="text-red-500 text-sm text-center">{submitError}</p>}
+                            <DialogFooter className="mt-6">
+                                <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => setIsRetryModalOpen(false)}>Cancel</Button>
+                                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-foreground">
+                                    {isSubmitting ? "Submitting..." : "Resubmit Order"}
                                 </Button>
                             </DialogFooter>
                         </form>
