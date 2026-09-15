@@ -14,12 +14,20 @@ const API_URL = RAW_API_URL.endsWith('/') ? RAW_API_URL.slice(0, -1) : RAW_API_U
 
 function getToken(): string | null {
     if (typeof window === "undefined") return null;
-    return localStorage.getItem("token");
+    try {
+        return localStorage.getItem("token");
+    } catch (e) {
+        return null;
+    }
 }
 
 function setToken(token: string): void {
     if (typeof window === "undefined") return;
-    localStorage.setItem("token", token);
+    try {
+        localStorage.setItem("token", token);
+    } catch (e) {
+        console.warn("localStorage is disabled");
+    }
 }
 
 async function tryRefreshToken(): Promise<string | null> {
