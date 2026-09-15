@@ -299,6 +299,12 @@ function CustomerSubmissionsContent() {
         }
     };
 
+    const placedTotal = orders.filter(o => o.status === 'SUBMITTED' || o.status === 'VALIDATING').reduce((acc, curr) => acc + (Number(curr.refundAmount) || 0), 0);
+    const pendingTotal = orders.filter(o => o.status === 'VALIDATED' && o.refundStatus !== 'REFUNDED' && o.refundStatus !== 'APPROVED').reduce((acc, curr) => acc + (Number(curr.refundAmount) || 0), 0);
+    const confirmedTotal = orders.filter(o => o.status === 'VALIDATED' && o.refundStatus === 'APPROVED').reduce((acc, curr) => acc + (Number(curr.refundAmount) || 0), 0);
+    const processedTotal = orders.filter(o => o.refundStatus === 'REFUNDED').reduce((acc, curr) => acc + (Number(curr.refundAmount) || 0), 0);
+    const totalProfit = placedTotal + pendingTotal + confirmedTotal + processedTotal;
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -308,6 +314,75 @@ function CustomerSubmissionsContent() {
                 </div>
                 <Button onClick={() => setIsAddModalOpen(true)}>Add New</Button>
             </div>
+
+            <Card className="bg-white shadow-sm border-gray-100">
+                <CardHeader className="pb-2">
+                    <CardTitle className="text-center text-xl font-bold text-gray-900">Profit Break Up</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="text-center mb-6">
+                        <span className="text-4xl font-extrabold tracking-tight text-gray-900">₹{totalProfit}</span>
+                    </div>
+
+                    <div className="space-y-4 max-w-md mx-auto">
+                        <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                            <div>
+                                <div className="text-lg font-bold text-gray-900">₹{confirmedTotal}</div>
+                                <div className="text-xs text-gray-500 mt-1">Available for payment</div>
+                            </div>
+                            <div className="flex items-center gap-2 px-3 py-1 bg-green-50 border border-green-200 text-green-700 rounded-md text-sm font-medium">
+                                <div className="w-2 h-2 rounded-full bg-green-500"></div> Confirmed
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                            <div>
+                                <div className="text-lg font-bold text-gray-900">₹{pendingTotal}</div>
+                            </div>
+                            <div className="flex items-center gap-2 px-3 py-1 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-md text-sm font-medium">
+                                <div className="w-2 h-2 rounded-full bg-yellow-500"></div> Pending
+                            </div>
+                        </div>
+
+                        <div className="flex items-center justify-between border-b border-gray-100 pb-4">
+                            <div>
+                                <div className="text-lg font-bold text-gray-900">₹{processedTotal}</div>
+                            </div>
+                            <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-md text-sm font-medium">
+                                <div className="w-2 h-2 rounded-full bg-blue-500"></div> Processed
+                            </div>
+                        </div>
+                        
+                        <div className="flex items-center justify-between pb-2">
+                            <div>
+                                <div className="text-lg font-bold text-gray-900">₹{placedTotal}</div>
+                            </div>
+                            <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 border border-gray-200 text-gray-700 rounded-md text-sm font-medium">
+                                <div className="w-2 h-2 rounded-full bg-gray-500"></div> Placed
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 space-y-3 max-w-2xl mx-auto text-sm">
+                        <div className="flex gap-2">
+                            <div className="mt-1.5 w-2 h-2 rounded-full bg-green-500 shrink-0"></div>
+                            <p className="text-gray-600"><span className="font-bold text-gray-900">Confirmed Profit:</span> Profit that you can transfer to your bank account or redeem through other payment methods.</p>
+                        </div>
+                        <div className="flex gap-2">
+                            <div className="mt-1.5 w-2 h-2 rounded-full bg-yellow-500 shrink-0"></div>
+                            <p className="text-gray-600"><span className="font-bold text-gray-900">Pending Profit:</span> Your Profit has been recorded and will be confirmed as per the partner's expected date.</p>
+                        </div>
+                        <div className="flex gap-2">
+                            <div className="mt-1.5 w-2 h-2 rounded-full bg-blue-500 shrink-0"></div>
+                            <p className="text-gray-600"><span className="font-bold text-gray-900">Processed Profit:</span> Profit that has successfully been paid to you in the past.</p>
+                        </div>
+                        <div className="flex gap-2">
+                            <div className="mt-1.5 w-2 h-2 rounded-full bg-gray-500 shrink-0"></div>
+                            <p className="text-gray-600"><span className="font-bold text-gray-900">Placed Profit:</span> Orders submitted and awaiting initial verification.</p>
+                        </div>
+                    </div>
+                </CardContent>
+            </Card>
 
             <div className="space-y-4">
                 <div className="flex flex-col md:flex-row gap-4 mb-4">
