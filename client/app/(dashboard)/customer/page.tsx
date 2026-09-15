@@ -25,6 +25,9 @@ function CustomerDashboardContent() {
     const [isSubmitModalOpen, setIsSubmitModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
+    const [isTermsModalOpen, setIsTermsModalOpen] = useState(false);
+    const [termsProduct, setTermsProduct] = useState<any>(null);
+
     // Form State
     const [orderForm, setOrderForm] = useState({
         orderId: "",
@@ -73,6 +76,25 @@ function CustomerDashboardContent() {
         } catch {
             return imgStr.startsWith('/') ? [`${API_URL}${imgStr}`] : [imgStr];
         }
+    };
+
+    const getShortDescription = (dealTypeStr?: string) => {
+        if (!dealTypeStr) return "Return Window Screenshot Required";
+        const types = dealTypeStr.split(",");
+        const reqs = [];
+        if (types.includes("Review Deal")) reqs.push("Review");
+        if (types.includes("Rating Deal")) reqs.push("Rating");
+        if (types.includes("Seller Feedback Deal")) reqs.push("Seller Feedback");
+        
+        if (reqs.length > 0) {
+            return `${reqs.join(", ")} & Return Window Screenshot Required`;
+        }
+        return "Return Window Screenshot Required";
+    };
+
+    const getTermsBlocks = (dealTypeStr?: string) => {
+        if (!dealTypeStr) return ["Only Order"];
+        return dealTypeStr.split(",");
     };
 
     const openSubmitModal = (product: any) => {
@@ -198,16 +220,16 @@ function CustomerDashboardContent() {
                                     {/* Info Box */}
                                     <div className="flex items-center gap-2 p-3 mt-1 bg-slate-50 rounded-xl border border-slate-100 text-slate-600">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500 shrink-0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                        <span className="text-xs font-medium">30-45 days After Delivery Screenshot Verification</span>
+                                        <span className="text-xs font-medium">{getShortDescription(product.deal_type)}</span>
                                     </div>
 
                                     {/* Terms and Links */}
                                     <div className="flex items-center justify-between mt-auto pt-2">
-                                        <a href="#" className="flex items-center gap-1 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-wider">
+                                        <button onClick={(e) => { e.preventDefault(); setTermsProduct(product); setIsTermsModalOpen(true); }} className="flex items-center gap-1 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-wider cursor-pointer">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                                             Terms & Conditions
                                             <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-0.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                                        </a>
+                                        </button>
                                     </div>
 
                                     {/* Action Buttons */}
@@ -277,6 +299,91 @@ function CustomerDashboardContent() {
                                 {isSubmitting ? "Submitting..." : "Submit Order Details"}
                             </Button>
                         </form>
+                    )}
+                </DialogContent>
+            </Dialog>
+            <Dialog open={isTermsModalOpen} onOpenChange={setIsTermsModalOpen}>
+                <DialogContent className="sm:max-w-xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Terms & Conditions</DialogTitle>
+                    </DialogHeader>
+                    {termsProduct && (
+                        <div className="space-y-6 pt-4 text-sm text-slate-700">
+                            {getTermsBlocks(termsProduct.deal_type).map((type, idx) => {
+                                if (type.includes("Only Order")) return (
+                                    <div key={idx} className="space-y-2">
+                                        <h4 className="font-bold text-slate-900">1. Only Order Deal</h4>
+                                        <ul className="list-disc pl-5 space-y-1">
+                                            <li>Cashback will be processed only after the customer completes the required order process.</li>
+                                            <li>The customer must submit a clear screenshot of the Return Window as proof.</li>
+                                            <li>The Return Window screenshot must clearly show the relevant order details.</li>
+                                            <li>Cashback will not be processed if the required screenshot is missing, unclear, or invalid.</li>
+                                        </ul>
+                                    </div>
+                                );
+                                if (type.includes("Rating Deal")) return (
+                                    <div key={idx} className="space-y-2">
+                                        <h4 className="font-bold text-slate-900">2. Rating Deal ⭐⭐⭐⭐⭐</h4>
+                                        <ul className="list-disc pl-5 space-y-1">
+                                            <li>Cashback will be processed only after the customer completes the required rating.</li>
+                                            <li>The customer must submit:
+                                                <ul className="list-circle pl-5 mt-1">
+                                                    <li>Rating screenshot</li>
+                                                    <li>Return Window screenshot</li>
+                                                </ul>
+                                            </li>
+                                            <li>Both screenshots must be clear and valid.</li>
+                                            <li>Cashback will not be processed if either required proof is missing or does not meet the deal requirements.</li>
+                                        </ul>
+                                    </div>
+                                );
+                                if (type.includes("Review Deal")) return (
+                                    <div key={idx} className="space-y-2">
+                                        <h4 className="font-bold text-slate-900">3. Review Deal ✍️</h4>
+                                        <ul className="list-disc pl-5 space-y-1">
+                                            <li>Cashback will be processed only after the customer completes the required review.</li>
+                                            <li>The customer must submit:
+                                                <ul className="list-circle pl-5 mt-1">
+                                                    <li>Review screenshot</li>
+                                                    <li>Return Window screenshot</li>
+                                                </ul>
+                                            </li>
+                                            <li>The review must be successfully posted and visible as required.</li>
+                                            <li>Cashback will not be processed without valid proof of both the review and Return Window.</li>
+                                        </ul>
+                                    </div>
+                                );
+                                if (type.includes("Seller Feedback Deal")) return (
+                                    <div key={idx} className="space-y-2">
+                                        <h4 className="font-bold text-slate-900">4. Seller Feedback Deal 🏪</h4>
+                                        <ul className="list-disc pl-5 space-y-1">
+                                            <li>Cashback will be processed only after the customer completes the required seller feedback.</li>
+                                            <li>The customer must submit:
+                                                <ul className="list-circle pl-5 mt-1">
+                                                    <li>Seller Feedback screenshot</li>
+                                                    <li>Return Window screenshot</li>
+                                                </ul>
+                                            </li>
+                                            <li>The seller feedback must be successfully submitted and visible as required.</li>
+                                            <li>Cashback will not be processed if the required proofs are missing, unclear, or invalid.</li>
+                                        </ul>
+                                    </div>
+                                );
+                                return null;
+                            })}
+                            
+                            <div className="space-y-2 mt-6 pt-6 border-t border-slate-100">
+                                <h4 className="font-bold text-slate-900">General Terms & Conditions</h4>
+                                <ul className="list-disc pl-5 space-y-1">
+                                    <li>Valid proof screenshots are mandatory for cashback processing.</li>
+                                    <li>Screenshots must be clear, complete, and genuine.</li>
+                                    <li>Customers must follow all instructions mentioned in the respective deal.</li>
+                                    <li>Cashback will be processed only after the submitted details and proofs are verified and approved.</li>
+                                    <li>Submission of screenshots does not guarantee cashback if the requirements of the deal have not been fulfilled.</li>
+                                    <li>Any invalid, edited, duplicate, or misleading proof may result in cashback rejection.</li>
+                                </ul>
+                            </div>
+                        </div>
                     )}
                 </DialogContent>
             </Dialog>
