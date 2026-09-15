@@ -174,7 +174,7 @@ function CustomerDashboardContent() {
                                 <CardContent className="flex-1 p-5 space-y-4 bg-white flex flex-col">
                                     <div>
                                         {/* Category Pill */}
-                                        <Badge variant="outline" className="text-blue-600 border-blue-200 bg-white hover:bg-blue-50 font-semibold mb-3 rounded-md px-3">
+                                        <Badge variant="outline" className="text-red-600 border-red-200 bg-white hover:bg-red-50 font-semibold mb-3 rounded-md px-3">
                                             {product.platform?.toUpperCase() || "DEAL"}
                                         </Badge>
                                         
@@ -189,15 +189,15 @@ function CustomerDashboardContent() {
                                             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Selling Price</p>
                                             <p className="font-bold text-xl text-slate-900">₹{product.real_price || (Number(product.offer_price || 0) + Number(product.refund_amount || 0))}</p>
                                         </div>
-                                        <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-50">
-                                            <p className="text-[10px] font-bold text-blue-500 uppercase tracking-wide">Final Cost</p>
-                                            <p className="font-bold text-xl text-blue-700">₹{product.offer_price || (product.real_price ? product.real_price - product.refund_amount : 0)}</p>
+                                        <div className="bg-red-50/50 p-3 rounded-xl border border-red-50">
+                                            <p className="text-[10px] font-bold text-red-500 uppercase tracking-wide">Final Cost</p>
+                                            <p className="font-bold text-xl text-red-700">₹{product.offer_price || (product.real_price ? product.real_price - product.refund_amount : 0)}</p>
                                         </div>
                                     </div>
 
                                     {/* Info Box */}
                                     <div className="flex items-center gap-2 p-3 mt-1 bg-slate-50 rounded-xl border border-slate-100 text-slate-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500 shrink-0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500 shrink-0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                                         <span className="text-xs font-medium">30-45 days After Delivery Screenshot Verification</span>
                                     </div>
 
@@ -213,9 +213,9 @@ function CustomerDashboardContent() {
                                     {/* Action Buttons */}
                                     <div className="flex gap-2 pt-2">
                                         <a href={product.product_link} target="_blank" rel="noreferrer" className="flex-1">
-                                            <Button variant="outline" className="w-full border-blue-200 text-blue-700 hover:bg-blue-50">Buy Now</Button>
+                                            <Button variant="outline" className="w-full border-red-200 text-red-700 hover:bg-red-50">Buy Now</Button>
                                         </a>
-                                        <Button className="flex-1 bg-blue-600 hover:bg-blue-700 text-foreground" onClick={() => openSubmitModal(product)}>Submit ID</Button>
+                                        <Button className="flex-1 bg-red-600 hover:bg-red-700 text-foreground" onClick={() => openSubmitModal(product)}>Submit ID</Button>
                                     </div>
                                 </CardContent>
                             </Card>
