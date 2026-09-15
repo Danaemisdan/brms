@@ -8,8 +8,12 @@ export async function POST(req: NextRequest) {
     if (session instanceof NextResponse) return session;
 
     try {
-        const body = await req.json().catch(() => ({}));
-        const { product_id, order_id, amount, screenshot_url } = body;
+        const payload = await req.json();
+        const { product_id, order_id, amount, profile_name, screenshot_url } = payload;
+
+        if (!product_id || !order_id || !amount || !profile_name || !screenshot_url) {
+            return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+        }
 
         const order = await prisma.order.create({
             data: {
@@ -17,6 +21,7 @@ export async function POST(req: NextRequest) {
                 user_id: session.userId,
                 product_id,
                 amount: parseFloat(amount),
+                profile_name,
                 screenshot_url: screenshot_url || "https://dummyimage.com/600x400/000/fff&text=Screenshot",
                 status: "SUBMITTED"
             },

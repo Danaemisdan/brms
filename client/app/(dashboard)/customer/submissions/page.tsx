@@ -37,12 +37,7 @@ function CustomerSubmissionsContent() {
 
     // Add New Modal State
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [orderForm, setOrderForm] = useState({
-        productId: "",
-        orderId: "",
-        amount: "",
-        screenshot: ""
-    });
+    const [orderForm, setOrderForm] = useState<{productId: string, orderId: string, amount: string, profileName?: string, screenshot: string}>({ productId: "", orderId: "", amount: "", profileName: "", screenshot: "" });
     const [searchQuery, setSearchQuery] = useState("");
     const [submitError, setSubmitError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -248,7 +243,7 @@ function CustomerSubmissionsContent() {
 
             toast.success("Order Proof Submitted Successfully!");
             setIsAddModalOpen(false);
-            setOrderForm({ productId: "", orderId: "", amount: "", screenshot: "" });
+            setOrderForm({ productId: "", orderId: "", amount: "", profileName: "", screenshot: "" });
             setSearchQuery("");
             fetchMyOrders();
         } catch (error: any) {
@@ -690,6 +685,16 @@ function CustomerSubmissionsContent() {
                                 min="1"
                                 value={orderForm.amount}
                                 onChange={(e) => setOrderForm({ ...orderForm, amount: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <Label>Profile Name <span className="text-red-500">*</span></Label>
+                            <Input
+                                className="mt-1 bg-white"
+                                placeholder="Enter your Profile Name"
+                                required
+                                value={orderForm.profileName || ""}
+                                onChange={(e) => setOrderForm({ ...orderForm, profileName: e.target.value })}
                             />
                         </div>
                         <div>

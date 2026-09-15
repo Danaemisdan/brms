@@ -29,9 +29,10 @@ function CustomerDashboardContent() {
     const [termsProduct, setTermsProduct] = useState<any>(null);
 
     // Form State
-    const [orderForm, setOrderForm] = useState({
+    const [orderForm, setOrderForm] = useState<{orderId: string, amount: string, profileName?: string, screenshot: string}>({
         orderId: "",
         amount: "",
+        profileName: "",
         screenshot: ""
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -101,7 +102,7 @@ function CustomerDashboardContent() {
         setSelectedProduct(product);
         setIsSubmitModalOpen(true);
         setSubmitError("");
-        setOrderForm({ orderId: "", amount: "", screenshot: "" });
+        setOrderForm({ orderId: "", amount: "", profileName: "", screenshot: "" });
     };
 
     const handleOrderSubmit = async (e: React.FormEvent) => {
@@ -119,6 +120,7 @@ function CustomerDashboardContent() {
                 product_id: selectedProduct.id,
                 order_id: orderForm.orderId,
                 amount: orderForm.amount,
+                profile_name: orderForm.profileName,
                 screenshot_url: orderForm.screenshot
             };
 
@@ -273,6 +275,16 @@ function CustomerDashboardContent() {
                                     min="1"
                                     value={orderForm.amount}
                                     onChange={(e) => setOrderForm({ ...orderForm, amount: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <Label>Profile Name <span className="text-red-500">*</span></Label>
+                                <Input
+                                    className="mt-1 bg-white"
+                                    placeholder="Enter your Profile Name"
+                                    required
+                                    value={orderForm.profileName || ""}
+                                    onChange={(e) => setOrderForm({ ...orderForm, profileName: e.target.value })}
                                 />
                             </div>
                             <div>

@@ -180,7 +180,7 @@ export default function AdminOrders() {
                                     {order.product?.product_name || "Unknown Product"}
                                 </CardTitle>
                                 <CardDescription className="text-foreground/50 font-sans text-xs tracking-widest uppercase">
-                                    <span className="text-foreground">{order.user?.name || order.user?.mobile}</span> • {order.product?.platform} • <span className="font-mono text-primary/70">{order.order_id}</span> • {new Date(order.created_at).toLocaleDateString()}
+                                    <span className="text-foreground">{order.user?.name || order.user?.mobile}</span> {order.profile_name && <span className="text-primary/70 border border-primary/20 bg-primary/5 px-1.5 py-0.5 rounded-sm ml-1 normal-case tracking-normal text-[10px]">Profile: {order.profile_name}</span>} • {order.product?.platform} • <span className="font-mono text-primary/70">{order.order_id}</span> • {new Date(order.created_at).toLocaleDateString()}
                                 </CardDescription>
                                 {order.screenshot_url && order.screenshot_url !== "https://dummyimage.com/600x400/000/fff&text=Order+Screenshot" && (
                                     <button onClick={() => setSelectedImage(order.screenshot_url)} className="text-[10px] text-primary/80 hover:text-primary tracking-widest uppercase font-sans mt-3 inline-block border-b border-primary/30 hover:border-primary">Access Intelligence Image</button>
