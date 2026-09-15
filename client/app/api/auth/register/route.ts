@@ -12,7 +12,7 @@ const registerSchema = z.object({
     mobile: mobileSchema,
     email: z.union([z.string().trim().email('Invalid email format'), z.literal('')]).optional(),
     password: z.string().min(6, 'Password must be at least 6 characters long'),
-    ecommerce_profile_url: z.union([z.string().trim().url('Invalid e-commerce profile URL'), z.literal('')]).optional(),
+    ecommerce_profile_url: z.string().trim().max(500, 'URL is too long').optional(),
     category: z.string().optional(),
 });
 
