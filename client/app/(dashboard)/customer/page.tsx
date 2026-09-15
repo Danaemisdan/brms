@@ -119,7 +119,7 @@ function CustomerDashboardContent() {
                 product_id: selectedProduct.id,
                 order_id: orderForm.orderId,
                 amount: orderForm.amount,
-                screenshot_url: "https://dummyimage.com/600x400/000/fff&text=Order+Screenshot"
+                screenshot_url: orderForm.screenshot
             };
 
             const token = localStorage.getItem("token");

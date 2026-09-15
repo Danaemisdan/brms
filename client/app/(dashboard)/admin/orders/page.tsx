@@ -7,6 +7,8 @@ import { Card, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { isDateMatch, DateFilterType } from "@/lib/dateUtils";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { toast } from "sonner";
 
 const API_URL = "";
 
@@ -17,6 +19,30 @@ export default function AdminOrders() {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("ALL");
     const [dateFilter, setDateFilter] = useState<DateFilterType>("ALL");
+
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+    const updateOrderStatus = async (id: string, newStatus: string) => {
+        try {
+            const token = localStorage.getItem("token");
+            const res = await apiFetch(`${API_URL}/api/orders/${id}/status`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+            if (res.ok) {
+                toast.success(`Order ${newStatus.toLowerCase()} successfully`);
+                fetchOrders();
+            } else {
+                toast.error("Failed to update order status");
+            }
+        } catch (error) {
+            toast.error("Error updating order status");
+        }
+    };
 
     useEffect(() => {
         fetchOrders();
@@ -133,22 +159,44 @@ export default function AdminOrders() {
                                     <span className="text-foreground">{order.user?.name || order.user?.mobile}</span> • {order.product?.platform} • <span className="font-mono text-primary/70">{order.order_id}</span> • {new Date(order.created_at).toLocaleDateString()}
                                 </CardDescription>
                                 {order.screenshot_url && order.screenshot_url !== "https://dummyimage.com/600x400/000/fff&text=Order+Screenshot" && (
-                                    <a href={order.screenshot_url} target="_blank" rel="noreferrer" className="text-[10px] text-primary/80 hover:text-primary tracking-widest uppercase font-sans mt-3 inline-block border-b border-primary/30 hover:border-primary">Access Intelligence Image</a>
+                                    <button onClick={() => setSelectedImage(order.screenshot_url)} className="text-[10px] text-primary/80 hover:text-primary tracking-widest uppercase font-sans mt-3 inline-block border-b border-primary/30 hover:border-primary">Access Intelligence Image</button>
                                 )}
                             </div>
-                            <span className={`px-4 py-2 text-[10px] font-sans tracking-widest uppercase rounded-sm border ${
-                                order.status === 'SUBMITTED' ? 'bg-blue-900/20 text-blue-400 border-blue-500/30' :
-                                order.status === 'VALIDATING' ? 'bg-yellow-900/20 text-yellow-500 border-yellow-500/30' :
-                                order.status === 'VALIDATED' ? 'bg-green-900/20 text-green-400 border-green-500/30' :
-                                order.status === 'REJECTED' ? 'bg-red-900/20 text-red-400 border-red-500/30' :
-                                'bg-white/5 text-foreground/50 border-border/10'
-                            }`}>
-                                {order.status}
-                            </span>
+                            <div className="flex flex-col gap-2 md:items-end">
+                                <span className={`px-4 py-2 text-[10px] font-sans tracking-widest uppercase rounded-sm border w-fit ${
+                                    order.status === 'SUBMITTED' ? 'bg-blue-900/20 text-blue-400 border-blue-500/30' :
+                                    order.status === 'VALIDATING' ? 'bg-yellow-900/20 text-yellow-500 border-yellow-500/30' :
+                                    order.status === 'VALIDATED' ? 'bg-green-900/20 text-green-400 border-green-500/30' :
+                                    order.status === 'REJECTED' ? 'bg-red-900/20 text-red-400 border-red-500/30' :
+                                    'bg-white/5 text-foreground/50 border-border/10'
+                                }`}>
+                                    {order.status}
+                                </span>
+                                {order.status === 'SUBMITTED' && (
+                                    <div className="flex gap-2">
+                                        <Button variant="outline" size="sm" className="h-7 text-[10px] bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/20 px-3 uppercase tracking-wider" onClick={() => updateOrderStatus(order.id, 'VALIDATED')}>Accept</Button>
+                                        <Button variant="outline" size="sm" className="h-7 text-[10px] bg-red-500/10 text-red-600 border-red-500/20 hover:bg-red-500/20 px-3 uppercase tracking-wider" onClick={() => updateOrderStatus(order.id, 'REJECTED')}>Reject</Button>
+                                    </div>
+                                )}
+                            </div>
                         </Card>
                     ));
                 })()}
             </div>
+
+            <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
+                <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col items-center justify-center bg-black/95 border-border/10 p-4">
+                    <DialogHeader className="w-full mb-2">
+                        <DialogTitle className="text-white/80 font-mono text-sm">Intelligence Image</DialogTitle>
+                    </DialogHeader>
+                    {selectedImage && (
+                        <div className="relative w-full h-full flex items-center justify-center overflow-auto rounded-lg">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={selectedImage} alt="Order Proof" className="max-w-full max-h-[75vh] object-contain rounded-md shadow-2xl" />
+                        </div>
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
