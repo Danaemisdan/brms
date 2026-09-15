@@ -233,7 +233,7 @@ function CustomerDashboardContent() {
                                         <a href={product.product_link} target="_blank" rel="noreferrer" className="flex-1">
                                             <Button variant="outline" className="w-full border-red-200 text-red-700 hover:bg-red-50">Buy Now</Button>
                                         </a>
-                                        <Button className="flex-1 bg-red-600 hover:bg-red-700 text-foreground" onClick={() => openSubmitModal(product)}>Submit ID</Button>
+                                        <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white" onClick={() => openSubmitModal(product)}>Submit ID</Button>
                                     </div>
                                 </CardContent>
                             </Card>
