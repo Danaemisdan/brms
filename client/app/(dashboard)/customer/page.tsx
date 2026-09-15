@@ -147,7 +147,7 @@ function CustomerDashboardContent() {
                             
                             <Card key={product.id} className="overflow-hidden flex flex-col relative rounded-2xl shadow-sm border border-gray-100">
                                 {/* Top Right Cashback Badge */}
-                                <div className="absolute top-4 right-0 z-10 bg-blue-600 text-foreground font-bold text-xs px-3 py-1.5 rounded-l-lg shadow-sm">
+                                <div className="absolute top-4 right-0 z-10 bg-red-600 text-white font-bold text-xs px-3 py-1.5 rounded-l-lg shadow-sm">
                                     LESS ₹{product.refund_amount} CASHBACK
                                 </div>
                                 
