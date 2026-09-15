@@ -4,6 +4,7 @@ import { apiFetch } from "@/lib/apiFetch";
 
 import { useEffect, useState } from "react";
 import { Card, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { isDateMatch, DateFilterType } from "@/lib/dateUtils";
@@ -23,6 +24,7 @@ export default function AdminOrders() {
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [rejectOrderId, setRejectOrderId] = useState<string | null>(null);
     const [rejectReason, setRejectReason] = useState("");
+    const [savedReasons, setSavedReasons] = useState<string[]>([]);
 
     const updateOrderStatus = async (id: string, newStatus: string, remarks?: string) => {
         try {
@@ -37,6 +39,16 @@ export default function AdminOrders() {
             });
             if (res.ok) {
                 toast.success(`Order ${newStatus.toLowerCase()} successfully`);
+                if (newStatus === 'REJECTED' && remarks && remarks.trim() !== '') {
+                    const trimmedReason = remarks.trim();
+                    setSavedReasons(prev => {
+                        const newSaved = prev.includes(trimmedReason) 
+                            ? prev 
+                            : [trimmedReason, ...prev].slice(0, 10); // Keep last 10
+                        localStorage.setItem("savedRejectReasons", JSON.stringify(newSaved));
+                        return newSaved;
+                    });
+                }
                 setRejectOrderId(null);
                 setRejectReason("");
                 fetchOrders();
@@ -49,6 +61,14 @@ export default function AdminOrders() {
     };
 
     useEffect(() => {
+        const saved = localStorage.getItem("savedRejectReasons");
+        if (saved) {
+            try {
+                setSavedReasons(JSON.parse(saved));
+            } catch (e) {
+                // ignore
+            }
+        }
         fetchOrders();
     }, []);
 
@@ -216,7 +236,25 @@ export default function AdminOrders() {
                     </DialogHeader>
                     <div className="space-y-4 pt-2">
                         <div>
-                            <label className="text-xs text-foreground/80 mb-2 block font-sans uppercase tracking-widest font-semibold">Reason for Rejection <span className="text-red-500">*</span></label>
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="text-xs text-foreground/80 block font-sans uppercase tracking-widest font-semibold">Reason for Rejection <span className="text-red-500">*</span></label>
+                            </div>
+                            
+                            {savedReasons.length > 0 && (
+                                <div className="flex flex-wrap gap-1.5 mb-3">
+                                    {savedReasons.map((reason, idx) => (
+                                        <Badge 
+                                            key={idx} 
+                                            variant="outline" 
+                                            className="cursor-pointer hover:bg-red-50 hover:text-red-600 hover:border-red-200 text-[10px] font-normal transition-colors py-0 px-2"
+                                            onClick={() => setRejectReason(reason)}
+                                        >
+                                            {reason}
+                                        </Badge>
+                                    ))}
+                                </div>
+                            )}
+
                             <Input 
                                 placeholder="e.g. Screenshot is too blurry or does not match" 
                                 value={rejectReason}
