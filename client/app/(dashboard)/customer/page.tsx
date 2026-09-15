@@ -217,11 +217,7 @@ function CustomerDashboardContent() {
                                         </div>
                                     </div>
 
-                                    {/* Info Box */}
-                                    <div className="flex items-center gap-2 p-3 mt-1 bg-slate-50 rounded-xl border border-slate-100 text-slate-600">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-red-500 shrink-0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                        <span className="text-xs font-medium">{getShortDescription(product.deal_type)}</span>
-                                    </div>
+
 
                                     {/* Terms and Links */}
                                     <div className="flex items-center justify-between mt-auto pt-2">
@@ -312,60 +308,45 @@ function CustomerDashboardContent() {
                             {getTermsBlocks(termsProduct.deal_type).map((type, idx) => {
                                 if (type.includes("Only Order")) return (
                                     <div key={idx} className="space-y-2">
-                                        <h4 className="font-bold text-slate-900">1. Only Order Deal</h4>
+                                        <h4 className="font-bold text-slate-900">Only Order Deal</h4>
                                         <ul className="list-disc pl-5 space-y-1">
-                                            <li>Cashback will be processed only after the customer completes the required order process.</li>
-                                            <li>The customer must submit a clear screenshot of the Return Window as proof.</li>
-                                            <li>The Return Window screenshot must clearly show the relevant order details.</li>
-                                            <li>Cashback will not be processed if the required screenshot is missing, unclear, or invalid.</li>
+                                            <li>Cashback is issued upon successful completion of your order.</li>
+                                            <li>A clear screenshot of the order's Return Window must be submitted as proof.</li>
+                                            <li>Ensure that the screenshot clearly displays all relevant order details.</li>
+                                            <li>Failure to provide a valid, clear screenshot will result in cashback rejection.</li>
                                         </ul>
                                     </div>
                                 );
                                 if (type.includes("Rating Deal")) return (
                                     <div key={idx} className="space-y-2">
-                                        <h4 className="font-bold text-slate-900">2. Rating Deal ⭐⭐⭐⭐⭐</h4>
+                                        <h4 className="font-bold text-slate-900">Rating Deal ⭐⭐⭐⭐⭐</h4>
                                         <ul className="list-disc pl-5 space-y-1">
-                                            <li>Cashback will be processed only after the customer completes the required rating.</li>
-                                            <li>The customer must submit:
-                                                <ul className="list-circle pl-5 mt-1">
-                                                    <li>Rating screenshot</li>
-                                                    <li>Return Window screenshot</li>
-                                                </ul>
-                                            </li>
-                                            <li>Both screenshots must be clear and valid.</li>
-                                            <li>Cashback will not be processed if either required proof is missing or does not meet the deal requirements.</li>
+                                            <li>Cashback is issued upon successfully rating the product.</li>
+                                            <li>You must submit two clear screenshots: one of your rating, and one of the order's Return Window.</li>
+                                            <li>Ensure both screenshots are clearly legible and valid.</li>
+                                            <li>Missing or invalid proof for either requirement will result in cashback rejection.</li>
                                         </ul>
                                     </div>
                                 );
                                 if (type.includes("Review Deal")) return (
                                     <div key={idx} className="space-y-2">
-                                        <h4 className="font-bold text-slate-900">3. Review Deal ✍️</h4>
+                                        <h4 className="font-bold text-slate-900">Review Deal ✍️</h4>
                                         <ul className="list-disc pl-5 space-y-1">
-                                            <li>Cashback will be processed only after the customer completes the required review.</li>
-                                            <li>The customer must submit:
-                                                <ul className="list-circle pl-5 mt-1">
-                                                    <li>Review screenshot</li>
-                                                    <li>Return Window screenshot</li>
-                                                </ul>
-                                            </li>
-                                            <li>The review must be successfully posted and visible as required.</li>
-                                            <li>Cashback will not be processed without valid proof of both the review and Return Window.</li>
+                                            <li>Cashback is issued upon successfully posting a review for the product.</li>
+                                            <li>You must submit two clear screenshots: one showing your published review, and one of the order's Return Window.</li>
+                                            <li>The review must be publicly visible and successfully posted according to guidelines.</li>
+                                            <li>Missing or invalid proof for either requirement will result in cashback rejection.</li>
                                         </ul>
                                     </div>
                                 );
                                 if (type.includes("Seller Feedback Deal")) return (
                                     <div key={idx} className="space-y-2">
-                                        <h4 className="font-bold text-slate-900">4. Seller Feedback Deal 🏪</h4>
+                                        <h4 className="font-bold text-slate-900">Seller Feedback Deal 🏪</h4>
                                         <ul className="list-disc pl-5 space-y-1">
-                                            <li>Cashback will be processed only after the customer completes the required seller feedback.</li>
-                                            <li>The customer must submit:
-                                                <ul className="list-circle pl-5 mt-1">
-                                                    <li>Seller Feedback screenshot</li>
-                                                    <li>Return Window screenshot</li>
-                                                </ul>
-                                            </li>
-                                            <li>The seller feedback must be successfully submitted and visible as required.</li>
-                                            <li>Cashback will not be processed if the required proofs are missing, unclear, or invalid.</li>
+                                            <li>Cashback is issued upon successfully submitting feedback for the seller.</li>
+                                            <li>You must submit two clear screenshots: one showing your submitted seller feedback, and one of the order's Return Window.</li>
+                                            <li>The seller feedback must be successfully submitted and publicly visible.</li>
+                                            <li>Missing or invalid proof for either requirement will result in cashback rejection.</li>
                                         </ul>
                                     </div>
                                 );
@@ -375,12 +356,11 @@ function CustomerDashboardContent() {
                             <div className="space-y-2 mt-6 pt-6 border-t border-slate-100">
                                 <h4 className="font-bold text-slate-900">General Terms & Conditions</h4>
                                 <ul className="list-disc pl-5 space-y-1">
-                                    <li>Valid proof screenshots are mandatory for cashback processing.</li>
-                                    <li>Screenshots must be clear, complete, and genuine.</li>
-                                    <li>Customers must follow all instructions mentioned in the respective deal.</li>
-                                    <li>Cashback will be processed only after the submitted details and proofs are verified and approved.</li>
-                                    <li>Submission of screenshots does not guarantee cashback if the requirements of the deal have not been fulfilled.</li>
-                                    <li>Any invalid, edited, duplicate, or misleading proof may result in cashback rejection.</li>
+                                    <li>Valid, unedited, and genuine proof screenshots are strictly mandatory.</li>
+                                    <li>All deal-specific instructions must be followed carefully.</li>
+                                    <li>Cashback processing begins only after all details and proofs have been verified and approved by our team.</li>
+                                    <li>Submitting screenshots does not guarantee a refund if the specific deal requirements are not met.</li>
+                                    <li>Any attempt to submit invalid, edited, duplicate, or misleading proofs will result in immediate rejection.</li>
                                 </ul>
                             </div>
                         </div>
