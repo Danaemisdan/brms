@@ -549,7 +549,7 @@ function CustomerSubmissionsContent() {
                             {submitError && <p className="text-red-500 text-sm text-center">{submitError}</p>}
                             <DialogFooter className="mt-6">
                                 <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => setIsRetryModalOpen(false)}>Cancel</Button>
-                                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-foreground">
+                                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-sans tracking-widest uppercase transition-colors">
                                     {isSubmitting ? "Submitting..." : "Resubmit Order"}
                                 </Button>
                             </DialogFooter>
