@@ -348,9 +348,16 @@ function CustomerSubmissionsContent() {
                                                     ₹{req.refundAmount}
                                                 </td>
                                                 <td className="px-4 py-4">
-                                                    <span className={`px-2 py-1 text-xs font-semibold rounded-md ${statusColor[req.status] || "bg-gray-100 text-gray-800"}`}>
-                                                        {req.status}
-                                                    </span>
+                                                    <div className="flex flex-col gap-1">
+                                                        <span className={`px-2 py-1 text-xs font-semibold rounded-md w-fit ${statusColor[req.status] || "bg-gray-100 text-gray-800"}`}>
+                                                            {req.status}
+                                                        </span>
+                                                        {req.status === 'REJECTED' && req.remarks && (
+                                                            <span className="text-[10px] text-red-500 max-w-[150px] truncate" title={req.remarks}>
+                                                                Reason: {req.remarks}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </td>
                                                 <td className="px-4 py-4">
                                                     {req.hasReview ? (
