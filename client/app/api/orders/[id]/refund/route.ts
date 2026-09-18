@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireRole } from '@/lib/auth';
 import { encryptBankData } from '@/lib/encryption';
+import { syncRefundToSheet } from '@/lib/services/googleSheets.service';
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const session = requireRole(req, ['CUSTOMER']);
@@ -70,6 +71,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                 }),
             },
         });
+
+        // Push the refund to Google Sheets in the background
+        syncRefundToSheet(order.id).catch(err => console.error("Refund sheet sync error:", err));
 
         return NextResponse.json({ message: "Refund claimed successfully! Review is pending AI verification." }, { status: 200 });
     } catch (error: any) {

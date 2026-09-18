@@ -34,10 +34,11 @@ function CustomerSubmissionsContent() {
     const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
     const [activeOrder, setActiveOrder] = useState<any>(null);
     const [reviewScreenshot, setReviewScreenshot] = useState("");
+    const [managerName, setManagerName] = useState("");
 
     // Add New Modal State
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [orderForm, setOrderForm] = useState<{productId: string, orderId: string, amount: string, profileName?: string, screenshot: string}>({ productId: "", orderId: "", amount: "", profileName: "", screenshot: "" });
+    const [orderForm, setOrderForm] = useState<{productId: string, orderId: string, amount: string, profileName?: string, referenceName?: string, screenshot: string}>({ productId: "", orderId: "", amount: "", profileName: "", referenceName: "", screenshot: "" });
     const [searchQuery, setSearchQuery] = useState("");
     const [submitError, setSubmitError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -184,7 +185,8 @@ function CustomerSubmissionsContent() {
                     review_screenshot: reviewScreenshot,
                     upi_id: defaultUpiId,
                     qr_code_url: "",
-                    mobile: payload.mobile || ""
+                    mobile: payload.mobile || "",
+                    manager_name: managerName
                 })
             });
 
@@ -196,6 +198,8 @@ function CustomerSubmissionsContent() {
             toast.success("Review link and refund details submitted successfully! Your refund will be processed shortly.");
             setIsRefundModalOpen(false);
             setActiveOrder(null);
+            setReviewScreenshot("");
+            setManagerName("");
             fetchMyOrders();
         } catch (error: any) {
             toast.error(error.message || "Failed to submit refund claim. Are you sure you haven't already applied?");
@@ -223,7 +227,9 @@ function CustomerSubmissionsContent() {
                 product_id: orderForm.productId,
                 order_id: orderForm.orderId,
                 amount: orderForm.amount,
-                screenshot_url: orderForm.screenshot
+                screenshot_url: orderForm.screenshot,
+                profile_name: orderForm.profileName,
+                reference_name: orderForm.referenceName
             };
 
             const token = localStorage.getItem("token");
@@ -243,7 +249,7 @@ function CustomerSubmissionsContent() {
 
             toast.success("Order Proof Submitted Successfully!");
             setIsAddModalOpen(false);
-            setOrderForm({ productId: "", orderId: "", amount: "", profileName: "", screenshot: "" });
+            setOrderForm({ productId: "", orderId: "", amount: "", profileName: "", referenceName: "", screenshot: "" });
             setSearchQuery("");
             fetchMyOrders();
         } catch (error: any) {
@@ -559,6 +565,17 @@ function CustomerSubmissionsContent() {
                             </div>
 
                             <div className="space-y-1 mt-4">
+                                <Label>Manager Name <span className="text-red-500">*</span></Label>
+                                <Input
+                                    className="mt-1 bg-white"
+                                    placeholder="Enter Manager Name"
+                                    required
+                                    value={managerName}
+                                    onChange={(e) => setManagerName(e.target.value)}
+                                />
+                            </div>
+
+                            <div className="space-y-1 mt-4">
                                 <Label>Review Screenshot <span className="text-red-500">*</span></Label>
                                 <div className="mt-2">
                                     <ImageUpload
@@ -695,6 +712,15 @@ function CustomerSubmissionsContent() {
                                 required
                                 value={orderForm.profileName || ""}
                                 onChange={(e) => setOrderForm({ ...orderForm, profileName: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <Label>Reference Name <span className="text-gray-500 text-xs font-normal ml-2">(Optional)</span></Label>
+                            <Input
+                                className="mt-1 bg-white"
+                                placeholder="Enter Reference Name"
+                                value={orderForm.referenceName || ""}
+                                onChange={(e) => setOrderForm({ ...orderForm, referenceName: e.target.value })}
                             />
                         </div>
                         <div>

@@ -143,6 +143,8 @@ model Order {
   product                      Product  @relation(fields: [product_id], references: [id])
   amount                       Float
   profile_name                 String?
+  reference_name               String?
+  manager_name                 String?
   screenshot_url               String
   screenshot_hash              String?
   status                       String   @default("SUBMITTED")

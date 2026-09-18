@@ -1,7 +1,6 @@
 import { google } from 'googleapis';
 import path from 'path';
 import fs from 'fs';
-import { Order, Product, Vendor, User } from '@prisma/client';
 import prisma from '@/lib/prisma';
 
 // Global Cache for Spreadsheet ID
@@ -42,72 +41,16 @@ function getSpreadsheetId(): string | null {
     return null;
 }
 
-/**
- * Ensures the basic tabs exist in the spreadsheet
- */
 export async function initializeSpreadsheet() {
-    const sheets = getSheetsClient();
-    const spreadsheetId = getSpreadsheetId();
-    if (!sheets || !spreadsheetId) return;
-
-    try {
-        const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
-        const existingTabs = spreadsheet.data.sheets.map((s: any) => s.properties.title);
-
-        const requiredTabs = ['Orders', 'Products', 'Brands'];
-        const requests: any[] = [];
-
-        for (const tab of requiredTabs) {
-            if (!existingTabs.includes(tab)) {
-                requests.push({
-                    addSheet: {
-                        properties: {
-                            title: tab,
-                        }
-                    }
-                });
-            }
-        }
-
-        if (requests.length > 0) {
-            await sheets.spreadsheets.batchUpdate({
-                spreadsheetId,
-                requestBody: { requests }
-            });
-            console.log(`[Google Sheets] Created missing tabs: ${requiredTabs.filter(t => !existingTabs.includes(t)).join(', ')}`);
-            
-            // Add headers
-            await sheets.spreadsheets.values.update({
-                spreadsheetId,
-                range: 'Orders!A1:N1',
-                valueInputOption: 'USER_ENTERED',
-                requestBody: {
-                    values: [['DB_ID', 'Order ID', 'Customer Name', 'Customer Mobile', 'Product Name', 'Brand', 'Status', 'Order Amount', 'Refund Amount', 'Remarks', 'Order Date', 'Delivery Date', 'Target Deal Type', 'Last Updated']]
-                }
-            });
-            await sheets.spreadsheets.values.update({
-                spreadsheetId,
-                range: 'Products!A1:I1',
-                valueInputOption: 'USER_ENTERED',
-                requestBody: {
-                    values: [['DB_ID', 'Product Name', 'Brand', 'Status', 'Platform', 'Real Price', 'Filled/Total', 'Deadline', 'Last Updated']]
-                }
-            });
-            await sheets.spreadsheets.values.update({
-                spreadsheetId,
-                range: 'Brands!A1:G1',
-                valueInputOption: 'USER_ENTERED',
-                requestBody: {
-                    values: [['DB_ID', 'Brand Name', 'Mobile', 'Email', 'Status', 'Wallet Balance', 'Commission (%)']]
-                }
-            });
-        }
-    } catch (error) {
-        console.error('[Google Sheets] Error initializing spreadsheet:', error);
-    }
+    // We are no longer auto-creating tabs since the user has existing tabs.
+    // Q2 General Order and Q2 General refund are pre-existing.
+    return;
 }
 
-export async function findRowById(sheetName: string, id: string): Promise<number | null> {
+/**
+ * Finds the row index (1-based) by Order ID in a specific column.
+ */
+export async function findRowByOrderId(sheetName: string, orderId: string, colRange: string): Promise<number | null> {
     const sheets = getSheetsClient();
     const spreadsheetId = getSpreadsheetId();
     if (!sheets || !spreadsheetId) return null;
@@ -115,172 +58,135 @@ export async function findRowById(sheetName: string, id: string): Promise<number
     try {
         const res = await sheets.spreadsheets.values.get({
             spreadsheetId,
-            range: `${sheetName}!A:A`,
+            range: `${sheetName}!${colRange}`,
         });
         const rows = res.data.values;
         if (!rows || rows.length === 0) return null;
         
         for (let i = 0; i < rows.length; i++) {
-            if (rows[i][0] === id) {
+            if (rows[i][0] === orderId) {
                 return i + 1; // Google Sheets uses 1-based index
             }
         }
         return null;
     } catch (error) {
-        console.error(`[Google Sheets] Error finding row by ID in ${sheetName}:`, error);
+        console.error(`[Google Sheets] Error finding row by Order ID in ${sheetName}:`, error);
         return null;
     }
 }
 
 /**
- * Sync an Order to Google Sheets
+ * Sync an Order to "Q2 General Order"
  */
-export async function syncOrderToSheet(orderId: string) {
+export async function syncOrderToSheet(internalId: string) {
     const sheets = getSheetsClient();
     const spreadsheetId = getSpreadsheetId();
     if (!sheets || !spreadsheetId) return;
 
     try {
         const order = await prisma.order.findUnique({
-            where: { id: orderId },
-            include: { user: true, product: true }
+            where: { id: internalId },
+            include: { user: true, product: true, review: true, refund: true }
         });
         if (!order) return;
 
         const rowData = [
-            order.id, // A: DB_ID
-            order.order_id, // B: Order ID
-            order.user.name, // C: Customer Name
-            order.user.mobile, // D: Customer Mobile
-            order.product.product_name, // E: Product Name
-            order.product.brand, // F: Brand
-            order.status, // G: Status
-            order.amount.toString(), // H: Order Amount
-            order.product.refund_amount?.toString() || order.amount.toString(), // I: Refund Amount
-            order.remarks || "", // J: Remarks
-            order.order_date.toISOString(), // K: Order Date
-            order.delivery_date?.toISOString() || "", // L: Delivery Date
-            order.product.deal_type || "", // M: Target Deal Type
-            new Date().toISOString() // N: Last Updated
+            order.created_at.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }), // A: Timestamp
+            order.profile_name || order.user.name, // B: Profile Name
+            order.product.deal_type || "", // C: Code
+            order.product.product_name, // D: Product Name
+            order.order_id, // E: Order ID / Order Number
+            order.screenshot_url, // F: UPLOAD SCREENHOT
+            order.amount.toString(), // G: Total Order Price
+            "", // H: After Less
+            "", // I: QR
+            order.reference_name || "", // J: Reference Name
+            "", // K: Less
+            order.user.mobile, // L: Number
+            order.user.email || "", // M: Email Address
+            "", // N: Follow Us
+            "", // O: Counter
+            order.refund ? order.refund.amount.toString() : "", // P: Refund Released
+            "", // Q: Substitute Order id's
+            order.review ? order.review.review_url || "" : "", // R: Review link
+            order.review ? order.review.rating.toString() : "", // S: Review / Rating?
+            order.review ? order.review.screenshot_url || "" : "", // T: Review ss
+            order.return_window_screenshot_url || "", // U: Return Window ss
+            order.status, // V: System Status (appended)
+            order.remarks || "", // W: System Remarks (appended)
         ];
 
-        const rowIndex = await findRowById('Orders', order.id);
-
-        if (rowIndex) {
-            // Update existing row
-            await sheets.spreadsheets.values.update({
-                spreadsheetId,
-                range: `Orders!A${rowIndex}:N${rowIndex}`,
-                valueInputOption: 'USER_ENTERED',
-                requestBody: { values: [rowData] }
-            });
-        } else {
-            // Append new row
-            await sheets.spreadsheets.values.append({
-                spreadsheetId,
-                range: 'Orders!A:N',
-                valueInputOption: 'USER_ENTERED',
-                insertDataOption: 'INSERT_ROWS',
-                requestBody: { values: [rowData] }
-            });
-        }
-    } catch (error) {
-        console.error(`[Google Sheets] Failed to sync order ${orderId}:`, error);
-    }
-}
-
-/**
- * Sync a Product to Google Sheets
- */
-export async function syncProductToSheet(productId: string) {
-    const sheets = getSheetsClient();
-    const spreadsheetId = getSpreadsheetId();
-    if (!sheets || !spreadsheetId) return;
-
-    try {
-        const product = await prisma.product.findUnique({ where: { id: productId } });
-        if (!product) return;
-
-        const rowData = [
-            product.id,
-            product.product_name,
-            product.brand,
-            product.status,
-            product.platform,
-            product.real_price?.toString() || "0",
-            `${product.filled_slots}/${product.total_slots}`,
-            product.deadline.toISOString(),
-            new Date().toISOString()
-        ];
-
-        const rowIndex = await findRowById('Products', product.id);
+        // Search Order ID in Column E
+        const rowIndex = await findRowByOrderId('Q2 General Order', order.order_id, 'E:E');
 
         if (rowIndex) {
             await sheets.spreadsheets.values.update({
                 spreadsheetId,
-                range: `Products!A${rowIndex}:I${rowIndex}`,
+                range: `'Q2 General Order'!A${rowIndex}:W${rowIndex}`,
                 valueInputOption: 'USER_ENTERED',
                 requestBody: { values: [rowData] }
             });
         } else {
             await sheets.spreadsheets.values.append({
                 spreadsheetId,
-                range: 'Products!A:I',
+                range: `'Q2 General Order'!A:W`,
                 valueInputOption: 'USER_ENTERED',
                 insertDataOption: 'INSERT_ROWS',
                 requestBody: { values: [rowData] }
             });
         }
     } catch (error) {
-        console.error(`[Google Sheets] Failed to sync product ${productId}:`, error);
+        console.error(`[Google Sheets] Failed to sync order ${internalId}:`, error);
     }
 }
 
 /**
- * Sync a Brand to Google Sheets
+ * Sync a Refund to "Q2 General refund"
  */
-export async function syncBrandToSheet(vendorUserId: string) {
+export async function syncRefundToSheet(internalId: string) {
     const sheets = getSheetsClient();
     const spreadsheetId = getSpreadsheetId();
     if (!sheets || !spreadsheetId) return;
 
     try {
-        const user = await prisma.user.findUnique({
-            where: { id: vendorUserId },
-            include: { vendor: true }
+        const order = await prisma.order.findUnique({
+            where: { id: internalId },
+            include: { user: true, product: true, review: true, refund: true }
         });
-        if (!user || user.role !== 'VENDOR' || !user.vendor) return;
+        if (!order) return;
 
         const rowData = [
-            user.id,
-            user.name,
-            user.mobile,
-            user.email || "",
-            user.vendor.status,
-            user.vendor.wallet_balance.toString(),
-            user.vendor.commission?.toString() || "0"
+            (order.refund?.created_at || new Date()).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }), // A: Timestamp
+            order.profile_name || order.user.name, // B: Profile Name
+            order.product.product_name, // C: Product Name
+            order.order_id, // D: Order ID
+            order.review?.screenshot_url || order.screenshot_url, // E: UPLOAD SCREENHOT
+            order.amount.toString(), // F: Total Order Price
+            order.manager_name || "", // G: Manager Name
+            order.refund?.status || "", // H: System Refund Status (appended)
         ];
 
-        const rowIndex = await findRowById('Brands', user.id);
+        // Search Order ID in Column D
+        const rowIndex = await findRowByOrderId('Q2 General refund', order.order_id, 'D:D');
 
         if (rowIndex) {
             await sheets.spreadsheets.values.update({
                 spreadsheetId,
-                range: `Brands!A${rowIndex}:G${rowIndex}`,
+                range: `'Q2 General refund'!A${rowIndex}:H${rowIndex}`,
                 valueInputOption: 'USER_ENTERED',
                 requestBody: { values: [rowData] }
             });
         } else {
             await sheets.spreadsheets.values.append({
                 spreadsheetId,
-                range: 'Brands!A:G',
+                range: `'Q2 General refund'!A:H`,
                 valueInputOption: 'USER_ENTERED',
                 insertDataOption: 'INSERT_ROWS',
                 requestBody: { values: [rowData] }
             });
         }
     } catch (error) {
-        console.error(`[Google Sheets] Failed to sync brand ${vendorUserId}:`, error);
+        console.error(`[Google Sheets] Failed to sync refund ${internalId}:`, error);
     }
 }
 
@@ -295,68 +201,42 @@ export async function pullUpdatesFromSheet() {
     try {
         console.log('[Google Sheets] Starting two-way sync pull...');
 
-        // 1. Pull Orders
-        const ordersRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: 'Orders!A2:N' });
+        // 1. Pull Orders from Q2 General Order
+        const ordersRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: `'Q2 General Order'!A2:W` });
         const orderRows = ordersRes.data.values || [];
         for (const row of orderRows) {
-            const dbId = row[0];
-            const status = row[6];
-            const remarks = row[9];
-            if (dbId) {
-                // Update Order in DB
+            const orderId = row[4]; // Column E: Order ID
+            const status = row[21]; // Column V: System Status
+            const remarks = row[22]; // Column W: System Remarks
+            
+            if (orderId && status) {
                 await prisma.order.updateMany({
-                    where: { id: dbId },
+                    where: { order_id: orderId },
                     data: {
-                        status: status || 'SUBMITTED',
+                        status: status,
                         remarks: remarks || null
                     }
                 });
             }
         }
 
-        // 2. Pull Products
-        const productsRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: 'Products!A2:I' });
-        const productRows = productsRes.data.values || [];
-        for (const row of productRows) {
-            const dbId = row[0];
-            const productName = row[1];
-            const brand = row[2];
-            const status = row[3];
-            const platform = row[4];
-            const realPrice = parseFloat(row[5]) || 0;
+        // 2. Pull Refunds from Q2 General refund
+        const refundsRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: `'Q2 General refund'!A2:H` });
+        const refundRows = refundsRes.data.values || [];
+        for (const row of refundRows) {
+            const orderId = row[3]; // Column D: Order ID
+            const refundStatus = row[7]; // Column H: System Refund Status
             
-            if (dbId) {
-                await prisma.product.updateMany({
-                    where: { id: dbId },
-                    data: {
-                        product_name: productName,
-                        brand: brand,
-                        status: status || 'DRAFT',
-                        platform: platform || 'AMAZON',
-                        real_price: realPrice
-                    }
-                });
-            }
-        }
-
-        // 3. Pull Brands (Vendors)
-        const brandsRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: 'Brands!A2:G' });
-        const brandRows = brandsRes.data.values || [];
-        for (const row of brandRows) {
-            const dbId = row[0]; // This is user.id
-            const status = row[4];
-            const walletBalance = parseFloat(row[5]) || 0;
-            const commission = parseFloat(row[6]) || 0;
-
-            if (dbId) {
-                await prisma.vendor.updateMany({
-                    where: { user_id: dbId },
-                    data: {
-                        status: status || 'active',
-                        wallet_balance: walletBalance,
-                        commission: commission
-                    }
-                });
+            if (orderId && refundStatus) {
+                const order = await prisma.order.findUnique({ where: { order_id: orderId }, select: { id: true } });
+                if (order) {
+                    await prisma.refund.updateMany({
+                        where: { order_id: order.id },
+                        data: {
+                            status: refundStatus
+                        }
+                    });
+                }
             }
         }
 
