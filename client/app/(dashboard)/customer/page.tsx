@@ -331,7 +331,7 @@ function CustomerDashboardContent() {
                                 );
                                 if (type.includes("Rating Deal")) return (
                                     <div key={idx} className="space-y-2">
-                                        <h4 className="font-bold text-slate-900">Rating Deal ⭐⭐⭐⭐⭐</h4>
+                                        <h4 className="font-bold text-slate-900">Rating Deal</h4>
                                         <ul className="list-disc pl-5 space-y-1">
                                             <li>Cashback is issued upon successfully rating the product.</li>
                                             <li>You must submit two clear screenshots: one of your rating, and one of the order's Return Window.</li>
@@ -342,7 +342,7 @@ function CustomerDashboardContent() {
                                 );
                                 if (type.includes("Review Deal")) return (
                                     <div key={idx} className="space-y-2">
-                                        <h4 className="font-bold text-slate-900">Review Deal ✍️</h4>
+                                        <h4 className="font-bold text-slate-900">Review Deal</h4>
                                         <ul className="list-disc pl-5 space-y-1">
                                             <li>Cashback is issued upon successfully posting a review for the product.</li>
                                             <li>You must submit two clear screenshots: one showing your published review, and one of the order's Return Window.</li>
@@ -353,7 +353,7 @@ function CustomerDashboardContent() {
                                 );
                                 if (type.includes("Seller Feedback Deal")) return (
                                     <div key={idx} className="space-y-2">
-                                        <h4 className="font-bold text-slate-900">Seller Feedback Deal 🏪</h4>
+                                        <h4 className="font-bold text-slate-900">Seller Feedback Deal</h4>
                                         <ul className="list-disc pl-5 space-y-1">
                                             <li>Cashback is issued upon successfully submitting feedback for the seller.</li>
                                             <li>You must submit two clear screenshots: one showing your submitted seller feedback, and one of the order's Return Window.</li>
