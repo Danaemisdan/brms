@@ -191,6 +191,119 @@ export async function syncRefundToSheet(internalId: string) {
 }
 
 /**
+ * Sync a Product to Google Sheets
+ */
+export async function syncProductToSheet(productId: string) {
+    const sheets = getSheetsClient();
+    const spreadsheetId = getSpreadsheetId();
+    if (!sheets || !spreadsheetId) return;
+
+    try {
+        const product = await prisma.product.findUnique({ where: { id: productId } });
+        if (!product) return;
+
+        const rowData = [
+            product.id,
+            product.product_name,
+            product.brand,
+            product.status,
+            product.platform,
+            product.real_price?.toString() || "0",
+            `${product.filled_slots}/${product.total_slots}`,
+            product.deadline.toISOString(),
+            new Date().toISOString()
+        ];
+
+        // Ensure findRowById exists or change to findRowByOrderId
+        // Wait, old findRowById used column A, but we use findRowByOrderId now. Let's make a generic one.
+        const res = await sheets.spreadsheets.values.get({ spreadsheetId, range: `Products!A:A` });
+        const rows = res.data.values || [];
+        let rowIndex = null;
+        for (let i = 0; i < rows.length; i++) {
+            if (rows[i][0] === product.id) {
+                rowIndex = i + 1;
+                break;
+            }
+        }
+
+        if (rowIndex) {
+            await sheets.spreadsheets.values.update({
+                spreadsheetId,
+                range: `Products!A${rowIndex}:I${rowIndex}`,
+                valueInputOption: 'USER_ENTERED',
+                requestBody: { values: [rowData] }
+            });
+        } else {
+            await sheets.spreadsheets.values.append({
+                spreadsheetId,
+                range: 'Products!A:I',
+                valueInputOption: 'USER_ENTERED',
+                insertDataOption: 'INSERT_ROWS',
+                requestBody: { values: [rowData] }
+            });
+        }
+    } catch (error) {
+        console.error(`[Google Sheets] Failed to sync product ${productId}:`, error);
+    }
+}
+
+/**
+ * Sync a Brand to Google Sheets
+ */
+export async function syncBrandToSheet(vendorUserId: string) {
+    const sheets = getSheetsClient();
+    const spreadsheetId = getSpreadsheetId();
+    if (!sheets || !spreadsheetId) return;
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: vendorUserId },
+            include: { vendor: true }
+        });
+        if (!user || user.role !== 'VENDOR' || !user.vendor) return;
+
+        const rowData = [
+            user.id,
+            user.name,
+            user.mobile,
+            user.email || "",
+            user.vendor.status,
+            user.vendor.wallet_balance.toString(),
+            user.vendor.commission?.toString() || "0"
+        ];
+
+        const res = await sheets.spreadsheets.values.get({ spreadsheetId, range: `Brands!A:A` });
+        const rows = res.data.values || [];
+        let rowIndex = null;
+        for (let i = 0; i < rows.length; i++) {
+            if (rows[i][0] === user.id) {
+                rowIndex = i + 1;
+                break;
+            }
+        }
+
+        if (rowIndex) {
+            await sheets.spreadsheets.values.update({
+                spreadsheetId,
+                range: `Brands!A${rowIndex}:G${rowIndex}`,
+                valueInputOption: 'USER_ENTERED',
+                requestBody: { values: [rowData] }
+            });
+        } else {
+            await sheets.spreadsheets.values.append({
+                spreadsheetId,
+                range: 'Brands!A:G',
+                valueInputOption: 'USER_ENTERED',
+                insertDataOption: 'INSERT_ROWS',
+                requestBody: { values: [rowData] }
+            });
+        }
+    } catch (error) {
+        console.error(`[Google Sheets] Failed to sync brand ${vendorUserId}:`, error);
+    }
+}
+
+/**
  * Pull updates from Google Sheets into the Database
  */
 export async function pullUpdatesFromSheet() {
@@ -237,6 +350,52 @@ export async function pullUpdatesFromSheet() {
                         }
                     });
                 }
+            }
+        }
+
+        // 3. Pull Products
+        const productsRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: 'Products!A2:I' });
+        const productRows = productsRes.data.values || [];
+        for (const row of productRows) {
+            const dbId = row[0];
+            const productName = row[1];
+            const brand = row[2];
+            const status = row[3];
+            const platform = row[4];
+            const realPrice = parseFloat(row[5]) || 0;
+
+            if (dbId) {
+                await prisma.product.updateMany({
+                    where: { id: dbId },
+                    data: {
+                        product_name: productName,
+                        brand: brand,
+                        status: status || 'DRAFT',
+                        platform: platform || 'AMAZON',
+                        real_price: realPrice
+                    }
+                });
+            }
+        }
+
+        // 4. Pull Brands (Vendors)
+        const brandsRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: 'Brands!A2:G' });
+        const brandRows = brandsRes.data.values || [];
+        for (const row of brandRows) {
+            const dbId = row[0]; // This is user.id
+            const status = row[4];
+            const walletBalance = parseFloat(row[5]) || 0;
+            const commission = parseFloat(row[6]) || 0;
+
+            if (dbId) {
+                await prisma.vendor.updateMany({
+                    where: { user_id: dbId },
+                    data: {
+                        status: status || 'active',
+                        wallet_balance: walletBalance,
+                        commission: commission
+                    }
+                });
             }
         }
 
