@@ -72,6 +72,9 @@ export async function POST(req: NextRequest) {
             return user;
         });
 
+        // Sync to Google Sheets Matrix
+        import('@/lib/services/googleSheets.service').then(m => m.syncBrandToSheet(newBrandUser.id).catch(err => console.error("Matrix Sync Error:", err)));
+
         return NextResponse.json({
             message: 'Brand account created successfully',
             user: {

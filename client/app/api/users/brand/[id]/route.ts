@@ -63,6 +63,9 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             });
         }
 
+        // Sync to Google Sheets Matrix
+        import('@/lib/services/googleSheets.service').then(m => m.syncBrandToSheet(id).catch(err => console.error("Matrix Sync Error:", err)));
+
         return NextResponse.json({ message: 'Brand updated successfully' }, { status: 200 });
     } catch (error) {
         console.error('Update Brand Error:', error);

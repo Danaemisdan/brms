@@ -248,11 +248,60 @@ export async function syncProductToSheet(productId: string) {
 }
 
 /**
- * Sync a Brand to Google Sheets
- * Note: Matrix sheet uses Products as the base row. We don't push standalone brands.
+ * Sync a Brand to Google Sheets (Matrix)
  */
 export async function syncBrandToSheet(vendorUserId: string) {
-    // No-op for now, as brands/clients are synced as part of their products in the Matrix sheet.
+    const sheets = getSheetsClient();
+    const spreadsheetId = getSpreadsheetId();
+    if (!sheets || !spreadsheetId) return;
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: vendorUserId },
+            include: { vendor: true }
+        });
+        if (!user || user.role !== 'VENDOR' || !user.vendor) return;
+
+        const rowData = [
+            "", // A: Sr No.
+            user.name, // B: Brand (using user.name as brand name based on frontend mapping)
+            "", // C: Product Name
+            user.name, // D: Client Name
+            "", // E: Client code
+            "", // F: Product Link
+            "0", // G: Slot
+            "0", // H: Cost
+            "0", // I: Placed
+            "", // J: Pending
+            user.vendor.status || "active", // K: Status
+            "", // L: Refund Placed
+            "", // M: Pending Refund
+            "", // N: Order End Date
+            "" // O: Refund End date
+        ];
+
+        // Ensure findRowById exists or change to findRowByOrderId
+        const rowIndex = await findRowByOrderId('Matrix', user.name, 'B:B');
+
+        if (rowIndex) {
+            await sheets.spreadsheets.values.update({
+                spreadsheetId,
+                range: `'Matrix'!A${rowIndex}:O${rowIndex}`,
+                valueInputOption: 'USER_ENTERED',
+                requestBody: { values: [rowData] }
+            });
+        } else {
+            await sheets.spreadsheets.values.append({
+                spreadsheetId,
+                range: `'Matrix'!A:O`,
+                valueInputOption: 'USER_ENTERED',
+                insertDataOption: 'INSERT_ROWS',
+                requestBody: { values: [rowData] }
+            });
+        }
+    } catch (error) {
+        console.error(`[Google Sheets] Failed to sync brand ${vendorUserId}:`, error);
+    }
 }
 
 /**

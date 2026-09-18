@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireAuth, requireRole } from '@/lib/auth';
+import { syncProductToSheet } from '@/lib/services/googleSheets.service';
 
 export async function GET(req: NextRequest) {
     const session = requireRole(req, ['ADMIN', 'VENDOR', 'CUSTOMER']);
@@ -117,6 +118,9 @@ export async function POST(req: NextRequest) {
                 wa_time_3: wa_time_3 || null
             }
         });
+
+        // Sync to Google Sheets Matrix
+        await syncProductToSheet(product.id).catch(err => console.error("Matrix Sync Error:", err));
 
         return NextResponse.json({ message: "Campaign created successfully", product }, { status: 201 });
     } catch (error: any) {
