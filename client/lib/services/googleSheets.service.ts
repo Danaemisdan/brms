@@ -191,7 +191,7 @@ export async function syncRefundToSheet(internalId: string) {
 }
 
 /**
- * Sync a Product to Google Sheets
+ * Sync a Product to Google Sheets (Matrix)
  */
 export async function syncProductToSheet(productId: string) {
     const sheets = getSheetsClient();
@@ -199,44 +199,44 @@ export async function syncProductToSheet(productId: string) {
     if (!sheets || !spreadsheetId) return;
 
     try {
-        const product = await prisma.product.findUnique({ where: { id: productId } });
+        const product = await prisma.product.findUnique({ 
+            where: { id: productId },
+            include: { client: { include: { user: true } } }
+        });
         if (!product) return;
 
         const rowData = [
-            product.id,
-            product.product_name,
-            product.brand,
-            product.status,
-            product.platform,
-            product.real_price?.toString() || "0",
-            `${product.filled_slots}/${product.total_slots}`,
-            product.deadline.toISOString(),
-            new Date().toISOString()
+            "", // A: Sr No.
+            product.brand || "", // B: Brand
+            product.product_name || "", // C: Product Name
+            product.client?.user?.name || "", // D: Client Name
+            "", // E: Client code
+            product.product_link || "", // F: Product Link
+            product.total_slots?.toString() || "0", // G: Slot
+            product.real_price?.toString() || "0", // H: Cost
+            product.filled_slots?.toString() || "0", // I: Placed
+            "", // J: Pending
+            product.status || "DRAFT", // K: Status
+            "", // L: Refund Placed
+            "", // M: Pending Refund
+            product.deadline ? product.deadline.toISOString() : "", // N: Order End Date
+            "" // O: Refund End date
         ];
 
-        // Ensure findRowById exists or change to findRowByOrderId
-        // Wait, old findRowById used column A, but we use findRowByOrderId now. Let's make a generic one.
-        const res = await sheets.spreadsheets.values.get({ spreadsheetId, range: `Products!A:A` });
-        const rows = res.data.values || [];
-        let rowIndex = null;
-        for (let i = 0; i < rows.length; i++) {
-            if (rows[i][0] === product.id) {
-                rowIndex = i + 1;
-                break;
-            }
-        }
+        // Find by Product Name in Column C
+        const rowIndex = await findRowByOrderId('Matrix', product.product_name, 'C:C');
 
         if (rowIndex) {
             await sheets.spreadsheets.values.update({
                 spreadsheetId,
-                range: `Products!A${rowIndex}:I${rowIndex}`,
+                range: `'Matrix'!A${rowIndex}:O${rowIndex}`,
                 valueInputOption: 'USER_ENTERED',
                 requestBody: { values: [rowData] }
             });
         } else {
             await sheets.spreadsheets.values.append({
                 spreadsheetId,
-                range: 'Products!A:I',
+                range: `'Matrix'!A:O`,
                 valueInputOption: 'USER_ENTERED',
                 insertDataOption: 'INSERT_ROWS',
                 requestBody: { values: [rowData] }
@@ -249,58 +249,10 @@ export async function syncProductToSheet(productId: string) {
 
 /**
  * Sync a Brand to Google Sheets
+ * Note: Matrix sheet uses Products as the base row. We don't push standalone brands.
  */
 export async function syncBrandToSheet(vendorUserId: string) {
-    const sheets = getSheetsClient();
-    const spreadsheetId = getSpreadsheetId();
-    if (!sheets || !spreadsheetId) return;
-
-    try {
-        const user = await prisma.user.findUnique({
-            where: { id: vendorUserId },
-            include: { vendor: true }
-        });
-        if (!user || user.role !== 'VENDOR' || !user.vendor) return;
-
-        const rowData = [
-            user.id,
-            user.name,
-            user.mobile,
-            user.email || "",
-            user.vendor.status,
-            user.vendor.wallet_balance.toString(),
-            user.vendor.commission?.toString() || "0"
-        ];
-
-        const res = await sheets.spreadsheets.values.get({ spreadsheetId, range: `Brands!A:A` });
-        const rows = res.data.values || [];
-        let rowIndex = null;
-        for (let i = 0; i < rows.length; i++) {
-            if (rows[i][0] === user.id) {
-                rowIndex = i + 1;
-                break;
-            }
-        }
-
-        if (rowIndex) {
-            await sheets.spreadsheets.values.update({
-                spreadsheetId,
-                range: `Brands!A${rowIndex}:G${rowIndex}`,
-                valueInputOption: 'USER_ENTERED',
-                requestBody: { values: [rowData] }
-            });
-        } else {
-            await sheets.spreadsheets.values.append({
-                spreadsheetId,
-                range: 'Brands!A:G',
-                valueInputOption: 'USER_ENTERED',
-                insertDataOption: 'INSERT_ROWS',
-                requestBody: { values: [rowData] }
-            });
-        }
-    } catch (error) {
-        console.error(`[Google Sheets] Failed to sync brand ${vendorUserId}:`, error);
-    }
+    // No-op for now, as brands/clients are synced as part of their products in the Matrix sheet.
 }
 
 /**
@@ -353,47 +305,26 @@ export async function pullUpdatesFromSheet() {
             }
         }
 
-        // 3. Pull Products
-        const productsRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: 'Products!A2:I' });
-        const productRows = productsRes.data.values || [];
-        for (const row of productRows) {
-            const dbId = row[0];
-            const productName = row[1];
-            const brand = row[2];
-            const status = row[3];
-            const platform = row[4];
-            const realPrice = parseFloat(row[5]) || 0;
+        // 3. Pull Products from Matrix
+        const matrixRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: `'Matrix'!A2:O` });
+        const matrixRows = matrixRes.data.values || [];
+        for (const row of matrixRows) {
+            const brand = row[1]; // B: Brand
+            const productName = row[2]; // C: Product Name
+            const productLink = row[5]; // F: Product Link
+            const slots = parseInt(row[6]) || 0; // G: Slot
+            const cost = parseFloat(row[7]) || 0; // H: Cost
+            const status = row[10]; // K: Status
 
-            if (dbId) {
+            if (productName) {
                 await prisma.product.updateMany({
-                    where: { id: dbId },
+                    where: { product_name: productName },
                     data: {
-                        product_name: productName,
-                        brand: brand,
-                        status: status || 'DRAFT',
-                        platform: platform || 'AMAZON',
-                        real_price: realPrice
-                    }
-                });
-            }
-        }
-
-        // 4. Pull Brands (Vendors)
-        const brandsRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: 'Brands!A2:G' });
-        const brandRows = brandsRes.data.values || [];
-        for (const row of brandRows) {
-            const dbId = row[0]; // This is user.id
-            const status = row[4];
-            const walletBalance = parseFloat(row[5]) || 0;
-            const commission = parseFloat(row[6]) || 0;
-
-            if (dbId) {
-                await prisma.vendor.updateMany({
-                    where: { user_id: dbId },
-                    data: {
-                        status: status || 'active',
-                        wallet_balance: walletBalance,
-                        commission: commission
+                        brand: brand || undefined,
+                        product_link: productLink || undefined,
+                        total_slots: slots || undefined,
+                        real_price: cost || undefined,
+                        status: status || undefined
                     }
                 });
             }
