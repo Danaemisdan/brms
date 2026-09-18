@@ -316,6 +316,31 @@ export async function pullUpdatesFromSheet() {
             const cost = parseFloat(row[7]) || 0; // H: Cost
             const status = row[10]; // K: Status
 
+            // Upsert Brand (Vendor) if it doesn't exist so it appears on the frontend
+            if (brand) {
+                const existingBrand = await prisma.user.findFirst({
+                    where: { name: brand, role: 'VENDOR' }
+                });
+
+                if (!existingBrand) {
+                    const newBrandUser = await prisma.user.create({
+                        data: {
+                            name: brand,
+                            mobile: "0000000000", // Placeholder until updated in frontend
+                            password_hash: "matrix_imported_placeholder",
+                            role: 'VENDOR'
+                        }
+                    });
+                    await prisma.vendor.create({
+                        data: {
+                            user_id: newBrandUser.id,
+                            wallet_balance: 0,
+                            commission: 0,
+                        }
+                    });
+                }
+            }
+
             if (productName) {
                 await prisma.product.updateMany({
                     where: { product_name: productName },
