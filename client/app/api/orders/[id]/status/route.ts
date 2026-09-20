@@ -19,6 +19,9 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
             }
         });
 
+        const { syncOrderToSheet } = await import('@/lib/services/googleSheets.service');
+        await syncOrderToSheet(id).catch(err => console.error("Sheet sync error:", err));
+
         return NextResponse.json({ message: `Order status updated to ${status}`, order }, { status: 200 });
     } catch (error) {
         console.error("Error updating order status:", error);

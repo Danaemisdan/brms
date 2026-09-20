@@ -48,10 +48,11 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Push to Google Sheets in the background so it doesn't block the UI
-        syncOrderToSheet(order.id).catch(err => console.error("Sheet sync error:", err));
+        // Push to Google Sheets in the background
+        // IMPORTANT: Await the sheet sync so Vercel doesn't kill the background task!
+        await syncOrderToSheet(order.id).catch(err => console.error("Sheet sync error:", err));
 
-        return NextResponse.json({ message: "Order proof submitted successfully", order }, { status: 201 });
+        return NextResponse.json({ message: "Order submitted successfully", order }, { status: 201 });
     } catch (error: any) {
         console.error("Error submitting order proof:", error);
         if (error.code === 'P2002') {

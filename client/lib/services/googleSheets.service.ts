@@ -58,7 +58,7 @@ export async function findRowByOrderId(sheetName: string, orderId: string, colRa
     try {
         const res = await sheets.spreadsheets.values.get({
             spreadsheetId,
-            range: `${sheetName}!${colRange}`,
+            range: `'${sheetName}'!${colRange}`,
         });
         const rows = res.data.values;
         if (!rows || rows.length === 0) return null;
