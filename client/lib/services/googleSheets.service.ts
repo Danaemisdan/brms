@@ -17,10 +17,16 @@ function getSheetsClient() {
         let auth;
         // First try to use Vercel environment variables
         if (process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY) {
+            let pKey = process.env.GOOGLE_PRIVATE_KEY;
+            if (pKey.startsWith('"') && pKey.endsWith('"')) {
+                pKey = pKey.slice(1, -1);
+            }
+            pKey = pKey.replace(/\\n/g, '\n');
+
             auth = new google.auth.GoogleAuth({
                 credentials: {
                     client_email: process.env.GOOGLE_CLIENT_EMAIL,
-                    private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+                    private_key: pKey,
                 },
                 scopes: ['https://www.googleapis.com/auth/spreadsheets'],
             });

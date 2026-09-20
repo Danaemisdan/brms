@@ -18,10 +18,16 @@ export async function GET(req: NextRequest) {
             }, { status: 500 });
         }
 
+        let pKey = privateKey;
+        if (pKey.startsWith('"') && pKey.endsWith('"')) {
+            pKey = pKey.slice(1, -1);
+        }
+        pKey = pKey.replace(/\\n/g, '\n');
+
         const auth = new google.auth.GoogleAuth({
             credentials: {
                 client_email: email,
-                private_key: privateKey.replace(/\\n/g, '\n'),
+                private_key: pKey,
             },
             scopes: ['https://www.googleapis.com/auth/spreadsheets'],
         });
