@@ -5,7 +5,7 @@ async function run() {
     try {
         const email = process.env.GOOGLE_CLIENT_EMAIL || "";
         const privateKey = process.env.GOOGLE_PRIVATE_KEY || "";
-        const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
+        const spreadsheetId = "1Jwlqv5riX4ahJqRoMc-5RCHSppuFk13Fs4xEu6gG8Ak";
 
         let pKey = privateKey;
         if (pKey.startsWith('"') && pKey.endsWith('"')) {
