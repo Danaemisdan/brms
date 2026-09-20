@@ -15,21 +15,27 @@ export async function GET(request: NextRequest) {
         }
 
         // Test real sync for LAVADKEBALL
-        let searchResult = null;
+        let realSyncResult = null;
         try {
-            const getRes = await sheets.spreadsheets.values.get({
-                spreadsheetId,
-                range: `'Q2 General Order'!A:W`,
+            const order = await prisma.order.findFirst({
+                where: {
+                    OR: [
+                        { id: 'LAVADKEBALL' },
+                        { order_id: 'LAVADKEBALL' }
+                    ]
+                }
             });
-            const rows = getRes.data.values || [];
-            searchResult = rows.map((r, i) => ({ row: i + 1, orderId: r[4] })).filter(x => x.orderId && x.orderId.includes('LAVADKEBALL'));
+            
+            const targetId = order ? order.id : 'LAVADKEBALL';
+            await syncOrderToSheet(targetId);
+            realSyncResult = `Synced order: ${targetId}`;
         } catch (e: any) {
-            searchResult = { error: e.message };
+            realSyncResult = { error: e.message, stack: e.stack };
         }
 
         return NextResponse.json({ 
             success: true, 
-            searchResult
+            realSyncTest: realSyncResult
         });
 
     } catch (error: any) {
