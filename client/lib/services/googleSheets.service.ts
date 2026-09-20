@@ -21,7 +21,17 @@ function getSheetsClient() {
             if (pKey.startsWith('"') && pKey.endsWith('"')) {
                 pKey = pKey.slice(1, -1);
             }
-            pKey = pKey.replace(/\\n/g, '\n');
+            
+            const beginTag = '-----BEGIN PRIVATE KEY-----';
+            const endTag = '-----END PRIVATE KEY-----';
+            if (pKey.includes(beginTag) && pKey.includes(endTag)) {
+                let body = pKey.substring(pKey.indexOf(beginTag) + beginTag.length, pKey.indexOf(endTag));
+                body = body.replace(/\\n/g, '').replace(/\s+/g, '');
+                const chunks = body.match(/.{1,64}/g) || [];
+                pKey = `${beginTag}\n${chunks.join('\n')}\n${endTag}\n`;
+            } else {
+                pKey = pKey.replace(/\\n/g, '\n');
+            }
 
             auth = new google.auth.GoogleAuth({
                 credentials: {
