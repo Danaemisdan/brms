@@ -17,6 +17,7 @@ const brandNav = [
 const customerNav = [
     { label: "Dashboard", href: "/customer" },
     { label: "Submission of Proof", href: "/customer/submissions" },
+    { label: "Tasks & Offers", href: "/customer/tasks" },
     { label: "Payment Info", href: "/customer/payment-info" },
     { label: "FAQ", href: "/customer/faq" },
     { label: "Support", href: "/customer/support" },
@@ -26,6 +27,7 @@ const adminNav = [
     { label: "Dashboard", href: "/admin" },
     { label: "Analytics", href: "/admin/analytics" },
     { label: "Products", href: "/admin/products" },
+    { label: "Tasks", href: "/admin/tasks" },
     { label: "Brands", href: "/admin/brands" },
     { label: "Customers", href: "/admin/customers" },
     { label: "Orders", href: "/admin/orders" },

@@ -119,10 +119,13 @@ export async function syncOrderToSheet(internalId: string) {
         });
         if (!order) return;
 
-        const safeText = (val: any) => {
+        const safeText = (val: any, fieldName: string = '') => {
             if (!val) return "";
             const s = String(val);
-            if (s.startsWith("data:image/") || s.length > 1000) return "[Base64 Image / Large Data]";
+            if (s.startsWith("data:image/") || s.length > 1000) {
+                if (fieldName) return `https://samplelelo.in/api/image/order/${order.id}?field=${fieldName}`;
+                return "[Base64 Image / Large Data]";
+            }
             return s;
         };
 
@@ -132,7 +135,7 @@ export async function syncOrderToSheet(internalId: string) {
             safeText(order.product.deal_type), // C: Code
             safeText(order.product.product_name), // D: Product Name
             safeText(order.order_id), // E: Order ID / Order Number
-            safeText(order.screenshot_url), // F: UPLOAD SCREENHOT
+            safeText(order.screenshot_url, 'screenshot_url'), // F: UPLOAD SCREENHOT
             order.amount.toString(), // G: Total Order Price
             "", // H: After Less
             "", // I: QR
@@ -146,8 +149,8 @@ export async function syncOrderToSheet(internalId: string) {
             "", // Q: Substitute Order id's
             safeText(order.review ? order.review.review_url : ""), // R: Review link
             order.review ? order.review.rating.toString() : "", // S: Review / Rating?
-            safeText(order.review ? order.review.screenshot_url : ""), // T: Review ss
-            safeText(order.return_window_screenshot_url), // U: Return Window ss
+            safeText(order.review ? order.review.screenshot_url : "", 'review_screenshot'), // T: Review ss
+            safeText(order.return_window_screenshot_url, 'return_window_screenshot'), // U: Return Window ss
             safeText(order.status), // V: System Status (appended)
             safeText(order.remarks), // W: System Remarks (appended)
         ];
@@ -192,10 +195,13 @@ export async function syncRefundToSheet(internalId: string) {
         });
         if (!order) return;
 
-        const safeText = (val: any) => {
+        const safeText = (val: any, fieldName: string = '') => {
             if (!val) return "";
             const s = String(val);
-            if (s.startsWith("data:image/") || s.length > 1000) return "[Base64 Image / Large Data]";
+            if (s.startsWith("data:image/") || s.length > 1000) {
+                if (fieldName) return `https://samplelelo.in/api/image/order/${order.id}?field=${fieldName}`;
+                return "[Base64 Image / Large Data]";
+            }
             return s;
         };
 
@@ -209,8 +215,8 @@ export async function syncRefundToSheet(internalId: string) {
             "", // G: Customer Issue
             safeText(order.user.mobile), // H: Contact no
             "", // I: Qr Scan
-            safeText(order.screenshot_url), // J: screenshot
-            safeText(order.review ? order.review.screenshot_url : ""), // K: Review ss
+            safeText(order.screenshot_url, 'screenshot_url'), // J: screenshot
+            safeText(order.review ? order.review.screenshot_url : "", 'review_screenshot'), // K: Review ss
             "", // L: UPI (Often missing in DB refund schema, handle carefully)
             "", // M: Account no
             "", // N: IFSC
