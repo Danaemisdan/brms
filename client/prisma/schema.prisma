@@ -35,6 +35,8 @@ model User {
   token_version         Int      @default(0)
   totp_secret           String?
   is_totp_enabled       Boolean  @default(false)
+  wallet_balance        Float    @default(0)
+  upi_id                String?
   created_at            DateTime @default(now())
   updated_at            DateTime @updatedAt
 
@@ -154,6 +156,8 @@ model Order {
   return_window_screenshot_url String?
   deal_screenshot_url          String?
   remarks                      String?
+  refund_entry                 Boolean  @default(false)
+  issue_flag                   Boolean  @default(false)
   created_at                   DateTime @default(now())
   updated_at                   DateTime @updatedAt
 
