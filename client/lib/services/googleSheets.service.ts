@@ -119,30 +119,37 @@ export async function syncOrderToSheet(internalId: string) {
         });
         if (!order) return;
 
+        const safeText = (val: any) => {
+            if (!val) return "";
+            const s = String(val);
+            if (s.startsWith("data:image/") || s.length > 1000) return "[Base64 Image / Large Data]";
+            return s;
+        };
+
         const rowData = [
             order.created_at.toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }), // A: Timestamp
-            order.profile_name || order.user.name, // B: Profile Name
-            order.product.deal_type || "", // C: Code
-            order.product.product_name, // D: Product Name
-            order.order_id, // E: Order ID / Order Number
-            order.screenshot_url || "", // F: UPLOAD SCREENHOT
+            safeText(order.profile_name || order.user.name), // B: Profile Name
+            safeText(order.product.deal_type), // C: Code
+            safeText(order.product.product_name), // D: Product Name
+            safeText(order.order_id), // E: Order ID / Order Number
+            safeText(order.screenshot_url), // F: UPLOAD SCREENHOT
             order.amount.toString(), // G: Total Order Price
             "", // H: After Less
             "", // I: QR
-            order.reference_name || "", // J: Reference Name
+            safeText(order.reference_name), // J: Reference Name
             "", // K: Less
-            order.user.mobile, // L: Number
-            order.user.email || "", // M: Email Address
+            safeText(order.user.mobile), // L: Number
+            safeText(order.user.email), // M: Email Address
             "", // N: Follow Us
             "", // O: Counter
             order.refund ? order.refund.amount.toString() : "", // P: Refund Released
             "", // Q: Substitute Order id's
-            order.review ? order.review.review_url || "" : "", // R: Review link
+            safeText(order.review ? order.review.review_url : ""), // R: Review link
             order.review ? order.review.rating.toString() : "", // S: Review / Rating?
-            order.review ? order.review.screenshot_url || "" : "", // T: Review ss
-            order.return_window_screenshot_url || "", // U: Return Window ss
-            order.status, // V: System Status (appended)
-            order.remarks || "", // W: System Remarks (appended)
+            safeText(order.review ? order.review.screenshot_url : ""), // T: Review ss
+            safeText(order.return_window_screenshot_url), // U: Return Window ss
+            safeText(order.status), // V: System Status (appended)
+            safeText(order.remarks), // W: System Remarks (appended)
         ];
 
         // Search Order ID in Column E
@@ -185,15 +192,31 @@ export async function syncRefundToSheet(internalId: string) {
         });
         if (!order) return;
 
+        const safeText = (val: any) => {
+            if (!val) return "";
+            const s = String(val);
+            if (s.startsWith("data:image/") || s.length > 1000) return "[Base64 Image / Large Data]";
+            return s;
+        };
+
         const rowData = [
             (order.refund?.created_at || new Date()).toLocaleString('en-US', { timeZone: 'Asia/Kolkata' }), // A: Timestamp
-            order.profile_name || order.user.name, // B: Profile Name
-            order.product.product_name, // C: Product Name
-            order.order_id, // D: Order ID
-            order.review?.screenshot_url || order.screenshot_url || "", // E: UPLOAD SCREENHOT
-            order.amount.toString(), // F: Total Order Price
-            order.manager_name || "", // G: Manager Name
-            order.refund?.status || "", // H: System Refund Status (appended)
+            safeText(order.profile_name || order.user.name), // B: Profile Name
+            safeText(order.product.product_name), // C: Product Name
+            safeText(order.order_id), // D: Order Id
+            order.refund ? order.refund.amount.toString() : "", // E: Refund Release Amount
+            safeText(order.user.name), // F: Refund Profile Name
+            "", // G: Customer Issue
+            safeText(order.user.mobile), // H: Contact no
+            "", // I: Qr Scan
+            safeText(order.screenshot_url), // J: screenshot
+            safeText(order.review ? order.review.screenshot_url : ""), // K: Review ss
+            "", // L: UPI (Often missing in DB refund schema, handle carefully)
+            "", // M: Account no
+            "", // N: IFSC
+            "", // O: Status (Often updated manually in Sheets)
+            safeText(order.status), // P: System Status
+            safeText(order.remarks)  // Q: System Remarks
         ];
 
         // Search Order ID in Column D
@@ -202,7 +225,7 @@ export async function syncRefundToSheet(internalId: string) {
         if (rowIndex) {
             await sheets.spreadsheets.values.update({
                 spreadsheetId,
-                range: `'Q2 General refund'!A${rowIndex}:H${rowIndex}`,
+                range: `'Q2 General refund'!A${rowIndex}:Q${rowIndex}`,
                 valueInputOption: 'USER_ENTERED',
                 requestBody: { values: [rowData] }
             });
