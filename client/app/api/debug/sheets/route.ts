@@ -34,6 +34,15 @@ export async function GET(req: NextRequest) {
             pKey = pKey.replace(/\\n/g, '\n');
         }
 
+        let diagnostics = {
+            originalLength: privateKey.length,
+            hasBeginTag: privateKey.includes('-----BEGIN PRIVATE KEY-----'),
+            hasEndTag: privateKey.includes('-----END PRIVATE KEY-----'),
+            hasLiteralNewlines: privateKey.includes('\\n'),
+            startsWithQuote: privateKey.startsWith('"'),
+            startsWithBrace: privateKey.startsWith('{'),
+        };
+
         const auth = new google.auth.GoogleAuth({
             credentials: {
                 client_email: email,
@@ -54,15 +63,27 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ 
             success: true, 
             title: res.data.properties?.title,
-            sheets: sheetNames
+            sheets: sheetNames,
+            diagnostics
         });
 
     } catch (error: any) {
+        // Also capture what we just parsed
+        const email = process.env.GOOGLE_CLIENT_EMAIL || "";
+        const privateKey = process.env.GOOGLE_PRIVATE_KEY || "";
+        
         return NextResponse.json({ 
             error: "Google Sheets Error", 
             message: error.message,
             stack: error.stack,
-            details: error.response?.data
+            diagnostics: {
+                originalLength: privateKey.length,
+                hasBeginTag: privateKey.includes('-----BEGIN PRIVATE KEY-----'),
+                hasEndTag: privateKey.includes('-----END PRIVATE KEY-----'),
+                hasLiteralNewlines: privateKey.includes('\\n'),
+                startsWithQuote: privateKey.startsWith('"'),
+                startsWithBrace: privateKey.startsWith('{'),
+            }
         }, { status: 500 });
     }
 }
