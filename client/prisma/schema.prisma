@@ -254,3 +254,14 @@ model Message {
   is_admin   Boolean  @default(false)
   created_at DateTime @default(now())
 }
+
+model Task {
+  id            String   @id @default(uuid())
+  title         String
+  description   String
+  image_url     String?
+  reward_amount Float    @default(0)
+  is_public     Boolean  @default(true)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+}
