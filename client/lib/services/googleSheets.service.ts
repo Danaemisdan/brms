@@ -96,7 +96,7 @@ export async function syncOrderToSheet(internalId: string) {
             order.product.deal_type || "", // C: Code
             order.product.product_name, // D: Product Name
             order.order_id, // E: Order ID / Order Number
-            order.screenshot_url, // F: UPLOAD SCREENHOT
+            order.screenshot_url || "", // F: UPLOAD SCREENHOT
             order.amount.toString(), // G: Total Order Price
             "", // H: After Less
             "", // I: QR
@@ -160,7 +160,7 @@ export async function syncRefundToSheet(internalId: string) {
             order.profile_name || order.user.name, // B: Profile Name
             order.product.product_name, // C: Product Name
             order.order_id, // D: Order ID
-            order.review?.screenshot_url || order.screenshot_url, // E: UPLOAD SCREENHOT
+            order.review?.screenshot_url || order.screenshot_url || "", // E: UPLOAD SCREENHOT
             order.amount.toString(), // F: Total Order Price
             order.manager_name || "", // G: Manager Name
             order.refund?.status || "", // H: System Refund Status (appended)
