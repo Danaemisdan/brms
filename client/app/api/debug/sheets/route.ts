@@ -5,7 +5,7 @@ import prisma from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
         const email = process.env.GOOGLE_CLIENT_EMAIL || "";
         const privateKey = process.env.GOOGLE_PRIVATE_KEY || "";
