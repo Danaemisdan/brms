@@ -10,8 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Switch } from "@/components/ui/switch";
-import { apiFetch } from "@/lib/auth";
+import { apiFetch } from "@/lib/apiFetch";
 
 export default function AdminTasksPage() {
     const [tasks, setTasks] = useState<any[]>([]);
@@ -238,7 +237,7 @@ export default function AdminTasksPage() {
                                 <Label>Publicly Visible</Label>
                                 <p className="text-sm text-gray-500">Should users see this task right now?</p>
                             </div>
-                            <Switch checked={isPublic} onCheckedChange={setIsPublic} />
+                            <input type="checkbox" checked={isPublic} onChange={(e) => setIsPublic(e.target.checked)} className="h-5 w-5" />
                         </div>
                     </div>
                     

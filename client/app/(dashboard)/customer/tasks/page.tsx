@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { apiFetch } from "@/lib/auth";
+import { apiFetch } from "@/lib/apiFetch";
 
 export default function CustomerTasksPage() {
     const [tasks, setTasks] = useState<any[]>([]);
