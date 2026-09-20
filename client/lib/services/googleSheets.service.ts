@@ -165,7 +165,8 @@ export async function syncOrderToSheet(internalId: string) {
             });
         }
     } catch (error) {
-        console.error(`[Google Sheets] Failed to sync order ${internalId}:`, error);
+        console.error(`[Google Sheets] Error syncing order ${internalId}:`, error);
+        throw error; // Throw so we can see it in debug
     }
 }
 
