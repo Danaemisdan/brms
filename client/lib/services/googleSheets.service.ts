@@ -14,15 +14,28 @@ function getSheetsClient() {
     if (sheetsApi) return sheetsApi;
     
     try {
-        if (!fs.existsSync(KEY_PATH)) {
-            console.warn(`⚠️ [Google Sheets] credentials.json not found at ${KEY_PATH}. Sync disabled.`);
+        let auth;
+        // First try to use Vercel environment variables
+        if (process.env.GOOGLE_CLIENT_EMAIL && process.env.GOOGLE_PRIVATE_KEY) {
+            auth = new google.auth.GoogleAuth({
+                credentials: {
+                    client_email: process.env.GOOGLE_CLIENT_EMAIL,
+                    private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+                },
+                scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+            });
+        } 
+        // Fallback to local credentials.json
+        else if (fs.existsSync(KEY_PATH)) {
+            auth = new google.auth.GoogleAuth({
+                keyFile: KEY_PATH,
+                scopes: ['https://www.googleapis.com/auth/spreadsheets'],
+            });
+        } 
+        else {
+            console.warn(`⚠️ [Google Sheets] No credentials found in ENV or at ${KEY_PATH}. Sync disabled.`);
             return null;
         }
-
-        const auth = new google.auth.GoogleAuth({
-            keyFile: KEY_PATH,
-            scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-        });
 
         sheetsApi = google.sheets({ version: 'v4', auth });
         return sheetsApi;
