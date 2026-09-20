@@ -60,11 +60,27 @@ export async function GET(req: NextRequest) {
 
         const sheetNames = res.data.sheets?.map(s => s.properties?.title) || [];
 
+        // Attempt a test append
+        let appendRes = null;
+        try {
+            const testRow = ["Test", "Test", "Test", "Test", "DEBUG-123", "Test", "0", "", "", "", "", "1234567890", "", "", "", "", "", "", "", "", "", "Test", "Test"];
+            appendRes = await sheets.spreadsheets.values.append({
+                spreadsheetId,
+                range: `'Q2 General Order'!A:W`,
+                valueInputOption: 'USER_ENTERED',
+                insertDataOption: 'INSERT_ROWS',
+                requestBody: { values: [testRow] }
+            });
+        } catch (appendErr: any) {
+            appendRes = { error: appendErr.message, details: appendErr.response?.data };
+        }
+
         return NextResponse.json({ 
             success: true, 
             title: res.data.properties?.title,
             sheets: sheetNames,
-            diagnostics
+            diagnostics,
+            appendTest: appendRes
         });
 
     } catch (error: any) {
