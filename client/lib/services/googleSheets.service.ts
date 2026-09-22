@@ -364,6 +364,64 @@ export async function syncBrandToSheet(vendorUserId: string) {
 }
 
 /**
+ * Sync a Dynamic Custom Record to Google Sheets
+ */
+export async function syncCustomRecordToSheet(form: any, record: any) {
+    const sheets = getSheetsClient();
+    const spreadsheetId = getSpreadsheetId();
+    if (!sheets || !spreadsheetId) return;
+
+    try {
+        const fields = form.fields as Array<{ name: string; type: string; column: string }>;
+        if (!fields || !Array.isArray(fields) || fields.length === 0) return;
+
+        // Convert column letters (A, B, C...) to zero-based index (0, 1, 2...)
+        const colToIndex = (col: string) => {
+            let index = 0;
+            for (let i = 0; i < col.length; i++) {
+                index = index * 26 + col.charCodeAt(i) - 64;
+            }
+            return index - 1;
+        };
+
+        const safeText = (val: any, fieldName: string = '') => {
+            if (val == null) return "";
+            const s = String(val);
+            if (s.startsWith("data:image/") || s.length > 1000) {
+                if (fieldName) return `https://samplelelo.in/api/image/custom/${record.id}?field=${encodeURIComponent(fieldName)}`;
+                return "[Base64 Image / Large Data]";
+            }
+            return s;
+        };
+
+        const maxIndex = Math.max(...fields.map(f => colToIndex(f.column.toUpperCase())));
+        const rowData = new Array(maxIndex + 1).fill("");
+
+        // Fill array based on column mapping
+        for (const field of fields) {
+            const idx = colToIndex(field.column.toUpperCase());
+            const value = (record.data as any)[field.name];
+            
+            if (field.type === 'image') {
+                rowData[idx] = safeText(value, field.name);
+            } else {
+                rowData[idx] = safeText(value);
+            }
+        }
+
+        await sheets.spreadsheets.values.append({
+            spreadsheetId,
+            range: `'${form.sheet_name}'!A:ZZ`,
+            valueInputOption: 'USER_ENTERED',
+            insertDataOption: 'INSERT_ROWS',
+            requestBody: { values: [rowData] }
+        });
+    } catch (error) {
+        console.error(`[Google Sheets] Failed to sync custom record ${record.id}:`, error);
+    }
+}
+
+/**
  * Pull updates from Google Sheets into the Database
  */
 export async function pullUpdatesFromSheet() {

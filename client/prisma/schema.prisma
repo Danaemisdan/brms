@@ -49,6 +49,7 @@ model User {
 
   tickets         Ticket[]  @relation("CustomerTickets")
   messages        Message[] @relation("SenderMessages")
+  custom_records  CustomRecord[]
 
   @@index([role])
   @@index([mobile])
@@ -268,4 +269,26 @@ model Task {
   is_public     Boolean  @default(true)
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
+}
+
+model CustomForm {
+  id          String   @id @default(uuid())
+  name        String
+  sheet_name  String
+  fields      Json
+  is_public   Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  records     CustomRecord[]
+}
+
+model CustomRecord {
+  id          String     @id @default(uuid())
+  form_id     String
+  form        CustomForm @relation(fields: [form_id], references: [id], onDelete: Cascade)
+  user_id     String?
+  user        User?      @relation(fields: [user_id], references: [id])
+  data        Json
+  created_at  DateTime   @default(now())
 }

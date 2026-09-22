@@ -31,11 +31,14 @@ export async function GET(
                 where: { id }
             });
             base64Data = refund?.screenshot_url;
-        } else if (type === 'task') {
-            const task = await prisma.task.findUnique({
+        } else if (type === 'custom') {
+            const record = await prisma.customRecord.findUnique({
                 where: { id }
             });
-            base64Data = task?.image_url;
+            // data is JSON, field is the key
+            if (record && record.data && typeof record.data === 'object') {
+                base64Data = (record.data as any)[field];
+            }
         } else if (type === 'product') {
             const product = await prisma.product.findUnique({
                 where: { id }
