@@ -16,7 +16,7 @@ const brandNav = [
 
 const customerNav = [
     { label: "Deals", href: "/customer" },
-    { label: "Submission of Proof", href: "/customer/submissions" },
+    { label: "Track order status", href: "/customer/submissions" },
     { label: "Tasks & Offers", href: "/customer/tasks" },
     { label: "Payment Info", href: "/customer/payment-info" },
     { label: "FAQ", href: "/customer/faq" },
@@ -174,12 +174,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         );
                     })}
                     
-                    {/* Dynamic Services Section */}
+                    {/* Dynamic Services Section - Appended without separate header */}
                     {services.length > 0 && (
-                        <div className="mt-8">
-                            <div className="px-3 mb-4 text-[10px] font-sans font-bold text-muted-foreground uppercase tracking-[0.2em]">
-                                Services
-                            </div>
+                        <>
                             {services.map((service) => {
                                 const href = userProfile.role === "ADMIN" 
                                     ? `/admin/services/${service.id}` 
@@ -208,7 +205,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                                     </Link>
                                 );
                             })}
-                        </div>
+                        </>
                     )}
                 </nav>
                 
