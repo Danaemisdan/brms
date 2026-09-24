@@ -17,7 +17,7 @@ export default function CreatorDashboardPage() {
     const [reelLink, setReelLink] = useState("");
 
     const [formData, setFormData] = useState({
-        profile_url: "",
+        profile_urls: [""],
         follower_count: "",
         content_category: "",
         engagement_rate: ""
@@ -35,7 +35,7 @@ export default function CreatorDashboardPage() {
                 const profData = await profRes.json();
                 setProfile(profData);
                 setFormData({
-                    profile_url: profData.profile_url || "",
+                    profile_urls: profData.profile_urls?.length ? profData.profile_urls : [""],
                     follower_count: profData.follower_count || "",
                     content_category: profData.content_category || "",
                     engagement_rate: profData.engagement_rate || ""
@@ -133,9 +133,34 @@ export default function CreatorDashboardPage() {
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleProfileSubmit} className="space-y-4">
-                            <div className="space-y-2">
-                                <Label>Profile URL (Instagram/YouTube)</Label>
-                                <Input value={formData.profile_url} onChange={e => setFormData({...formData, profile_url: e.target.value})} required placeholder="https://instagram.com/yourhandle" />
+                            <div className="space-y-4 border p-4 rounded-md bg-gray-50/50">
+                                <div className="flex items-center justify-between">
+                                    <Label>Profile URLs (Instagram, YouTube, etc.)</Label>
+                                    <Button type="button" variant="outline" size="sm" onClick={() => setFormData({...formData, profile_urls: [...formData.profile_urls, ""]})}>
+                                        + Add Link
+                                    </Button>
+                                </div>
+                                {formData.profile_urls.map((url: string, idx: number) => (
+                                    <div key={idx} className="flex gap-2">
+                                        <Input 
+                                            value={url} 
+                                            onChange={e => {
+                                                const newUrls = [...formData.profile_urls];
+                                                newUrls[idx] = e.target.value;
+                                                setFormData({...formData, profile_urls: newUrls});
+                                            }} 
+                                            required 
+                                            placeholder="https://instagram.com/yourhandle" 
+                                            className="flex-1"
+                                        />
+                                        {formData.profile_urls.length > 1 && (
+                                            <Button type="button" variant="destructive" onClick={() => {
+                                                const newUrls = formData.profile_urls.filter((_: string, i: number) => i !== idx);
+                                                setFormData({...formData, profile_urls: newUrls});
+                                            }}>Remove</Button>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                             <div className="space-y-2">
                                 <Label>Follower Count</Label>

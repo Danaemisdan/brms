@@ -13,6 +13,7 @@ const registerSchema = z.object({
     email: z.union([z.string().trim().email('Invalid email format'), z.literal('')]).optional(),
     password: z.string().min(6, 'Password must be at least 6 characters long'),
     ecommerce_profile_url: z.string().trim().max(500, 'URL is too long').optional(),
+    creator_profile_urls: z.array(z.string().url('Invalid profile URL').trim()).optional(),
     category: z.string().optional(),
     role: z.enum(['CUSTOMER', 'CREATOR']).optional().default('CUSTOMER'),
 });
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: firstValidationError(parsed.error) }, { status: 400 });
         }
 
-        const { name, mobile, email, password, ecommerce_profile_url, role } = parsed.data;
+        const { name, mobile, email, password, ecommerce_profile_url, creator_profile_urls, role } = parsed.data;
 
         const existingMobile = await prisma.user.findUnique({ where: { mobile } });
         if (existingMobile) {
@@ -60,7 +61,8 @@ export async function POST(req: NextRequest) {
         if (role === 'CREATOR') {
             await prisma.creatorProfile.create({
                 data: {
-                    user_id: user.id
+                    user_id: user.id,
+                    profile_urls: creator_profile_urls || []
                 }
             });
         }

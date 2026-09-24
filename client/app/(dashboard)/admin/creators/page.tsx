@@ -79,11 +79,17 @@ export default function AdminCreatorsPage() {
                                                 <div className="font-semibold">Engagement:</div>
                                                 <div>{profile.engagement_rate}%</div>
                                             </div>
-                                            {profile.profile_url && (
-                                                <a href={profile.profile_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">
-                                                    View Profile Link
-                                                </a>
-                                            )}
+                                            <div className="flex flex-col gap-1 mt-2">
+                                                {profile.profile_urls && profile.profile_urls.length > 0 ? (
+                                                    profile.profile_urls.map((url: string, idx: number) => (
+                                                        <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">
+                                                            Profile Link {idx + 1}
+                                                        </a>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-gray-400 text-sm">No profile links</span>
+                                                )}
+                                            </div>
                                             <div className="pt-4 border-t flex justify-between items-center">
                                                 {profile.is_verified ? (
                                                     <span className="text-green-600 flex items-center text-sm font-semibold"><CheckCircle className="w-4 h-4 mr-1"/> Verified ({profile.category_tier})</span>

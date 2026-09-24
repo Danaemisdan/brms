@@ -36,14 +36,14 @@ export async function POST(req: NextRequest) {
         const profile = await prisma.creatorProfile.upsert({
             where: { user_id: session.userId },
             update: {
-                profile_url: body.profile_url,
+                profile_urls: body.profile_urls || [],
                 follower_count: parseInt(body.follower_count) || 0,
                 content_category: body.content_category,
                 engagement_rate: parseFloat(body.engagement_rate) || 0,
             },
             create: {
                 user_id: session.userId,
-                profile_url: body.profile_url,
+                profile_urls: body.profile_urls || [],
                 follower_count: parseInt(body.follower_count) || 0,
                 content_category: body.content_category,
                 engagement_rate: parseFloat(body.engagement_rate) || 0,

@@ -24,6 +24,7 @@ export default function RegisterPage() {
         ecommerce_profile_url: "",
         role: "CUSTOMER",
     });
+    const [creatorUrls, setCreatorUrls] = useState<string[]>([""]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { id, value } = e.target;
@@ -32,6 +33,21 @@ export default function RegisterPage() {
         } else {
             setFormData({ ...formData, [id]: value });
         }
+    };
+
+    const handleCreatorUrlChange = (index: number, value: string) => {
+        const newUrls = [...creatorUrls];
+        newUrls[index] = value;
+        setCreatorUrls(newUrls);
+    };
+
+    const addCreatorUrl = () => {
+        setCreatorUrls([...creatorUrls, ""]);
+    };
+
+    const removeCreatorUrl = (index: number) => {
+        const newUrls = creatorUrls.filter((_, i) => i !== index);
+        setCreatorUrls(newUrls);
     };
 
     const handleRegister = async (e: React.FormEvent) => {
@@ -47,7 +63,12 @@ export default function RegisterPage() {
         setIsLoading(true);
 
         try {
-            const data = await api.post("/auth/register", formData, { requiresAuth: false });
+            const payload = {
+                ...formData,
+                creator_profile_urls: formData.role === "CREATOR" ? creatorUrls.filter(url => url.trim() !== "") : []
+            };
+
+            const data = await api.post("/auth/register", payload, { requiresAuth: false });
 
             if (data.token) {
                 localStorage.setItem("token", data.token);
@@ -138,6 +159,33 @@ export default function RegisterPage() {
                                 Apply as a Content Creator
                             </Label>
                         </div>
+
+                        {formData.role === "CREATOR" && (
+                            <div className="space-y-4 p-4 border border-primary/20 bg-primary/5 rounded-md">
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-primary font-bold uppercase tracking-widest text-xs">Creator Profile Links</Label>
+                                    <Button type="button" variant="outline" size="sm" onClick={addCreatorUrl} className="h-7 text-xs border-primary/30 text-primary">
+                                        + Add Link
+                                    </Button>
+                                </div>
+                                {creatorUrls.map((url, idx) => (
+                                    <div key={idx} className="flex gap-2">
+                                        <Input 
+                                            placeholder="https://instagram.com/yourhandle" 
+                                            value={url} 
+                                            onChange={(e) => handleCreatorUrlChange(idx, e.target.value)} 
+                                            className="h-10 bg-white/10 border-primary/20 text-foreground font-sans flex-1" 
+                                            required
+                                        />
+                                        {creatorUrls.length > 1 && (
+                                            <Button type="button" variant="destructive" size="sm" onClick={() => removeCreatorUrl(idx)} className="h-10">
+                                                Remove
+                                            </Button>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
 
                         <Button className="w-full h-14 mt-6 text-xs font-sans uppercase tracking-[0.2em] rounded-sm bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20 transition-all" type="submit" disabled={isLoading || !formData.name || formData.mobile.length !== 10}>
                             {isLoading ? "Processing..." : "Submit Application"}
