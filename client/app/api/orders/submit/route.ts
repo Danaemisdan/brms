@@ -16,6 +16,18 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
         }
 
+        const product = await prisma.product.findUnique({
+            where: { id: product_id }
+        });
+
+        if (!product) {
+            return NextResponse.json({ error: "Product not found" }, { status: 404 });
+        }
+
+        if (product.filled_slots >= product.total_slots) {
+            return NextResponse.json({ error: "Sorry, this product is sold out." }, { status: 400 });
+        }
+
         const order = await prisma.order.create({
             data: {
                 order_id,
@@ -32,9 +44,14 @@ export async function POST(req: NextRequest) {
             }
         });
 
+        const newFilledSlots = product.filled_slots + 1;
+        
         await prisma.product.update({
             where: { id: product_id },
-            data: { filled_slots: { increment: 1 } }
+            data: { 
+                filled_slots: newFilledSlots,
+                status: newFilledSlots >= product.total_slots ? "SOLD_OUT" : product.status
+            }
         });
 
         const user = await prisma.user.findUnique({ where: { id: session.userId } });

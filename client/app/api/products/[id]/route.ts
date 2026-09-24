@@ -39,6 +39,20 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             service_id
         } = body;
 
+        const productData = await prisma.product.findUnique({ where: { id } });
+        if (!productData) {
+            return NextResponse.json({ error: "Product not found." }, { status: 404 });
+        }
+
+        const parsedTotalSlots = total_slots ? Math.min(parseInt(total_slots), 1000000) : productData.total_slots;
+        let finalStatus = status !== undefined ? status : productData.status;
+
+        if (parsedTotalSlots <= productData.filled_slots) {
+            finalStatus = "SOLD_OUT";
+        } else if (parsedTotalSlots > productData.filled_slots && finalStatus === "SOLD_OUT") {
+            finalStatus = "ACTIVE";
+        }
+
         const product = await prisma.product.update({
             where: { id },
             data: {
@@ -50,11 +64,11 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
                 offer_price: offer_price !== undefined ? (offer_price ? parseFloat(offer_price) : null) : undefined,
                 refund_amount: refund_amount !== undefined ? (refund_amount ? Math.min(parseFloat(refund_amount), 1000000) : null) : undefined,
                 deal_type: deal_type !== undefined ? deal_type : undefined,
-                total_slots: total_slots ? Math.min(parseInt(total_slots), 1000000) : undefined,
+                total_slots: parsedTotalSlots,
                 daily_limit: daily_limit ? Math.min(parseInt(daily_limit), 1000000) : undefined,
                 deadline: deadline ? new Date(deadline) : undefined,
                 instructions,
-                status,
+                status: finalStatus,
                 is_public: is_public !== undefined ? Boolean(is_public) : undefined,
                 wa_target: wa_target !== undefined ? wa_target : undefined,
                 wa_custom_phones: wa_custom_phones !== undefined ? wa_custom_phones : undefined,
