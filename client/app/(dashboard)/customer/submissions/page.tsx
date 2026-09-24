@@ -306,6 +306,12 @@ function CustomerSubmissionsContent() {
     const processedTotal = orders.filter(o => o.refundStatus === 'REFUNDED').reduce((acc, curr) => acc + (Number(curr.refundAmount) || 0), 0);
     const totalProfit = placedTotal + pendingTotal + confirmedTotal + processedTotal;
 
+    const placedCount = orders.filter(o => o.status === 'SUBMITTED' || o.status === 'VALIDATING').length;
+    const pendingCount = orders.filter(o => o.status === 'VALIDATED' && o.refundStatus !== 'REFUNDED' && o.refundStatus !== 'APPROVED').length;
+    const confirmedCount = orders.filter(o => o.status === 'VALIDATED' && o.refundStatus === 'APPROVED').length;
+    const processedCount = orders.filter(o => o.refundStatus === 'REFUNDED').length;
+    const totalOrderCount = placedCount + pendingCount + confirmedCount + processedCount;
+
     return (
         <div className="space-y-6">
             <div className="flex items-center justify-between">
@@ -318,11 +324,12 @@ function CustomerSubmissionsContent() {
 
             <Card className="bg-white shadow-sm border-gray-100">
                 <CardHeader className="pb-2">
-                    <CardTitle className="text-center text-xl font-bold text-gray-900">Profit Break Up</CardTitle>
+                    <CardTitle className="text-center text-xl font-bold text-gray-900">Profit & Orders Overview</CardTitle>
                 </CardHeader>
                 <CardContent>
                     <div className="text-center mb-6">
                         <span className="text-4xl font-extrabold tracking-tight text-gray-900">₹{totalProfit}</span>
+                        <div className="text-sm text-gray-500 font-medium mt-1">{totalOrderCount} Total Orders</div>
                     </div>
 
                     <div className="space-y-4 max-w-md mx-auto">
@@ -331,8 +338,11 @@ function CustomerSubmissionsContent() {
                                 <div className="text-lg font-bold text-gray-900">₹{confirmedTotal}</div>
                                 <div className="text-xs text-gray-500 mt-1">Available for payment</div>
                             </div>
-                            <div className="flex items-center gap-2 px-3 py-1 bg-green-50 border border-green-200 text-green-700 rounded-md text-sm font-medium">
-                                <div className="w-2 h-2 rounded-full bg-green-500"></div> Confirmed
+                            <div className="flex items-center gap-4">
+                                <div className="text-sm font-semibold text-gray-700">{confirmedCount} {confirmedCount === 1 ? 'Order' : 'Orders'}</div>
+                                <div className="flex items-center gap-2 px-3 py-1 bg-green-50 border border-green-200 text-green-700 rounded-md text-sm font-medium w-28 justify-center">
+                                    <div className="w-2 h-2 rounded-full bg-green-500"></div> Confirmed
+                                </div>
                             </div>
                         </div>
 
@@ -340,8 +350,11 @@ function CustomerSubmissionsContent() {
                             <div>
                                 <div className="text-lg font-bold text-gray-900">₹{pendingTotal}</div>
                             </div>
-                            <div className="flex items-center gap-2 px-3 py-1 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-md text-sm font-medium">
-                                <div className="w-2 h-2 rounded-full bg-yellow-500"></div> Pending
+                            <div className="flex items-center gap-4">
+                                <div className="text-sm font-semibold text-gray-700">{pendingCount} {pendingCount === 1 ? 'Order' : 'Orders'}</div>
+                                <div className="flex items-center gap-2 px-3 py-1 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-md text-sm font-medium w-28 justify-center">
+                                    <div className="w-2 h-2 rounded-full bg-yellow-500"></div> Pending
+                                </div>
                             </div>
                         </div>
 
@@ -349,8 +362,11 @@ function CustomerSubmissionsContent() {
                             <div>
                                 <div className="text-lg font-bold text-gray-900">₹{processedTotal}</div>
                             </div>
-                            <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-md text-sm font-medium">
-                                <div className="w-2 h-2 rounded-full bg-blue-500"></div> Processed
+                            <div className="flex items-center gap-4">
+                                <div className="text-sm font-semibold text-gray-700">{processedCount} {processedCount === 1 ? 'Order' : 'Orders'}</div>
+                                <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-md text-sm font-medium w-28 justify-center">
+                                    <div className="w-2 h-2 rounded-full bg-blue-500"></div> Processed
+                                </div>
                             </div>
                         </div>
                         
@@ -358,8 +374,11 @@ function CustomerSubmissionsContent() {
                             <div>
                                 <div className="text-lg font-bold text-gray-900">₹{placedTotal}</div>
                             </div>
-                            <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 border border-gray-200 text-gray-700 rounded-md text-sm font-medium">
-                                <div className="w-2 h-2 rounded-full bg-gray-500"></div> Placed
+                            <div className="flex items-center gap-4">
+                                <div className="text-sm font-semibold text-gray-700">{placedCount} {placedCount === 1 ? 'Order' : 'Orders'}</div>
+                                <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 border border-gray-200 text-gray-700 rounded-md text-sm font-medium w-28 justify-center">
+                                    <div className="w-2 h-2 rounded-full bg-gray-500"></div> Placed
+                                </div>
                             </div>
                         </div>
                     </div>

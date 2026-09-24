@@ -3,9 +3,10 @@
 import { apiFetch } from "@/lib/apiFetch";
 
 import { useEffect, useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 
 const API_URL = "";
 
@@ -26,6 +27,7 @@ export default function AdminDashboard() {
     const [pendingRequests, setPendingRequests] = useState<any[]>([]);
     const [recentOrders, setRecentOrders] = useState<any[]>([]);
     const [pendingRefundOrders, setPendingRefundOrders] = useState<any[]>([]);
+    const [analyticsData, setAnalyticsData] = useState<{signupTrend: any[], topProducts: any[]}>({ signupTrend: [], topProducts: [] });
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -37,16 +39,18 @@ export default function AdminDashboard() {
             const token = localStorage.getItem("token");
             const headers = { Authorization: `Bearer ${token}` };
 
-            const [ordersRes, productsRes, agentStatsRes] = await Promise.all([
+            const [ordersRes, productsRes, agentStatsRes, analyticsRes] = await Promise.all([
                 apiFetch(`${API_URL}/api/orders`, { headers }),
                 apiFetch(`${API_URL}/api/products`, { headers }),
-                apiFetch(`${API_URL}/api/refunds/tasks/stats`, { headers })
+                apiFetch(`${API_URL}/api/refunds/tasks/stats`, { headers }),
+                apiFetch(`${API_URL}/api/analytics/dashboard`, { headers })
             ]);
 
             if (ordersRes.ok && productsRes.ok) {
                 const ordersData = await ordersRes.json();
                 const productsData = await productsRes.json();
                 const agentStatsData = agentStatsRes.ok ? await agentStatsRes.json() : { stats: {} };
+                const analyticsResponse = analyticsRes.ok ? await analyticsRes.json() : { signupTrend: [], topProducts: [] };
 
                 const orders = ordersData.orders || [];
                 const products = productsData.products || [];
@@ -88,6 +92,10 @@ export default function AdminDashboard() {
 
                 setRecentOrders(recent);
                 setPendingRefundOrders(refunds);
+                setAnalyticsData({
+                    signupTrend: analyticsResponse.signupTrend || [],
+                    topProducts: analyticsResponse.topProducts || []
+                });
             }
         } catch (error) {
             console.error("Failed to fetch admin dashboard data", error);
@@ -211,6 +219,47 @@ export default function AdminDashboard() {
                             </Card>
                         ))}
                     </div>
+
+                    {/* Quick Analytics Charts */}
+                    {analyticsData.signupTrend.length > 0 && (
+                        <div className="grid gap-6 md:grid-cols-2 pt-6">
+                            <Card className="glass-panel border-border/5 shadow-none">
+                                <CardHeader>
+                                    <CardTitle className="text-sm font-sans tracking-widest text-foreground/70 uppercase">Customer Growth</CardTitle>
+                                    <CardDescription>30-day signup trend</CardDescription>
+                                </CardHeader>
+                                <CardContent className="h-[250px]">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={analyticsData.signupTrend} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.2} />
+                                            <XAxis dataKey="date" tickFormatter={(val) => new Date(val).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} stroke="#6B7280" fontSize={10} tickLine={false} axisLine={false} />
+                                            <YAxis stroke="#6B7280" fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
+                                            <Tooltip contentStyle={{ borderRadius: '4px', border: 'none', backgroundColor: '#1f2937', color: '#fff' }} itemStyle={{ color: '#fff' }} />
+                                            <Line type="monotone" dataKey="signups" stroke="#d4af37" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="glass-panel border-border/5 shadow-none">
+                                <CardHeader>
+                                    <CardTitle className="text-sm font-sans tracking-widest text-foreground/70 uppercase">Top Campaigns</CardTitle>
+                                    <CardDescription>Volume leaders by unique orders</CardDescription>
+                                </CardHeader>
+                                <CardContent className="h-[250px]">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={analyticsData.topProducts} layout="vertical" margin={{ top: 5, right: 20, left: -20, bottom: 0 }}>
+                                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" opacity={0.2} />
+                                            <XAxis type="number" stroke="#6B7280" fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
+                                            <YAxis dataKey="name" type="category" stroke="#6B7280" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(val) => val.length > 15 ? val.substring(0, 15) + '...' : val} />
+                                            <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ borderRadius: '4px', border: 'none', backgroundColor: '#1f2937', color: '#fff' }} itemStyle={{ color: '#fff' }} />
+                                            <Bar dataKey="orders" fill="#d4af37" radius={[0, 4, 4, 0]} barSize={20} />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    )}
 
                     {/* Pending Vendor Requests */}
                     <div className="space-y-6 pt-6">

@@ -448,7 +448,7 @@ export default function AdminProducts() {
 
     return (
         <div className="space-y-10 relative z-10">
-            <div className="flex items-center justify-between border-b border-border/5 pb-6">
+            <div className="flex items-center justify-between border-b border-border/5 pb-6 mb-6">
                 <div>
                     <h1 className="text-4xl font-sans font-bold text-primary tracking-wider uppercase">Manage Campaigns</h1>
                     <p className="text-foreground/40 mt-2 font-sans tracking-wide text-sm">Deploy and orchestrate product intelligence operations.</p>
@@ -459,6 +459,42 @@ export default function AdminProducts() {
                 }} className="bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20 font-sans tracking-widest uppercase text-xs h-12 px-6 rounded-sm transition-all shadow-[0_0_15px_rgba(212,175,55,0.1)]">
                     {showForm ? "Abort Operation" : "Deploy New Campaign"}
                 </Button>
+            </div>
+
+            {/* Products Analytics */}
+            <div className="grid gap-4 md:grid-cols-4 mb-8">
+                <Card className="bg-gradient-to-br from-blue-50 to-white shadow-sm border-blue-100">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-blue-800">Total Campaigns</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-gray-900">{products.length}</div>
+                    </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-emerald-50 to-white shadow-sm border-emerald-100">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-emerald-800">Active Campaigns</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-gray-900">{products.filter(p => p.status === 'ACTIVE').length}</div>
+                    </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-orange-50 to-white shadow-sm border-orange-100">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-orange-800">Pending Requests</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-gray-900">{products.filter(p => p.status === 'REQUESTED').length}</div>
+                    </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-purple-50 to-white shadow-sm border-purple-100">
+                    <CardHeader className="pb-2">
+                        <CardTitle className="text-sm font-medium text-purple-800">Slots Filled</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-2xl font-bold text-gray-900">{products.reduce((acc, p) => acc + (p.filled_slots || 0), 0)} / {products.reduce((acc, p) => acc + (p.total_slots || 0), 0)}</div>
+                    </CardContent>
+                </Card>
             </div>
 
             {showForm && (
