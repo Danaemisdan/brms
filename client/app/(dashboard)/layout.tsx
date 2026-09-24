@@ -23,6 +23,11 @@ const customerNav = [
     { label: "Support", href: "/customer/support" },
 ];
 
+const creatorNav = [
+    { label: "Dashboard & Activities", href: "/creator" },
+    { label: "My Wallet", href: "/customer/payment-info" },
+];
+
 const adminNav = [
     { label: "Dashboard", href: "/admin" },
     { label: "Analytics", href: "/admin/analytics" },
@@ -31,6 +36,8 @@ const adminNav = [
     { label: "Brands", href: "/admin/brands" },
     { label: "Tickets", href: "/admin/tickets" },
     { label: "Custom Forms", href: "/admin/custom-forms" },
+    { label: "Creators", href: "/admin/creators" },
+    { label: "Creator Activities", href: "/admin/activities" },
     { label: "Payments", href: "/admin/payments" },
     { label: "Customers", href: "/admin/customers" },
     { label: "Orders", href: "/admin/orders" },
@@ -42,6 +49,7 @@ const adminNav = [
 function getNav(pathname: string) {
     if (pathname.startsWith("/admin")) return { nav: adminNav, title: "Admin Panel" };
     if (pathname.startsWith("/brand")) return { nav: brandNav, title: "Brand Panel" };
+    if (pathname.startsWith("/creator")) return { nav: creatorNav, title: "Creator Panel" };
     if (pathname.startsWith("/customer")) return { nav: customerNav, title: "Customer panel" };
     return { nav: [], title: "Dashboard" };
 }
@@ -77,7 +85,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
             return;
         }
-        if (pathname.startsWith("/customer") && role !== "CUSTOMER") {
+        if (pathname.startsWith("/customer") && role !== "CUSTOMER" && role !== "CREATOR") {
+            router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+            return;
+        }
+        if (pathname.startsWith("/creator") && role !== "CREATOR") {
             router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
             return;
         }

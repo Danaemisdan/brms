@@ -50,6 +50,8 @@ model User {
   tickets         Ticket[]  @relation("CustomerTickets")
   messages        Message[] @relation("SenderMessages")
   custom_records  CustomRecord[]
+  creator_profile CreatorProfile?
+  activity_apps   ActivityApplication[] @relation("CreatorApplications")
 
   @@index([role])
   @@index([mobile])
@@ -291,4 +293,47 @@ model CustomRecord {
   user        User?      @relation(fields: [user_id], references: [id])
   data        Json
   created_at  DateTime   @default(now())
+}
+
+model CreatorProfile {
+  id               String   @id @default(uuid())
+  user_id          String   @unique
+  user             User     @relation(fields: [user_id], references: [id])
+  profile_url      String?
+  follower_count   Int      @default(0)
+  content_category String?
+  engagement_rate  Float?
+  category_tier    String?  // Nano, Micro, Macro, etc.
+  is_verified      Boolean  @default(false)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+}
+
+model Activity {
+  id             String   @id @default(uuid())
+  title          String
+  description    String
+  requirements   String
+  reward_amount  Float
+  status         String   @default("OPEN") // OPEN | CLOSED
+  deadline       DateTime?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  applications   ActivityApplication[]
+}
+
+model ActivityApplication {
+  id           String   @id @default(uuid())
+  activity_id  String
+  activity     Activity @relation(fields: [activity_id], references: [id])
+  creator_id   String
+  creator      User     @relation("CreatorApplications", fields: [creator_id], references: [id])
+  status       String   @default("PENDING") // PENDING | SHORTLISTED | SUBMITTED | APPROVED | REJECTED
+  reel_link    String?
+  applied_at   DateTime @default(now())
+  submitted_at DateTime?
+  approved_at  DateTime?
+
+  @@unique([activity_id, creator_id])
 }

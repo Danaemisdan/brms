@@ -14,6 +14,7 @@ const registerSchema = z.object({
     password: z.string().min(6, 'Password must be at least 6 characters long'),
     ecommerce_profile_url: z.string().trim().max(500, 'URL is too long').optional(),
     category: z.string().optional(),
+    role: z.enum(['CUSTOMER', 'CREATOR']).optional().default('CUSTOMER'),
 });
 
 function firstValidationError(error: z.ZodError): string {
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: firstValidationError(parsed.error) }, { status: 400 });
         }
 
-        const { name, mobile, email, password, ecommerce_profile_url } = parsed.data;
+        const { name, mobile, email, password, ecommerce_profile_url, role } = parsed.data;
 
         const existingMobile = await prisma.user.findUnique({ where: { mobile } });
         if (existingMobile) {
@@ -51,9 +52,18 @@ export async function POST(req: NextRequest) {
                 email: email?.trim() || null,
                 password_hash,
                 ecommerce_profile_url: ecommerce_profile_url?.trim() || null,
-                role: 'CUSTOMER',
+                role: role,
             },
         });
+
+        // Initialize Creator Profile if role is CREATOR
+        if (role === 'CREATOR') {
+            await prisma.creatorProfile.create({
+                data: {
+                    user_id: user.id
+                }
+            });
+        }
 
         const accessToken = generateAccessToken({ userId: user.id, role: user.role });
         const refreshToken = generateRefreshToken({ userId: user.id, role: user.role });

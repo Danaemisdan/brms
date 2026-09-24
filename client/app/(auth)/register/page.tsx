@@ -22,6 +22,7 @@ export default function RegisterPage() {
         email: "",
         password: "",
         ecommerce_profile_url: "",
+        role: "CUSTOMER",
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,8 +53,13 @@ export default function RegisterPage() {
                 localStorage.setItem("token", data.token);
             }
 
-            toast.success("Registration successful! You can now track products and join campaigns.");
-            router.push("/customer");
+            toast.success("Registration successful! Welcome aboard.");
+            
+            if (formData.role === "CREATOR") {
+                router.push("/creator");
+            } else {
+                router.push("/customer");
+            }
         } catch (err: any) {
             setError(err.message || "Cannot connect to server. Please ensure backend is running.");
         } finally {
@@ -119,6 +125,18 @@ export default function RegisterPage() {
                         <div className="space-y-3">
                             <Label htmlFor="ecommerce_profile_url" className="text-foreground/60 uppercase tracking-widest text-[10px]">E-Commerce Profile URL</Label>
                             <Input id="ecommerce_profile_url" placeholder="https://amazon..." value={formData.ecommerce_profile_url} onChange={handleChange} className="h-12 bg-white/5 border-border/10 text-foreground placeholder:text-foreground/20 focus:border-primary/50 font-sans" />
+                        </div>
+                        <div className="flex items-center space-x-2 pt-2">
+                            <input 
+                                type="checkbox" 
+                                id="is_creator" 
+                                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+                                checked={formData.role === "CREATOR"}
+                                onChange={(e) => setFormData({...formData, role: e.target.checked ? "CREATOR" : "CUSTOMER"})}
+                            />
+                            <Label htmlFor="is_creator" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                Apply as a Content Creator
+                            </Label>
                         </div>
 
                         <Button className="w-full h-14 mt-6 text-xs font-sans uppercase tracking-[0.2em] rounded-sm bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20 transition-all" type="submit" disabled={isLoading || !formData.name || formData.mobile.length !== 10}>

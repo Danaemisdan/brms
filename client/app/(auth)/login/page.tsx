@@ -58,6 +58,7 @@ function LoginComponent() {
             const upperRole = role.toUpperCase();
             if (upperRole === "ADMIN") router.push("/admin");
             else if (upperRole === "VENDOR" || upperRole === "CLIENT") router.push("/brand");
+            else if (upperRole === "CREATOR") router.push("/creator");
             else router.push("/customer");
         }
     }, [router, returnUrl, resetToken]);
@@ -90,6 +91,7 @@ function LoginComponent() {
             const role = data.user.role.toLowerCase();
             if (role === "admin") router.push("/admin");
             else if (role === "vendor" || role === "client") router.push("/brand");
+            else if (role === "creator") router.push("/creator");
             else router.push("/customer");
         } catch (err: any) {
             setError(err.message || "Cannot connect to server.");
