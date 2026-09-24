@@ -454,15 +454,34 @@ export async function pullUpdatesFromSheet() {
     try {
         console.log('[Google Sheets] Starting two-way sync pull...');
 
+        // Helper to map friendly sheet statuses to system statuses
+        const mapSystemStatus = (val: string) => {
+            if (!val) return val;
+            const s = val.toUpperCase();
+            if (s.includes('VALIDATING')) return 'VALIDATING';
+            if (s.includes('CONFIRMED')) return 'VALIDATED';
+            if (s.includes('CANCELLED')) return 'CANCELLED';
+            if (s.includes('REJECTED') && s.includes('REFUND')) return 'REFUND_REJECTED';
+            if (s.includes('REJECTED')) return 'REJECTED';
+            if (s.includes('APPROVED')) return 'APPROVED';
+            if (s.includes('PROCESSING')) return 'PROCESSING';
+            if (s.includes('REFUNDED')) return 'REFUNDED';
+            if (s.includes('SUBMITTED')) return 'SUBMITTED';
+            if (s.includes('PENDING')) return 'PENDING';
+            if (s.includes('ACTIVE')) return 'ACTIVE';
+            return val;
+        };
+
         // 1. Pull Orders from Q2 General Order
         const ordersRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: `'Q2 General Order'!A2:W` });
         const orderRows = ordersRes.data.values || [];
         for (const row of orderRows) {
             const orderId = row[4]; // Column E: Order ID
-            const status = row[21]; // Column V: System Status
+            const sheetStatus = row[21]; // Column V: System Status
             const remarks = row[22]; // Column W: System Remarks
             
-            if (orderId && status) {
+            if (orderId && sheetStatus) {
+                const status = mapSystemStatus(sheetStatus);
                 await prisma.order.updateMany({
                     where: { order_id: orderId },
                     data: {
@@ -474,13 +493,18 @@ export async function pullUpdatesFromSheet() {
         }
 
         // 2. Pull Refunds from Q2 General refund
-        const refundsRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: `'Q2 General refund'!A2:H` });
+        const refundsRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: `'Q2 General refund'!A2:Q` });
         const refundRows = refundsRes.data.values || [];
         for (const row of refundRows) {
             const orderId = row[3]; // Column D: Order ID
-            const refundStatus = row[7]; // Column H: System Refund Status
+            // Status is often updated manually in Column O (14). Fallback to Column P (15) if O is empty.
+            let rawRefundStatus = row[14]; 
+            if (!rawRefundStatus || rawRefundStatus.trim() === "") {
+                rawRefundStatus = row[15];
+            }
             
-            if (orderId && refundStatus) {
+            if (orderId && rawRefundStatus) {
+                const refundStatus = mapSystemStatus(rawRefundStatus);
                 const order = await prisma.order.findUnique({ where: { order_id: orderId }, select: { id: true } });
                 if (order) {
                     await prisma.refund.updateMany({
