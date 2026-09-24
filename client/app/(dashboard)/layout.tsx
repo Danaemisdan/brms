@@ -15,7 +15,7 @@ const brandNav = [
 ];
 
 const customerNav = [
-    { label: "Dashboard", href: "/customer" },
+    { label: "Deals", href: "/customer" },
     { label: "Submission of Proof", href: "/customer/submissions" },
     { label: "Tasks & Offers", href: "/customer/tasks" },
     { label: "Payment Info", href: "/customer/payment-info" },
