@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
                 image_url: body.image_url,
                 reward_amount: parseFloat(body.reward_amount) || 0,
                 is_public: body.is_public ?? true,
+                service_id: body.service_id || null,
             }
         });
 

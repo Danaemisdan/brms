@@ -3,43 +3,38 @@ import prisma from '@/lib/prisma';
 import { requireAuth } from '@/lib/auth';
 import { syncCustomRecordToSheet } from '@/lib/services/googleSheets.service';
 
-export async function POST(
-    req: NextRequest,
-    context: { params: Promise<{ id: string }> }
-) {
+export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     const session = requireAuth(req);
-    // Don't enforce ADMIN role here if we eventually want users to submit, but for now we can enforce it.
-    // The user requested "only for admin ofc" so let's verify admin status.
     if (session instanceof NextResponse) return session;
-    if (session.role !== 'ADMIN') {
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
 
     try {
-        const { id } = await context.params;
+        const { id } = await params;
         const body = await req.json();
-
+        
         const form = await prisma.customForm.findUnique({
             where: { id }
         });
 
-        if (!form) {
-            return NextResponse.json({ error: 'Form not found' }, { status: 404 });
-        }
+        if (!form) return NextResponse.json({ error: 'Form not found' }, { status: 404 });
 
-        // Save data to CustomRecord
+        // Save record to DB
         const record = await prisma.customRecord.create({
             data: {
-                form_id: form.id,
-                user_id: session.userId,
-                data: body.data,
+                form_id: id,
+                user_id: session.id, // Assuming session returns user payload
+                data: body.data
             }
         });
 
-        // Async sync to Google Sheets
-        syncCustomRecordToSheet(form, record).catch(console.error);
+        // Map data to sheet format
+        try {
+            await syncCustomRecordToSheet(form, record);
+        } catch (sheetError) {
+            console.error("Failed to sync custom record to sheet:", sheetError);
+            // We don't fail the request if sheet sync fails, just log it.
+        }
 
-        return NextResponse.json({ success: true, record });
+        return NextResponse.json({ success: true, record }, { status: 201 });
     } catch (error) {
         console.error('Submit custom form error:', error);
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

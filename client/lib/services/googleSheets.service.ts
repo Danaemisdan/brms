@@ -422,6 +422,28 @@ export async function syncCustomRecordToSheet(form: any, record: any) {
 }
 
 /**
+ * Append a generic row to a Google Sheet
+ */
+export async function appendRowToSheet(sheetName: string, rowData: any[]) {
+    const sheets = getSheetsClient();
+    const spreadsheetId = getSpreadsheetId();
+    if (!sheets || !spreadsheetId) return;
+
+    try {
+        await sheets.spreadsheets.values.append({
+            spreadsheetId,
+            range: `'${sheetName}'!A:ZZ`,
+            valueInputOption: 'USER_ENTERED',
+            insertDataOption: 'INSERT_ROWS',
+            requestBody: { values: [rowData] }
+        });
+    } catch (error) {
+        console.error(`[Google Sheets] Failed to append row to ${sheetName}:`, error);
+        throw error;
+    }
+}
+
+/**
  * Pull updates from Google Sheets into the Database
  */
 export async function pullUpdatesFromSheet() {

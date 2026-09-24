@@ -90,10 +90,14 @@ export default function AdminOrders() {
     };
 
     const statusColor: Record<string, string> = {
-        SUBMITTED: "bg-blue-100 text-blue-800",
-        VALIDATING: "bg-yellow-100 text-yellow-800",
-        VALIDATED: "bg-green-100 text-green-800",
-        REJECTED: "bg-red-100 text-red-800",
+        "SUBMITTED": "bg-blue-100 text-blue-800",
+        "Order Validating": "bg-yellow-100 text-yellow-800",
+        "Order Confirmed (dating)": "bg-green-100 text-green-800",
+        "Order Cancelled": "bg-gray-100 text-gray-800",
+        "Order Rejected (No More Slots)": "bg-red-100 text-red-800",
+        "Order Approved (After Submission of Review SS & Return Window SS)": "bg-emerald-100 text-emerald-800",
+        "Refund Processing (15 days of Order Confirmation)": "bg-purple-100 text-purple-800",
+        "Refund Reject, Wrong Written": "bg-orange-100 text-orange-800",
     };
 
     return (
@@ -131,9 +135,13 @@ export default function AdminOrders() {
                     >
                         <option value="ALL">All Statuses</option>
                         <option value="SUBMITTED">Submitted</option>
-                        <option value="VALIDATING">Validating</option>
-                        <option value="VALIDATED">Validated</option>
-                        <option value="REJECTED">Rejected</option>
+                        <option value="Order Validating">Order Validating</option>
+                        <option value="Order Confirmed (dating)">Order Confirmed (dating)</option>
+                        <option value="Order Cancelled">Order Cancelled</option>
+                        <option value="Order Rejected (No More Slots)">Order Rejected</option>
+                        <option value="Order Approved (After Submission of Review SS & Return Window SS)">Order Approved</option>
+                        <option value="Refund Processing (15 days of Order Confirmation)">Refund Processing</option>
+                        <option value="Refund Reject, Wrong Written">Refund Reject</option>
                     </select>
                     <select
                         className="h-12 w-full md:w-[200px] rounded-sm border border-border/10 bg-foreground/40 px-3 text-foreground text-sm font-sans outline-none focus:border-primary/50 tracking-wide uppercase"
@@ -188,27 +196,37 @@ export default function AdminOrders() {
                             </div>
                             <div className="flex flex-col gap-2 md:items-end">
                                 <div className="flex flex-col items-end gap-1">
-                                    <span className={`px-4 py-2 text-[10px] font-sans tracking-widest uppercase rounded-sm border w-fit ${
-                                        order.status === 'SUBMITTED' ? 'bg-blue-900/20 text-blue-400 border-blue-500/30' :
-                                        order.status === 'VALIDATING' ? 'bg-yellow-900/20 text-yellow-500 border-yellow-500/30' :
-                                        order.status === 'VALIDATED' ? 'bg-green-900/20 text-green-400 border-green-500/30' :
-                                        order.status === 'REJECTED' ? 'bg-red-900/20 text-red-400 border-red-500/30' :
-                                        'bg-white/5 text-foreground/50 border-border/10'
-                                    }`}>
+                                    <span className={`px-4 py-2 text-[10px] font-sans tracking-widest uppercase rounded-sm border w-fit ${statusColor[order.status] || 'bg-white/5 text-foreground/50 border-border/10'}`}>
                                         {order.status}
                                     </span>
-                                    {order.status === 'REJECTED' && order.remarks && (
+                                    {order.status.includes('Reject') && order.remarks && (
                                         <span className="text-[10px] font-sans text-red-500/80 max-w-[200px] text-right truncate" title={order.remarks}>
                                             Reason: {order.remarks}
                                         </span>
                                     )}
                                 </div>
-                                {order.status === 'SUBMITTED' && (
-                                    <div className="flex gap-2">
-                                        <Button variant="outline" size="sm" className="h-7 text-[10px] bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/20 px-3 uppercase tracking-wider" onClick={() => updateOrderStatus(order.id, 'VALIDATED')}>Accept</Button>
-                                        <Button variant="outline" size="sm" className="h-7 text-[10px] bg-red-500/10 text-red-600 border-red-500/20 hover:bg-red-500/20 px-3 uppercase tracking-wider" onClick={() => { setRejectOrderId(order.id); setRejectReason(""); }}>Reject</Button>
-                                    </div>
-                                )}
+                                <div className="flex flex-col gap-2 w-full max-w-[250px] mt-2">
+                                    <select 
+                                        className="h-8 text-xs bg-foreground/10 border border-border/20 rounded px-2"
+                                        value={order.status}
+                                        onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                                    >
+                                        <option value="SUBMITTED">Submitted</option>
+                                        <option value="Order Validating">Order Validating</option>
+                                        <option value="Order Confirmed (dating)">Order Confirmed</option>
+                                        <option value="Order Cancelled">Order Cancelled</option>
+                                        <option value="Order Rejected (No More Slots)">Order Rejected</option>
+                                        <option value="Order Approved (After Submission of Review SS & Return Window SS)">Order Approved</option>
+                                        <option value="Refund Processing (15 days of Order Confirmation)">Refund Processing</option>
+                                        <option value="Refund Reject, Wrong Written">Refund Reject</option>
+                                    </select>
+                                    {(order.status === 'SUBMITTED' || order.status === 'Order Validating') && (
+                                        <div className="flex gap-2">
+                                            <Button variant="outline" size="sm" className="h-7 flex-1 text-[10px] bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500/20 px-3 uppercase tracking-wider" onClick={() => updateOrderStatus(order.id, 'Order Confirmed (dating)')}>Confirm</Button>
+                                            <Button variant="outline" size="sm" className="h-7 flex-1 text-[10px] bg-red-500/10 text-red-600 border-red-500/20 hover:bg-red-500/20 px-3 uppercase tracking-wider" onClick={() => { setRejectOrderId(order.id); setRejectReason(""); }}>Reject</Button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </Card>
                     ));

@@ -55,7 +55,8 @@ export default function AdminProducts() {
         wa_times_per_day: "1",
         wa_time_1: "09:00",
         wa_time_2: "",
-        wa_time_3: ""
+        wa_time_3: "",
+        service_id: ""
     });
 
     // WhatsApp Campaign State
@@ -75,6 +76,7 @@ export default function AdminProducts() {
     const [imagePreviews, setImagePreviews] = useState<string[]>([]);
     const [products, setProducts] = useState<any[]>([]);
     const [brandsList, setBrandsList] = useState<any[]>([]);
+    const [servicesList, setServicesList] = useState<any[]>([]);
 
     // WA Image Attachment State
     const [waImageFile, setWaImageFile] = useState<File | null>(null);
@@ -87,7 +89,20 @@ export default function AdminProducts() {
     useEffect(() => {
         fetchProducts();
         fetchBrands();
+        fetchServices();
     }, []);
+
+    const fetchServices = async () => {
+        try {
+            const res = await apiFetch(`${API_URL}/api/services`);
+            if (res.ok) {
+                const data = await res.json();
+                setServicesList(data.services || []);
+            }
+        } catch (error) {
+            console.error("Failed to fetch services", error);
+        }
+    };
 
     const fetchBrands = async () => {
         try {
@@ -153,7 +168,7 @@ export default function AdminProducts() {
         setForm({
             brand: "", deal_type: [], product_name: "", product_link: "", platform: "AMAZON", real_price: "", offer_price: "", refund_amount: "", deadline: "", total_slots: "", is_public: true,
             wa_target: ["all_customers"], wa_custom_phones: "", wa_template: "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
-            wa_start_date: "", wa_end_date: "", wa_times_per_day: "1", wa_time_1: "09:00", wa_time_2: "", wa_time_3: ""
+            wa_start_date: "", wa_end_date: "", wa_times_per_day: "1", wa_time_1: "09:00", wa_time_2: "", wa_time_3: "", service_id: ""
         });
         setExistingImages([]);
         setImageFiles([]);
@@ -185,7 +200,8 @@ export default function AdminProducts() {
             wa_times_per_day: product.wa_times_per_day ? String(product.wa_times_per_day) : "1",
             wa_time_1: product.wa_time_1 || "09:00",
             wa_time_2: product.wa_time_2 || "",
-            wa_time_3: product.wa_time_3 || ""
+            wa_time_3: product.wa_time_3 || "",
+            service_id: product.service_id || ""
         });
         setImageFiles([]);
         setImagePreviews([]);
@@ -354,7 +370,8 @@ export default function AdminProducts() {
                 wa_times_per_day: form.wa_times_per_day || null,
                 wa_time_1: form.wa_time_1 || null,
                 wa_time_2: form.wa_time_2 || null,
-                wa_time_3: form.wa_time_3 || null
+                wa_time_3: form.wa_time_3 || null,
+                service_id: form.service_id || null
             };
 
             if (finalUrls.length > 0) {
@@ -462,6 +479,19 @@ export default function AdminProducts() {
                                     <option value="" disabled>Select a brand...</option>
                                     {brandsList.map(b => (
                                         <option key={b.id} value={b.name}>{b.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                                <Label className="text-foreground/60 uppercase tracking-widest text-[10px]">Assign to Service (Optional)</Label>
+                                <select
+                                    className="h-12 w-full rounded-sm border border-border/10 bg-foreground/40 px-3 text-foreground text-sm font-sans outline-none focus:border-primary/50"
+                                    value={form.service_id}
+                                    onChange={e => setForm({ ...form, service_id: e.target.value })}
+                                >
+                                    <option value="">None / Independent Product</option>
+                                    {servicesList.map(s => (
+                                        <option key={s.id} value={s.id}>{s.name}</option>
                                     ))}
                                 </select>
                             </div>

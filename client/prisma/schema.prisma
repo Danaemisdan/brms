@@ -83,10 +83,26 @@ model Client {
   invoices Invoice[]
 }
 
+model Service {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  icon        String?  // lucide icon name
+  is_active   Boolean  @default(true)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  products    Product[]
+  tasks       Task[]
+  forms       CustomForm[]
+}
+
 model Product {
   id            String   @id @default(uuid())
   client_id     String
   client        Client   @relation(fields: [client_id], references: [id])
+  service_id    String?
+  service       Service? @relation(fields: [service_id], references: [id])
   brand         String
   product_name  String
   product_image String?
@@ -264,6 +280,8 @@ model Message {
 
 model Task {
   id            String   @id @default(uuid())
+  service_id    String?
+  service       Service? @relation(fields: [service_id], references: [id])
   title         String
   description   String
   image_url     String?
@@ -275,6 +293,8 @@ model Task {
 
 model CustomForm {
   id          String   @id @default(uuid())
+  service_id  String?
+  service     Service? @relation(fields: [service_id], references: [id])
   name        String
   sheet_name  String
   fields      Json

@@ -62,10 +62,24 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const [userProfile, setUserProfile] = useState({ name: "", role: "" });
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
+    const [services, setServices] = useState<any[]>([]);
 
     useEffect(() => {
         setMounted(true);
+        fetchServices();
     }, []);
+
+    const fetchServices = async () => {
+        try {
+            const res = await apiFetch("/api/services");
+            if (res.ok) {
+                const data = await res.json();
+                setServices(data.services || []);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -158,6 +172,43 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             </Link>
                         );
                     })}
+                    
+                    {/* Dynamic Services Section */}
+                    {services.length > 0 && (
+                        <div className="mt-8">
+                            <div className="px-3 mb-4 text-[10px] font-sans font-bold text-muted-foreground uppercase tracking-[0.2em]">
+                                Services
+                            </div>
+                            {services.map((service) => {
+                                const href = userProfile.role === "ADMIN" 
+                                    ? `/admin/services/${service.id}` 
+                                    : userProfile.role === "CUSTOMER" 
+                                        ? `/customer/services/${service.id}` 
+                                        : `/services/${service.id}`;
+                                const isActive = pathname.includes(service.id);
+                                return (
+                                    <Link
+                                        key={service.id}
+                                        href={href}
+                                        className={`flex items-center px-4 py-3 text-sm font-sans font-medium rounded-sm transition-all duration-300 group relative overflow-hidden ${isActive
+                                            ? "text-primary bg-primary/10"
+                                            : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                                            }`}
+                                    >
+                                        {isActive && (
+                                            <motion.div 
+                                                layoutId="activeNavService"
+                                                className="absolute left-0 top-0 bottom-0 w-[3px] bg-primary shadow-[0_0_10px_var(--color-primary)]"
+                                            />
+                                        )}
+                                        <span className={isActive ? "translate-x-2 transition-transform" : "transition-transform group-hover:translate-x-2"}>
+                                            {service.name}
+                                        </span>
+                                    </Link>
+                                );
+                            })}
+                        </div>
+                    )}
                 </nav>
                 
                 {/* Profile & Logout Section */}

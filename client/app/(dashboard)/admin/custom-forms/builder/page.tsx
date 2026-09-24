@@ -29,12 +29,27 @@ export default function CustomFormBuilderPage() {
     const [formName, setFormName] = useState("");
     const [sheetName, setSheetName] = useState("");
     const [fields, setFields] = useState<FieldDef[]>([]);
+    const [serviceId, setServiceId] = useState<string>("");
+    const [services, setServices] = useState<any[]>([]);
 
     useEffect(() => {
+        fetchServices();
         if (editId) {
             loadForm(editId);
         }
     }, [editId]);
+
+    const fetchServices = async () => {
+        try {
+            const res = await apiFetch("/api/services");
+            if (res.ok) {
+                const data = await res.json();
+                setServices(data.services || []);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
     const loadForm = async (id: string) => {
         setIsLoading(true);
@@ -45,6 +60,7 @@ export default function CustomFormBuilderPage() {
                 setFormName(data.name);
                 setSheetName(data.sheet_name);
                 setFields(data.fields || []);
+                setServiceId(data.service_id || "");
             }
         } catch (error) {
             toast.error("Failed to load form details");
@@ -88,6 +104,7 @@ export default function CustomFormBuilderPage() {
                 name: formName,
                 sheet_name: sheetName,
                 fields: fields,
+                service_id: serviceId || null,
             };
 
             let res;
@@ -147,6 +164,19 @@ export default function CustomFormBuilderPage() {
                         <Label>Google Sheet Tab Name</Label>
                         <Input value={sheetName} onChange={(e) => setSheetName(e.target.value)} placeholder="E.g., Sheet1" />
                         <p className="text-xs text-gray-500">Must exactly match the tab name in your spreadsheet.</p>
+                    </div>
+                    <div className="grid gap-2 md:col-span-2">
+                        <Label>Assign to Service (Optional)</Label>
+                        <select 
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                            value={serviceId}
+                            onChange={(e) => setServiceId(e.target.value)}
+                        >
+                            <option value="">None / Independent Form</option>
+                            {services.map(s => (
+                                <option key={s.id} value={s.id}>{s.name}</option>
+                            ))}
+                        </select>
                     </div>
                 </CardContent>
             </Card>

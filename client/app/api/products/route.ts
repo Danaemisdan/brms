@@ -59,7 +59,8 @@ export async function POST(req: NextRequest) {
             wa_times_per_day,
             wa_time_1,
             wa_time_2,
-            wa_time_3
+            wa_time_3,
+            service_id
         } = body;
 
         let validClientId = client_id;
@@ -116,7 +117,8 @@ export async function POST(req: NextRequest) {
                 wa_times_per_day: wa_times_per_day ? parseInt(wa_times_per_day) : null,
                 wa_time_1: wa_time_1 || null,
                 wa_time_2: wa_time_2 || null,
-                wa_time_3: wa_time_3 || null
+                wa_time_3: wa_time_3 || null,
+                service_id: service_id || null
             }
         });
 

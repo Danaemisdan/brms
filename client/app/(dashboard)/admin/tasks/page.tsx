@@ -14,6 +14,7 @@ import { apiFetch } from "@/lib/apiFetch";
 
 export default function AdminTasksPage() {
     const [tasks, setTasks] = useState<any[]>([]);
+    const [services, setServices] = useState<any[]>([]);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [saving, setSaving] = useState(false);
@@ -25,10 +26,24 @@ export default function AdminTasksPage() {
     const [reward, setReward] = useState("0");
     const [isPublic, setIsPublic] = useState(true);
     const [imageStr, setImageStr] = useState<string>("");
+    const [serviceId, setServiceId] = useState<string>("");
 
     useEffect(() => {
         fetchTasks();
+        fetchServices();
     }, []);
+
+    const fetchServices = async () => {
+        try {
+            const res = await apiFetch("/api/services");
+            if (res.ok) {
+                const data = await res.json();
+                setServices(data.services || []);
+            }
+        } catch (error) {
+            console.error("Failed to load services");
+        }
+    };
 
     const fetchTasks = async () => {
         setIsLoading(true);
@@ -53,6 +68,7 @@ export default function AdminTasksPage() {
             setReward(task.reward_amount.toString());
             setIsPublic(task.is_public);
             setImageStr(task.image_url || "");
+            setServiceId(task.service_id || "");
         } else {
             setEditingId(null);
             setTitle("");
@@ -60,6 +76,7 @@ export default function AdminTasksPage() {
             setReward("0");
             setIsPublic(true);
             setImageStr("");
+            setServiceId("");
         }
         setIsDialogOpen(true);
     };
@@ -77,6 +94,7 @@ export default function AdminTasksPage() {
                 reward_amount: reward,
                 is_public: isPublic,
                 image_url: imageStr,
+                service_id: serviceId || null,
             };
 
             let res;
@@ -220,6 +238,20 @@ export default function AdminTasksPage() {
                         <div className="grid gap-2">
                             <Label htmlFor="reward">Reward Amount (₹)</Label>
                             <Input id="reward" type="number" value={reward} onChange={(e) => setReward(e.target.value)} placeholder="0" />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="service">Assign to Service (Optional)</Label>
+                            <select 
+                                id="service"
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                                value={serviceId}
+                                onChange={(e) => setServiceId(e.target.value)}
+                            >
+                                <option value="">None / Independent Task</option>
+                                {services.map(s => (
+                                    <option key={s.id} value={s.id}>{s.name}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="grid gap-2">
                             <Label>Task Image</Label>

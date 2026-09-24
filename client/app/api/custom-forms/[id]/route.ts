@@ -47,6 +47,7 @@ export async function PUT(
                 sheet_name: body.sheet_name,
                 fields: body.fields,
                 is_public: body.is_public,
+                service_id: body.service_id || null,
             }
         });
 

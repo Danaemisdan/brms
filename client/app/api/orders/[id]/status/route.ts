@@ -11,6 +11,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         const body = await req.json().catch(() => ({}));
         const { status, remarks } = body;
 
+        const oldOrder = await prisma.order.findUnique({ where: { id }, include: { user: true } });
+        
         const order = await prisma.order.update({
             where: { id },
             data: { 
@@ -18,6 +20,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
                 ...(remarks !== undefined && { remarks })
             }
         });
+
+        if (status === "Order Confirmed (dating)" && oldOrder?.status !== "Order Confirmed (dating)") {
+            // Simulate sending an email
+            console.log(`[EMAIL DISPATCH] Order Confirmation sent to ${oldOrder?.user?.email || oldOrder?.user?.mobile}`);
+        }
 
         const { syncOrderToSheet } = await import('@/lib/services/googleSheets.service');
         await syncOrderToSheet(id).catch(err => console.error("Sheet sync error:", err));

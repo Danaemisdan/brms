@@ -35,7 +35,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
             wa_times_per_day,
             wa_time_1,
             wa_time_2,
-            wa_time_3
+            wa_time_3,
+            service_id
         } = body;
 
         const product = await prisma.product.update({
@@ -64,7 +65,8 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
                 wa_times_per_day: wa_times_per_day !== undefined ? (wa_times_per_day === null ? null : parseInt(wa_times_per_day)) : undefined,
                 wa_time_1: wa_time_1 !== undefined ? wa_time_1 : undefined,
                 wa_time_2: wa_time_2 !== undefined ? wa_time_2 : undefined,
-                wa_time_3: wa_time_3 !== undefined ? wa_time_3 : undefined
+                wa_time_3: wa_time_3 !== undefined ? wa_time_3 : undefined,
+                service_id: service_id !== undefined ? (service_id || null) : undefined
             }
         });
 
