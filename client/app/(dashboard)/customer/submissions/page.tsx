@@ -310,10 +310,10 @@ function CustomerSubmissionsContent() {
         <div className="space-y-6">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Submission of Proof</h1>
+                    <h1 className="text-3xl font-bold tracking-tight">Track Order Status</h1>
                     <p className="text-gray-500">Track your order statuses and claim refunds for successful reviews.</p>
                 </div>
-                <Button onClick={() => setIsAddModalOpen(true)}>Add New</Button>
+                <Button onClick={() => setIsAddModalOpen(true)}>Submit new order</Button>
             </div>
 
             <Card className="bg-white shadow-sm border-gray-100">
