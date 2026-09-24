@@ -72,11 +72,17 @@ export default function CustomerTasksPage() {
                                 <p className="text-gray-600 text-sm whitespace-pre-line">{task.description}</p>
                             </CardContent>
                             <CardFooter className="pt-0 bg-gray-50 p-4 border-t">
-                                <Button className="w-full font-semibold" onClick={() => {
-                                    toast.success("To complete this task, follow the instructions and submit your proof in a Ticket!");
-                                }}>
-                                    Complete Task
-                                </Button>
+                                {task.action_url ? (
+                                    <Button className="w-full font-semibold" onClick={() => window.open(task.action_url, '_blank')}>
+                                        {task.action_text || "Complete Task"}
+                                    </Button>
+                                ) : (
+                                    <Button className="w-full font-semibold" onClick={() => {
+                                        toast.success("To complete this task, follow the instructions and submit your proof in a Ticket!");
+                                    }}>
+                                        {task.action_text || "Complete Task"}
+                                    </Button>
+                                )}
                             </CardFooter>
                         </Card>
                     ))}

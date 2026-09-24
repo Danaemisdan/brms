@@ -35,6 +35,7 @@ const adminNav = [
     { label: "Tasks", href: "/admin/tasks" },
     { label: "Brands", href: "/admin/brands" },
     { label: "Tickets", href: "/admin/tickets" },
+    { label: "Services", href: "/admin/services" },
     { label: "Custom Forms", href: "/admin/custom-forms" },
     { label: "Creators", href: "/admin/creators" },
     { label: "Creator Activities", href: "/admin/activities" },

@@ -19,8 +19,11 @@ export async function PUT(
                 title: body.title,
                 description: body.description,
                 image_url: body.image_url,
+                action_text: body.action_text || null,
+                action_url: body.action_url || null,
                 reward_amount: parseFloat(body.reward_amount) || 0,
                 is_public: body.is_public,
+                service_id: body.service_id || null,
             }
         });
 

@@ -285,6 +285,8 @@ model Task {
   title         String
   description   String
   image_url     String?
+  action_text   String?
+  action_url    String?
   reward_amount Float    @default(0)
   is_public     Boolean  @default(true)
   created_at    DateTime @default(now())

@@ -27,6 +27,8 @@ export default function AdminTasksPage() {
     const [isPublic, setIsPublic] = useState(true);
     const [imageStr, setImageStr] = useState<string>("");
     const [serviceId, setServiceId] = useState<string>("");
+    const [actionText, setActionText] = useState<string>("");
+    const [actionUrl, setActionUrl] = useState<string>("");
 
     useEffect(() => {
         fetchTasks();
@@ -69,6 +71,8 @@ export default function AdminTasksPage() {
             setIsPublic(task.is_public);
             setImageStr(task.image_url || "");
             setServiceId(task.service_id || "");
+            setActionText(task.action_text || "");
+            setActionUrl(task.action_url || "");
         } else {
             setEditingId(null);
             setTitle("");
@@ -77,6 +81,8 @@ export default function AdminTasksPage() {
             setIsPublic(true);
             setImageStr("");
             setServiceId("");
+            setActionText("");
+            setActionUrl("");
         }
         setIsDialogOpen(true);
     };
@@ -95,6 +101,8 @@ export default function AdminTasksPage() {
                 is_public: isPublic,
                 image_url: imageStr,
                 service_id: serviceId || null,
+                action_text: actionText || null,
+                action_url: actionUrl || null,
             };
 
             let res;
@@ -252,6 +260,14 @@ export default function AdminTasksPage() {
                                     <option key={s.id} value={s.id}>{s.name}</option>
                                 ))}
                             </select>
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="actionText">Action Button Text (Optional)</Label>
+                            <Input id="actionText" value={actionText} onChange={(e) => setActionText(e.target.value)} placeholder="E.g., Go to Google Maps" />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="actionUrl">Action Button URL (Optional)</Label>
+                            <Input id="actionUrl" value={actionUrl} onChange={(e) => setActionUrl(e.target.value)} placeholder="E.g., https://maps.app.goo.gl/..." />
                         </div>
                         <div className="grid gap-2">
                             <Label>Task Image</Label>
