@@ -1,13 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle, Lock, Wallet, Upload, DollarSign } from "lucide-react";
+import { CheckCircle, Lock, Upload, DollarSign, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/apiFetch";
+
+const PLATFORMS = ["YouTube", "Instagram", "Facebook", "LinkedIn", "Other"];
+const FOLLOWER_RANGES = ["500-3000", "3000-5000", "5000-10000", "10000-25000", "25000+"];
+const CONTENT_TYPES = ["Only Story", "Only Reel", "Reel + Story"];
+const COLLABORATION_TYPES = ["Paid", "Barter"];
 
 export default function CreatorDashboardPage() {
     const [profile, setProfile] = useState<any>(null);
@@ -20,7 +27,11 @@ export default function CreatorDashboardPage() {
         profile_urls: [""],
         follower_count: "",
         content_category: "",
-        engagement_rate: ""
+        engagement_rate: "",
+        platforms: [] as string[],
+        follower_range: "",
+        content_types: [] as string[],
+        collaboration_types: [] as string[]
     });
 
     useEffect(() => {
@@ -38,10 +49,14 @@ export default function CreatorDashboardPage() {
                     profile_urls: profData.profile_urls?.length ? profData.profile_urls : [""],
                     follower_count: profData.follower_count || "",
                     content_category: profData.content_category || "",
-                    engagement_rate: profData.engagement_rate || ""
+                    engagement_rate: profData.engagement_rate || "",
+                    platforms: profData.platforms || [],
+                    follower_range: profData.follower_range || "",
+                    content_types: profData.content_types || [],
+                    collaboration_types: profData.collaboration_types || []
                 });
 
-                if (profData.is_verified) {
+                if (profData.platforms && profData.platforms.length > 0) {
                     const actRes = await apiFetch("/api/creator/activities");
                     if (actRes.ok) {
                         setActivities(await actRes.json());
@@ -55,8 +70,25 @@ export default function CreatorDashboardPage() {
         }
     };
 
+    const handleCheckboxChange = (field: keyof typeof formData, value: string) => {
+        setFormData(prev => {
+            const list = prev[field] as string[];
+            if (list.includes(value)) {
+                return { ...prev, [field]: list.filter(v => v !== value) };
+            } else {
+                return { ...prev, [field]: [...list, value] };
+            }
+        });
+    };
+
     const handleProfileSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (!formData.platforms.length || !formData.follower_range || !formData.content_types.length || !formData.collaboration_types.length) {
+            toast.error("Please fill out all required multiselect fields.");
+            return;
+        }
+
         setIsSaving(true);
         try {
             const res = await apiFetch("/api/creator/profile", {
@@ -65,7 +97,7 @@ export default function CreatorDashboardPage() {
                 body: JSON.stringify(formData)
             });
             if (res.ok) {
-                toast.success("Profile submitted for verification!");
+                toast.success("Profile submitted successfully! Dashboard Unlocked.");
                 fetchData();
             } else {
                 toast.error("Failed to submit profile");
@@ -115,27 +147,31 @@ export default function CreatorDashboardPage() {
         return <div className="flex justify-center p-12"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>;
     }
 
-    if (!profile?.is_verified) {
+    const isProfileComplete = profile && profile.platforms && profile.platforms.length > 0;
+
+    if (!isProfileComplete) {
         return (
-            <div className="p-6 max-w-2xl mx-auto space-y-6">
+            <div className="p-6 max-w-3xl mx-auto space-y-6">
                 <div className="text-center mb-8">
                     <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-yellow-100 text-yellow-600 mb-4">
                         <Lock className="w-8 h-8" />
                     </div>
-                    <h1 className="text-3xl font-bold tracking-tight">Creator Verification Required</h1>
-                    <p className="text-muted-foreground mt-2">Please complete your profile to unlock the Creator Dashboard and apply for campaigns.</p>
+                    <h1 className="text-3xl font-bold tracking-tight">Creator Dashboard Locked</h1>
+                    <p className="text-muted-foreground mt-2">Submit your creator profile details to unlock campaigns immediately.</p>
                 </div>
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Profile Details</CardTitle>
-                        <CardDescription>Our team will review your profile and follower base.</CardDescription>
+                <Card className="shadow-lg border-primary/20">
+                    <CardHeader className="bg-gray-50 border-b">
+                        <CardTitle>Creator Profile Registration</CardTitle>
+                        <CardDescription>Tell us about your audience and content style.</CardDescription>
                     </CardHeader>
-                    <CardContent>
-                        <form onSubmit={handleProfileSubmit} className="space-y-4">
-                            <div className="space-y-4 border p-4 rounded-md bg-gray-50/50">
+                    <CardContent className="pt-6">
+                        <form onSubmit={handleProfileSubmit} className="space-y-8">
+                            
+                            {/* Profile Links */}
+                            <div className="space-y-4 border p-5 rounded-lg bg-white shadow-sm">
                                 <div className="flex items-center justify-between">
-                                    <Label>Profile URLs (Instagram, YouTube, etc.)</Label>
+                                    <Label className="text-base font-bold">Profile URLs</Label>
                                     <Button type="button" variant="outline" size="sm" onClick={() => setFormData({...formData, profile_urls: [...formData.profile_urls, ""]})}>
                                         + Add Link
                                     </Button>
@@ -150,7 +186,7 @@ export default function CreatorDashboardPage() {
                                                 setFormData({...formData, profile_urls: newUrls});
                                             }} 
                                             required 
-                                            placeholder="https://instagram.com/yourhandle" 
+                                            placeholder="e.g. https://instagram.com/yourhandle" 
                                             className="flex-1"
                                         />
                                         {formData.profile_urls.length > 1 && (
@@ -162,20 +198,73 @@ export default function CreatorDashboardPage() {
                                     </div>
                                 ))}
                             </div>
-                            <div className="space-y-2">
-                                <Label>Follower Count</Label>
-                                <Input type="number" value={formData.follower_count} onChange={e => setFormData({...formData, follower_count: e.target.value})} required placeholder="e.g. 15000" />
+
+                            {/* Platforms */}
+                            <div className="space-y-3">
+                                <Label className="text-base font-bold">Platforms <span className="text-red-500">*</span></Label>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                    {PLATFORMS.map(p => (
+                                        <div key={p} className="flex items-center space-x-2 bg-gray-50 p-3 rounded border">
+                                            <Checkbox 
+                                                id={`plat-${p}`} 
+                                                checked={formData.platforms.includes(p)}
+                                                onCheckedChange={() => handleCheckboxChange('platforms', p)}
+                                            />
+                                            <Label htmlFor={`plat-${p}`} className="cursor-pointer">{p}</Label>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label>Content Category</Label>
-                                <Input value={formData.content_category} onChange={e => setFormData({...formData, content_category: e.target.value})} required placeholder="e.g. Fashion, Tech, Lifestyle" />
+
+                            {/* Follower Range */}
+                            <div className="space-y-3">
+                                <Label className="text-base font-bold">Follower Range <span className="text-red-500">*</span></Label>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                    {FOLLOWER_RANGES.map(r => (
+                                        <div key={r} className="flex items-center space-x-2 bg-gray-50 p-3 rounded border cursor-pointer hover:bg-gray-100" onClick={() => setFormData({...formData, follower_range: r})}>
+                                            <input type="radio" checked={formData.follower_range === r} readOnly className="w-4 h-4 text-primary" />
+                                            <Label className="cursor-pointer">{r}</Label>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="space-y-2">
-                                <Label>Average Engagement Rate (%)</Label>
-                                <Input type="number" step="0.1" value={formData.engagement_rate} onChange={e => setFormData({...formData, engagement_rate: e.target.value})} placeholder="e.g. 4.5" />
+
+                            {/* Content Types */}
+                            <div className="space-y-3">
+                                <Label className="text-base font-bold">Content Type <span className="text-red-500">*</span></Label>
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    {CONTENT_TYPES.map(c => (
+                                        <div key={c} className="flex items-center space-x-2 bg-gray-50 p-3 rounded border">
+                                            <Checkbox 
+                                                id={`cont-${c}`} 
+                                                checked={formData.content_types.includes(c)}
+                                                onCheckedChange={() => handleCheckboxChange('content_types', c)}
+                                            />
+                                            <Label htmlFor={`cont-${c}`} className="cursor-pointer">{c}</Label>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                            <Button type="submit" className="w-full" disabled={isSaving}>
-                                {isSaving ? "Saving..." : "Submit for Verification"}
+
+                            {/* Collaboration Types */}
+                            <div className="space-y-3">
+                                <Label className="text-base font-bold">Collaboration Type <span className="text-red-500">*</span></Label>
+                                <div className="flex gap-4">
+                                    {COLLABORATION_TYPES.map(c => (
+                                        <div key={c} className="flex items-center space-x-2 bg-gray-50 p-3 rounded border w-40">
+                                            <Checkbox 
+                                                id={`collab-${c}`} 
+                                                checked={formData.collaboration_types.includes(c)}
+                                                onCheckedChange={() => handleCheckboxChange('collaboration_types', c)}
+                                            />
+                                            <Label htmlFor={`collab-${c}`} className="cursor-pointer">{c}</Label>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <Button type="submit" className="w-full text-lg h-12" disabled={isSaving}>
+                                {isSaving ? "Submitting..." : "Submit & Unlock Dashboard"}
                             </Button>
                         </form>
                     </CardContent>
@@ -185,61 +274,76 @@ export default function CreatorDashboardPage() {
     }
 
     return (
-        <div className="p-6 max-w-6xl mx-auto space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight text-gray-900">Creator Dashboard</h1>
-                <p className="text-muted-foreground mt-1 flex items-center">
-                    <CheckCircle className="w-4 h-4 text-green-500 mr-2" /> 
-                    Verified Creator Profile • {profile.category_tier || 'Standard'} Tier
-                </p>
+        <div className="p-6 max-w-7xl mx-auto space-y-8">
+            <div className="flex justify-between items-end">
+                <div>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">Creator Deals</h1>
+                    <p className="text-muted-foreground mt-1 flex items-center">
+                        <CheckCircle className="w-4 h-4 text-green-500 mr-2" /> 
+                        Profile Active • {profile.category_tier || 'Standard'} Tier
+                    </p>
+                </div>
             </div>
-
-            <h2 className="text-xl font-bold border-b pb-2">Available Campaigns</h2>
             
             {activities.length === 0 ? (
-                <div className="text-center p-12 bg-white rounded-lg border border-dashed text-gray-500">No campaigns available right now.</div>
+                <div className="text-center p-12 bg-white rounded-2xl shadow-sm border text-gray-500">No creator campaigns available right now.</div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {activities.map(activity => {
                         const myApp = activity.applications[0];
                         
                         return (
-                            <Card key={activity.id} className="flex flex-col border-primary/10 hover:border-primary/30 transition-colors">
-                                <CardHeader className="bg-gray-50 border-b pb-4">
-                                    <div className="flex justify-between items-start">
-                                        <CardTitle className="text-xl">{activity.title}</CardTitle>
-                                        <div className="flex items-center text-green-600 font-bold bg-green-50 px-3 py-1 rounded-full text-sm">
-                                            <DollarSign className="w-4 h-4 mr-1" /> {activity.reward_amount}
-                                        </div>
+                            <Card key={activity.id} className="overflow-hidden flex flex-col relative rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                                {/* Top Right Badge */}
+                                <div className="absolute top-4 right-0 z-10 bg-green-600 text-white font-bold text-xs px-3 py-1.5 rounded-l-lg shadow-sm">
+                                    REWARD ₹{activity.reward_amount}
+                                </div>
+                                
+                                {/* Image Section (Placeholder gradient for Activities) */}
+                                <div className="bg-gradient-to-br from-indigo-50 to-purple-50 h-48 flex flex-col items-center justify-center relative group p-4 border-b">
+                                    <ImageIcon className="w-12 h-12 text-indigo-200 mb-2" />
+                                    <span className="text-indigo-400 font-semibold uppercase tracking-widest text-xs">Creator Collab</span>
+                                </div>
+
+                                <CardContent className="flex-1 p-5 space-y-4 bg-white flex flex-col">
+                                    <div>
+                                        <Badge variant="outline" className="text-indigo-600 border-indigo-200 bg-indigo-50 font-semibold mb-3 rounded-md px-3">
+                                            CAMPAIGN
+                                        </Badge>
+                                        <h3 className="font-bold text-lg leading-tight line-clamp-2 text-slate-900">{activity.title}</h3>
                                     </div>
-                                </CardHeader>
-                                <CardContent className="flex-1 flex flex-col pt-4 space-y-4">
-                                    <p className="text-sm text-gray-600">{activity.description}</p>
-                                    <div className="bg-gray-50 p-3 rounded text-sm">
-                                        <p className="font-semibold mb-1">Requirements:</p>
-                                        <p className="text-gray-600 whitespace-pre-wrap">{activity.requirements}</p>
+                                    
+                                    <div className="text-sm text-slate-600 line-clamp-3">
+                                        {activity.description}
                                     </div>
 
-                                    <div className="mt-auto pt-4">
+                                    <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-xs">
+                                        <p className="font-bold text-slate-900 mb-1">Requirements:</p>
+                                        <p className="text-slate-600 line-clamp-3">{activity.requirements}</p>
+                                    </div>
+
+                                    <div className="mt-auto pt-4 border-t border-slate-50">
                                         {!myApp ? (
-                                            <Button className="w-full" onClick={() => handleApply(activity.id)}>Apply for Campaign</Button>
+                                            <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white" onClick={() => handleApply(activity.id)}>
+                                                Apply Now
+                                            </Button>
                                         ) : myApp.status === 'PENDING' ? (
                                             <Button className="w-full" variant="secondary" disabled>Application Pending</Button>
                                         ) : myApp.status === 'SHORTLISTED' ? (
-                                            <div className="space-y-3 bg-blue-50 p-4 rounded-lg border border-blue-100">
-                                                <p className="text-sm font-semibold text-blue-800 flex items-center"><CheckCircle className="w-4 h-4 mr-2"/> You've been Shortlisted!</p>
-                                                <p className="text-xs text-blue-600">Complete the activity and submit your reel link.</p>
+                                            <div className="space-y-3 bg-blue-50 p-4 rounded-xl border border-blue-100">
+                                                <p className="text-sm font-bold text-blue-900 flex items-center"><CheckCircle className="w-4 h-4 mr-2"/> Shortlisted!</p>
+                                                <p className="text-xs text-blue-700 font-medium">Submit your final reel/post link here.</p>
                                                 <div className="flex gap-2">
-                                                    <Input placeholder="Instagram Reel URL" value={reelLink} onChange={e => setReelLink(e.target.value)} />
-                                                    <Button onClick={() => handleSubmitReel(myApp.id)}><Upload className="w-4 h-4" /></Button>
+                                                    <Input placeholder="URL" className="h-9 text-xs" value={reelLink} onChange={e => setReelLink(e.target.value)} />
+                                                    <Button size="sm" onClick={() => handleSubmitReel(myApp.id)}><Upload className="w-4 h-4" /></Button>
                                                 </div>
                                             </div>
                                         ) : myApp.status === 'SUBMITTED' ? (
-                                            <Button className="w-full bg-yellow-100 text-yellow-800 border-yellow-200" variant="outline" disabled>Reel Under Review</Button>
+                                            <Button className="w-full bg-yellow-100 text-yellow-800 border-yellow-200 font-bold" variant="outline" disabled>Under Review</Button>
                                         ) : myApp.status === 'APPROVED' ? (
-                                            <Button className="w-full bg-green-100 text-green-800 border-green-200" variant="outline" disabled>Approved & Paid!</Button>
+                                            <Button className="w-full bg-green-100 text-green-800 border-green-200 font-bold" variant="outline" disabled>Approved & Paid!</Button>
                                         ) : (
-                                            <Button className="w-full bg-red-100 text-red-800 border-red-200" variant="outline" disabled>Application Rejected</Button>
+                                            <Button className="w-full bg-red-100 text-red-800 border-red-200 font-bold" variant="outline" disabled>Rejected</Button>
                                         )}
                                     </div>
                                 </CardContent>

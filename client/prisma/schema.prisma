@@ -318,17 +318,21 @@ model CustomRecord {
 }
 
 model CreatorProfile {
-  id               String   @id @default(uuid())
-  user_id          String   @unique
-  user             User     @relation(fields: [user_id], references: [id])
-  profile_urls     String[]
-  follower_count   Int      @default(0)
-  content_category String?
-  engagement_rate  Float?
-  category_tier    String?  // Nano, Micro, Macro, etc.
-  is_verified      Boolean  @default(false)
-  created_at       DateTime @default(now())
-  updated_at       DateTime @updatedAt
+  id                  String   @id @default(uuid())
+  user_id             String   @unique
+  user                User     @relation(fields: [user_id], references: [id])
+  profile_urls        String[]
+  platforms           String[]
+  follower_range      String?
+  content_types       String[]
+  collaboration_types String[]
+  follower_count      Int      @default(0)
+  content_category    String?
+  engagement_rate     Float?
+  category_tier       String?  // Nano, Micro, Macro, etc.
+  is_verified         Boolean  @default(false)
+  created_at          DateTime @default(now())
+  updated_at          DateTime @updatedAt
 }
 
 model Activity {

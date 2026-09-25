@@ -3,7 +3,7 @@ import prisma from '@/lib/prisma';
 import { requireRole } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
-    const session = requireRole(req, ['CREATOR']);
+    const session = requireRole(req, ['CREATOR', 'CUSTOMER']);
     if (session instanceof NextResponse) return session;
 
     try {
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-    const session = requireRole(req, ['CREATOR']);
+    const session = requireRole(req, ['CREATOR', 'CUSTOMER']);
     if (session instanceof NextResponse) return session;
 
     try {
@@ -37,6 +37,10 @@ export async function POST(req: NextRequest) {
             where: { user_id: session.userId },
             update: {
                 profile_urls: body.profile_urls || [],
+                platforms: body.platforms || [],
+                follower_range: body.follower_range || null,
+                content_types: body.content_types || [],
+                collaboration_types: body.collaboration_types || [],
                 follower_count: parseInt(body.follower_count) || 0,
                 content_category: body.content_category,
                 engagement_rate: parseFloat(body.engagement_rate) || 0,
@@ -44,6 +48,10 @@ export async function POST(req: NextRequest) {
             create: {
                 user_id: session.userId,
                 profile_urls: body.profile_urls || [],
+                platforms: body.platforms || [],
+                follower_range: body.follower_range || null,
+                content_types: body.content_types || [],
+                collaboration_types: body.collaboration_types || [],
                 follower_count: parseInt(body.follower_count) || 0,
                 content_category: body.content_category,
                 engagement_rate: parseFloat(body.engagement_rate) || 0,

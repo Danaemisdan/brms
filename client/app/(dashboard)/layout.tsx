@@ -16,6 +16,7 @@ const brandNav = [
 
 const customerNav = [
     { label: "Deals", href: "/customer" },
+    { label: "Creator Deals", href: "/creator" },
     { label: "Track order status", href: "/customer/submissions" },
     { label: "Tasks & Offers", href: "/customer/tasks" },
     { label: "Payment Info", href: "/customer/payment-info" },
@@ -50,8 +51,10 @@ const adminNav = [
 function getNav(pathname: string) {
     if (pathname.startsWith("/admin")) return { nav: adminNav, title: "Admin Panel" };
     if (pathname.startsWith("/brand")) return { nav: brandNav, title: "Brand Panel" };
-    if (pathname.startsWith("/creator")) return { nav: creatorNav, title: "Creator Panel" };
-    if (pathname.startsWith("/customer")) return { nav: customerNav, title: "Customer panel" };
+    // If we are on /creator, we still want to show the customerNav so they don't lose their sidebar context
+    // because any customer can access this page now.
+    if (pathname.startsWith("/creator")) return { nav: customerNav, title: "Customer Panel" };
+    if (pathname.startsWith("/customer")) return { nav: customerNav, title: "Customer Panel" };
     return { nav: [], title: "Dashboard" };
 }
 
@@ -104,7 +107,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
             return;
         }
-        if (pathname.startsWith("/creator") && role !== "CREATOR") {
+        if (pathname.startsWith("/creator") && role !== "CREATOR" && role !== "CUSTOMER") {
             router.push(`/login?returnUrl=${encodeURIComponent(pathname)}`);
             return;
         }
