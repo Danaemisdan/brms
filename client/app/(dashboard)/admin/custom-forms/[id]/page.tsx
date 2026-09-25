@@ -149,14 +149,10 @@ export default function CustomFormEntryPage() {
                                 />
                             ) : field.type === 'image' ? (
                                 <div>
-                                    {formData[field.name] ? (
-                                        <div className="relative rounded-md overflow-hidden border h-48 bg-gray-50 w-full md:w-1/2">
-                                            <img src={formData[field.name]} className="w-full h-full object-contain" />
-                                            <Button variant="destructive" size="sm" className="absolute top-2 right-2" onClick={() => handleInputChange(field.name, "")}>Remove</Button>
-                                        </div>
-                                    ) : (
-                                        <ImageUpload onFilesAdded={(files) => handleImageUpload(field.name, files)} />
-                                    )}
+                                    <ImageUpload 
+                                        value={formData[field.name] || ""}
+                                        onChange={(base64) => handleInputChange(field.name, base64)} 
+                                    />
                                 </div>
                             ) : (
                                 <Input 

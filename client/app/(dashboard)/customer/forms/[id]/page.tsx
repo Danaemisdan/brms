@@ -150,20 +150,11 @@ export default function CustomerFormSubmitPage({ params }: { params: Promise<{ i
                                 )}
 
                                 {field.type === 'image' && (
-                                    <div className="mt-2 border rounded-md p-4 bg-white/5">
-                                        {formData[field.id] ? (
-                                            <div className="relative inline-block">
-                                                <img src={formData[field.id]} className="h-32 object-contain rounded border bg-white" />
-                                                <Button 
-                                                    variant="destructive" 
-                                                    size="sm" 
-                                                    className="absolute -top-2 -right-2 h-6 w-6 p-0 rounded-full" 
-                                                    onClick={() => handleFieldChange(field.id, '')}
-                                                >×</Button>
-                                            </div>
-                                        ) : (
-                                            <ImageUpload onFilesAdded={(files) => handleImageUpload(field.id, files)} />
-                                        )}
+                                    <div className="mt-2">
+                                        <ImageUpload 
+                                            value={formData[field.id] || ""}
+                                            onChange={(base64) => handleFieldChange(field.id, base64)} 
+                                        />
                                     </div>
                                 )}
 
