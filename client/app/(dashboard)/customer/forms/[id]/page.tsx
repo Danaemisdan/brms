@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/ui/image-upload";
 
@@ -31,7 +32,7 @@ export default function CustomerFormSubmitPage({ params }: { params: Promise<{ i
                 // Initialize form data
                 const initial: Record<string, any> = {};
                 data.fields?.forEach((f: any) => {
-                    initial[f.id] = f.type === 'number' ? '' : '';
+                    initial[f.id] = f.type === 'multiple_choice' ? [] : (f.type === 'number' ? '' : '');
                 });
                 setFormData(initial);
             }
@@ -70,7 +71,11 @@ export default function CustomerFormSubmitPage({ params }: { params: Promise<{ i
         
         // Validate
         for (const field of formConfig.fields) {
-            if (!formData[field.id]) {
+            if (field.type === 'multiple_choice') {
+                if (!formData[field.id] || formData[field.id].length === 0) {
+                    return toast.error(`Please select at least one option for ${field.name}.`);
+                }
+            } else if (!formData[field.id]) {
                 return toast.error(`Please fill out the ${field.name} field.`);
             }
         }
@@ -159,6 +164,44 @@ export default function CustomerFormSubmitPage({ params }: { params: Promise<{ i
                                         ) : (
                                             <ImageUpload onFilesAdded={(files) => handleImageUpload(field.id, files)} />
                                         )}
+                                    </div>
+                                )}
+
+                                {field.type === 'dropdown' && (
+                                    <select
+                                        value={formData[field.id] || ''}
+                                        onChange={e => handleFieldChange(field.id, e.target.value)}
+                                        required
+                                        className="flex h-12 w-full rounded-md border border-input bg-white/5 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                    >
+                                        <option value="">Select an option...</option>
+                                        {(field.options || "").split(",").map((opt: string) => opt.trim()).filter((o: string) => o).map((opt: string) => (
+                                            <option key={opt} value={opt}>{opt}</option>
+                                        ))}
+                                    </select>
+                                )}
+
+                                {field.type === 'multiple_choice' && (
+                                    <div className="grid gap-3 pt-2">
+                                        {(field.options || "").split(",").map((opt: string) => opt.trim()).filter((o: string) => o).map((opt: string) => (
+                                            <div key={opt} className="flex items-center space-x-3 bg-white/5 p-3 rounded-md border border-input">
+                                                <Checkbox 
+                                                    id={`${field.id}-${opt}`}
+                                                    checked={(formData[field.id] || []).includes(opt)}
+                                                    onCheckedChange={(checked) => {
+                                                        const current = formData[field.id] || [];
+                                                        if (checked) {
+                                                            handleFieldChange(field.id, [...current, opt]);
+                                                        } else {
+                                                            handleFieldChange(field.id, current.filter((v: string) => v !== opt));
+                                                        }
+                                                    }}
+                                                />
+                                                <Label htmlFor={`${field.id}-${opt}`} className="cursor-pointer text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                                    {opt}
+                                                </Label>
+                                            </div>
+                                        ))}
                                     </div>
                                 )}
                             </div>

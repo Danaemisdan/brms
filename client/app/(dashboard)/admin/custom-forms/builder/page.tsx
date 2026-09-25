@@ -16,6 +16,7 @@ interface FieldDef {
     name: string;
     type: string;
     column: string;
+    options?: string;
 }
 
 export default function CustomFormBuilderPage() {
@@ -95,6 +96,9 @@ export default function CustomFormBuilderPage() {
         for (const f of fields) {
             if (!f.name || !f.column) {
                 return toast.error("All fields must have a name and a column letter mapped.");
+            }
+            if ((f.type === "dropdown" || f.type === "multiple_choice") && !f.options) {
+                return toast.error(`Field "${f.name}" requires options to be set.`);
             }
         }
 
@@ -220,6 +224,8 @@ export default function CustomFormBuilderPage() {
                                             <option value="textarea">Text (Long)</option>
                                             <option value="number">Number</option>
                                             <option value="image">Image / File</option>
+                                            <option value="dropdown">Dropdown</option>
+                                            <option value="multiple_choice">Multiple Choice</option>
                                         </select>
                                     </div>
                                     <div className="col-span-2">
@@ -231,6 +237,17 @@ export default function CustomFormBuilderPage() {
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>
+                                    
+                                    {(field.type === 'dropdown' || field.type === 'multiple_choice') && (
+                                        <div className="col-span-1 sm:col-span-12 mt-2 sm:mt-1 sm:ml-2 sm:mr-2 pb-2">
+                                            <Label className="mb-1 block text-sm text-gray-600">Options (comma separated)</Label>
+                                            <Input 
+                                                value={field.options || ""} 
+                                                onChange={(e) => updateField(index, "options", e.target.value)} 
+                                                placeholder="E.g., Option A, Option B, Option C" 
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>

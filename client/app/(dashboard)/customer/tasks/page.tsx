@@ -5,10 +5,18 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/apiFetch";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function CustomerTasksPage() {
     const [tasks, setTasks] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [submitTaskModal, setSubmitTaskModal] = useState<any>(null);
+    const [proofLink, setProofLink] = useState("");
+    const [remarks, setRemarks] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         fetchTasks();
@@ -26,6 +34,32 @@ export default function CustomerTasksPage() {
             toast.error("Failed to load tasks");
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const handleSubmitProof = async () => {
+        if (!proofLink && !remarks) {
+            return toast.error("Please provide a proof link or remarks.");
+        }
+        setIsSubmitting(true);
+        try {
+            const res = await apiFetch(`/api/tasks/${submitTaskModal.id}/submit`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ proof_link: proofLink, remarks })
+            });
+            if (res.ok) {
+                toast.success("Task proof submitted successfully! Our team will review it.");
+                setSubmitTaskModal(null);
+                setProofLink("");
+                setRemarks("");
+            } else {
+                toast.error("Failed to submit task.");
+            }
+        } catch {
+            toast.error("An error occurred.");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -77,16 +111,56 @@ export default function CustomerTasksPage() {
                                         {task.action_text || "Complete Task"}
                                     </Button>
                                 ) : (
-                                    <Button className="w-full font-semibold" onClick={() => {
-                                        toast.success("To complete this task, follow the instructions and submit your proof in a Ticket!");
-                                    }}>
-                                        {task.action_text || "Complete Task"}
+                                    <Button className="w-full font-semibold" onClick={() => setSubmitTaskModal(task)}>
+                                        {task.action_text || "Submit Task Proof"}
                                     </Button>
                                 )}
                             </CardFooter>
                         </Card>
                     ))}
                 </div>
+            )}
+
+            {submitTaskModal && (
+                <Dialog open={!!submitTaskModal} onOpenChange={(open) => !open && setSubmitTaskModal(null)}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle>Submit Task Proof</DialogTitle>
+                            <DialogDescription>
+                                Provide proof of completion for: <strong>{submitTaskModal.title}</strong>
+                            </DialogDescription>
+                        </DialogHeader>
+                        
+                        <div className="space-y-4 py-4">
+                            <div className="space-y-2">
+                                <Label>Proof Link (e.g. Google Drive, Post URL)</Label>
+                                <Input 
+                                    placeholder="https://..." 
+                                    value={proofLink}
+                                    onChange={(e) => setProofLink(e.target.value)}
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <Label>Additional Remarks</Label>
+                                <Textarea 
+                                    placeholder="Any details to help us verify your submission..." 
+                                    value={remarks}
+                                    onChange={(e) => setRemarks(e.target.value)}
+                                    rows={4}
+                                />
+                            </div>
+                        </div>
+
+                        <DialogFooter>
+                            <Button variant="outline" onClick={() => setSubmitTaskModal(null)} disabled={isSubmitting}>
+                                Cancel
+                            </Button>
+                            <Button onClick={handleSubmitProof} disabled={isSubmitting}>
+                                {isSubmitting ? "Submitting..." : "Submit Proof"}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             )}
         </div>
     );
