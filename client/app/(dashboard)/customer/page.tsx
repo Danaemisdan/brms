@@ -13,6 +13,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/ui/image-upload";
 import { Share2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const API_URL = "";
 
@@ -164,7 +165,34 @@ function CustomerDashboardContent() {
     };
 
     if (isLoading) {
-        return <div className="py-12 text-center text-gray-500">Loading open campaigns...</div>;
+        return (
+            <div className="p-6 max-w-[1400px] mx-auto space-y-8 animate-in fade-in duration-500">
+                <div className="flex flex-col gap-2">
+                    <Skeleton className="h-10 w-48" />
+                    <Skeleton className="h-4 w-96" />
+                </div>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    {[...Array(6)].map((_, i) => (
+                        <Card key={i} className="overflow-hidden flex flex-col relative rounded-2xl shadow-sm border border-gray-100 h-[450px]">
+                            <Skeleton className="h-56 w-full rounded-none" />
+                            <CardContent className="flex-1 p-5 space-y-4">
+                                <Skeleton className="h-6 w-24 rounded-full" />
+                                <Skeleton className="h-4 w-32" />
+                                <Skeleton className="h-6 w-full" />
+                                <div className="grid grid-cols-2 gap-3 mt-4">
+                                    <Skeleton className="h-16 w-full rounded-xl" />
+                                    <Skeleton className="h-16 w-full rounded-xl" />
+                                </div>
+                                <div className="flex gap-2 mt-auto pt-4">
+                                    <Skeleton className="h-10 flex-1 rounded-md" />
+                                    <Skeleton className="h-10 flex-1 rounded-md" />
+                                </div>
+                            </CardContent>
+                        </Card>
+                    ))}
+                </div>
+            </div>
+        );
     }
 
     return (

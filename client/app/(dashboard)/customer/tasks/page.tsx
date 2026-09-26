@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Share2 } from "lucide-react";
 import { useSearchParams } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function CustomerTasksPage() {
     const searchParams = useSearchParams();
@@ -90,7 +91,24 @@ export default function CustomerTasksPage() {
             </div>
 
             {isLoading ? (
-                <div className="flex justify-center p-12"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-in fade-in duration-500">
+                    {[...Array(6)].map((_, i) => (
+                        <Card key={i} className="overflow-hidden flex flex-col h-[350px]">
+                            <Skeleton className="h-48 w-full rounded-none" />
+                            <CardHeader className="pb-2">
+                                <Skeleton className="h-6 w-3/4" />
+                            </CardHeader>
+                            <CardContent className="flex-1 pb-4">
+                                <Skeleton className="h-4 w-full mb-2" />
+                                <Skeleton className="h-4 w-5/6" />
+                            </CardContent>
+                            <CardFooter className="bg-gray-50 p-4 border-t gap-2 flex">
+                                <Skeleton className="h-10 w-12" />
+                                <Skeleton className="h-10 flex-1" />
+                            </CardFooter>
+                        </Card>
+                    ))}
+                </div>
             ) : tasks.length === 0 ? (
                 <div className="text-center p-12 bg-white rounded-lg border border-dashed">
                     <p className="text-gray-500 text-lg">No tasks are currently available. Check back later!</p>
