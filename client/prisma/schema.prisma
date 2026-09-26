@@ -43,12 +43,12 @@ model User {
   orders          Order[]
   refunds         Refund[]
   notifications   Notification[]
-  managed_vendors Vendor[] @relation("ManagedBy")
+  managed_vendors Vendor[]       @relation("ManagedBy")
   client_profile  Client?
   audit_logs      AuditLog[]
 
-  tickets         Ticket[]  @relation("CustomerTickets")
-  messages        Message[] @relation("SenderMessages")
+  tickets         Ticket[]              @relation("CustomerTickets")
+  messages        Message[]             @relation("SenderMessages")
   custom_records  CustomRecord[]
   creator_profile CreatorProfile?
   activity_apps   ActivityApplication[] @relation("CreatorApplications")
@@ -87,102 +87,111 @@ model Service {
   id          String   @id @default(uuid())
   name        String   @unique
   description String?
-  icon        String?  // lucide icon name
+  icon        String? // lucide icon name
   is_active   Boolean  @default(true)
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  products    Product[]
-  tasks       Task[]
-  forms       CustomForm[]
+  products Product[]
+  tasks    Task[]
+  forms    CustomForm[]
 }
 
 model Product {
-  id            String   @id @default(uuid())
-  client_id     String
-  client        Client   @relation(fields: [client_id], references: [id])
-  service_id    String?
-  service       Service? @relation(fields: [service_id], references: [id])
-  brand         String
-  product_name  String
-  product_image String?
-  product_link  String
-  platform      String   // AMAZON | FLIPKART | MYNTRA
-  real_price    Float?
-  offer_price   Float?
-  refund_amount Float?
-  deal_type     String?  @default("Review Deal")
-  total_slots   Int
-  filled_slots  Int      @default(0)
-  daily_limit   Int      @default(100)
-  deadline      DateTime
-  instructions  String
-  is_public     Boolean  @default(true)
-  target_audience String @default("ALL")
-  status        String   @default("DRAFT")
-  delivery_type String?  @default("ORIGINAL") // ORIGINAL | EXCHANGE
-  exchange_image String?
-  wa_target             String?  @default("all_customers")
-  wa_custom_phones      String?
-  wa_template           String?
-  wa_attachment_url     String?
-  wa_start_date         DateTime?
-  wa_end_date           DateTime?
-  wa_times_per_day      Int?
-  wa_time_1             String?
-  wa_time_2             String?
-  wa_time_3             String?
-  wa_last_sent_at       DateTime?
-  created_at            DateTime @default(now())
+  id                String    @id @default(uuid())
+  client_id         String
+  client            Client    @relation(fields: [client_id], references: [id])
+  service_id        String?
+  service           Service?  @relation(fields: [service_id], references: [id])
+  brand             String
+  product_name      String
+  product_image     String?
+  product_link      String
+  platform          String // AMAZON | FLIPKART | MYNTRA
+  real_price        Float?
+  offer_price       Float?
+  refund_amount     Float?
+  deal_type         String?   @default("Review Deal")
+  total_slots       Int
+  filled_slots      Int       @default(0)
+  daily_limit       Int       @default(100)
+  deadline          DateTime
+  instructions      String
+  is_public         Boolean   @default(true)
+  target_audience   String    @default("ALL")
+  status            String    @default("DRAFT")
+  delivery_type     String?   @default("ORIGINAL") // ORIGINAL | EXCHANGE
+  exchange_image    String?
+  wa_target         String?   @default("all_customers")
+  wa_custom_phones  String?
+  wa_template       String?
+  wa_attachment_url String?
+  wa_start_date     DateTime?
+  wa_end_date       DateTime?
+  wa_times_per_day  Int?
+  wa_time_1         String?
+  wa_time_2         String?
+  wa_time_3         String?
+  wa_last_sent_at   DateTime?
+  created_at        DateTime  @default(now())
 
   orders   Order[]
   invoices Invoice[]
+
+  @@index([is_public])
+  @@index([target_audience])
+  @@index([status])
 }
 
 model AgentTask {
-  id         String   @id @default(uuid())
-  task_type  String   // REVIEW_VERIFY | WHATSAPP_BLAST
-  status     String   @default("PENDING") // PENDING | IN_PROGRESS | COMPLETED | FAILED
-  payload    String
-  result     String?
-  dedupe_key String?  @unique
-  locked_by  String?
-  locked_at  DateTime?
-  attempts   Int      @default(0)
-  available_at DateTime @default(now())
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id           String    @id @default(uuid())
+  task_type    String // REVIEW_VERIFY | WHATSAPP_BLAST
+  status       String    @default("PENDING") // PENDING | IN_PROGRESS | COMPLETED | FAILED
+  payload      String
+  result       String?
+  dedupe_key   String?   @unique
+  locked_by    String?
+  locked_at    DateTime?
+  attempts     Int       @default(0)
+  available_at DateTime  @default(now())
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
 
   @@index([task_type, status, available_at])
 }
 
 model Order {
-  id                           String   @id @default(uuid())
-  order_id                     String   @unique
+  id                           String    @id @default(uuid())
+  order_id                     String    @unique
   user_id                      String
-  user                         User     @relation(fields: [user_id], references: [id])
+  user                         User      @relation(fields: [user_id], references: [id])
   product_id                   String
-  product                      Product  @relation(fields: [product_id], references: [id])
+  product                      Product   @relation(fields: [product_id], references: [id])
   amount                       Float
   profile_name                 String?
   reference_name               String?
   manager_name                 String?
   screenshot_url               String
   screenshot_hash              String?
-  status                       String   @default("SUBMITTED")
-  order_date                   DateTime @default(now())
+  status                       String    @default("SUBMITTED")
+  order_date                   DateTime  @default(now())
   delivery_date                DateTime?
   delivery_screenshot_url      String?
   return_window_screenshot_url String?
   deal_screenshot_url          String?
   remarks                      String?
-  refund_entry                 Boolean  @default(false)
-  issue_flag                   Boolean  @default(false)
-  created_at                   DateTime @default(now())
-  updated_at                   DateTime @updatedAt
+  refund_entry                 Boolean   @default(false)
+  issue_flag                   Boolean   @default(false)
+  created_at                   DateTime  @default(now())
+  updated_at                   DateTime  @updatedAt
 
   review Review?
   refund Refund?
+
+  @@index([user_id])
+  @@index([product_id])
+  @@index([status])
+  @@index([order_id])
 }
 
 model Review {
@@ -235,7 +244,7 @@ model Notification {
   id         String   @id @default(uuid())
   user_id    String
   user       User     @relation(fields: [user_id], references: [id])
-  type       String   // REVIEW_REMINDER | REFUND_REMINDER | CORRECTION | GENERAL
+  type       String // REVIEW_REMINDER | REFUND_REMINDER | CORRECTION | GENERAL
   title      String
   message    String
   channel    String   @default("DASHBOARD")
@@ -265,7 +274,7 @@ model Ticket {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  messages   Message[]
+  messages Message[]
 }
 
 model Message {
@@ -280,44 +289,50 @@ model Message {
 }
 
 model Task {
-  id            String   @id @default(uuid())
-  service_id    String?
-  service       Service? @relation(fields: [service_id], references: [id])
-  title         String
-  description   String
-  image_url     String?
-  action_text   String?
-  action_url    String?
-  reward_amount Float    @default(0)
-  is_public     Boolean  @default(true)
-  target_audience String @default("ALL")
-  created_at    DateTime @default(now())
-  updated_at    DateTime @updatedAt
+  id              String   @id @default(uuid())
+  service_id      String?
+  service         Service? @relation(fields: [service_id], references: [id])
+  title           String
+  description     String
+  image_url       String?
+  action_text     String?
+  action_url      String?
+  reward_amount   Float    @default(0)
+  is_public       Boolean  @default(true)
+  target_audience String   @default("ALL")
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  @@index([is_public])
+  @@index([target_audience])
 }
 
 model CustomForm {
-  id          String   @id @default(uuid())
-  service_id  String?
-  service     Service? @relation(fields: [service_id], references: [id])
-  name        String
-  sheet_name  String
-  fields      Json
-  is_public   Boolean  @default(false)
-  target_audience String @default("ALL")
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id              String   @id @default(uuid())
+  service_id      String?
+  service         Service? @relation(fields: [service_id], references: [id])
+  name            String
+  sheet_name      String
+  fields          Json
+  is_public       Boolean  @default(false)
+  target_audience String   @default("ALL")
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
-  records     CustomRecord[]
+  records CustomRecord[]
+
+  @@index([is_public])
+  @@index([target_audience])
 }
 
 model CustomRecord {
-  id          String     @id @default(uuid())
-  form_id     String
-  form        CustomForm @relation(fields: [form_id], references: [id], onDelete: Cascade)
-  user_id     String?
-  user        User?      @relation(fields: [user_id], references: [id])
-  data        Json
-  created_at  DateTime   @default(now())
+  id         String     @id @default(uuid())
+  form_id    String
+  form       CustomForm @relation(fields: [form_id], references: [id], onDelete: Cascade)
+  user_id    String?
+  user       User?      @relation(fields: [user_id], references: [id])
+  data       Json
+  created_at DateTime   @default(now())
 }
 
 model CreatorProfile {
@@ -332,35 +347,35 @@ model CreatorProfile {
   follower_count      Int      @default(0)
   content_category    String?
   engagement_rate     Float?
-  category_tier       String?  // Nano, Micro, Macro, etc.
+  category_tier       String? // Nano, Micro, Macro, etc.
   is_verified         Boolean  @default(false)
   created_at          DateTime @default(now())
   updated_at          DateTime @updatedAt
 }
 
 model Activity {
-  id             String   @id @default(uuid())
-  title          String
-  description    String
-  requirements   String
-  reward_amount  Float
-  status         String   @default("OPEN") // OPEN | CLOSED
-  deadline       DateTime?
-  created_at     DateTime @default(now())
-  updated_at     DateTime @updatedAt
+  id            String    @id @default(uuid())
+  title         String
+  description   String
+  requirements  String
+  reward_amount Float
+  status        String    @default("OPEN") // OPEN | CLOSED
+  deadline      DateTime?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
 
-  applications   ActivityApplication[]
+  applications ActivityApplication[]
 }
 
 model ActivityApplication {
-  id           String   @id @default(uuid())
+  id           String    @id @default(uuid())
   activity_id  String
-  activity     Activity @relation(fields: [activity_id], references: [id])
+  activity     Activity  @relation(fields: [activity_id], references: [id])
   creator_id   String
-  creator      User     @relation("CreatorApplications", fields: [creator_id], references: [id])
-  status       String   @default("PENDING") // PENDING | SHORTLISTED | SUBMITTED | APPROVED | REJECTED
+  creator      User      @relation("CreatorApplications", fields: [creator_id], references: [id])
+  status       String    @default("PENDING") // PENDING | SHORTLISTED | SUBMITTED | APPROVED | REJECTED
   reel_link    String?
-  applied_at   DateTime @default(now())
+  applied_at   DateTime  @default(now())
   submitted_at DateTime?
   approved_at  DateTime?
 
