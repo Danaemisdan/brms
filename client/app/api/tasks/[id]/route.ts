@@ -23,6 +23,7 @@ export async function PUT(
                 action_url: body.action_url || null,
                 reward_amount: parseFloat(body.reward_amount) || 0,
                 is_public: body.is_public,
+                target_audience: body.target_audience || "ALL",
                 service_id: body.service_id || null,
             }
         });

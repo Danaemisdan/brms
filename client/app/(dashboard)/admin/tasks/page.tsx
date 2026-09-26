@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Pencil, Trash2, CheckCircle2, XCircle } from "lucide-react";
+import { Plus, Pencil, Trash2, CheckCircle2, XCircle, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,6 +25,7 @@ export default function AdminTasksPage() {
     const [description, setDescription] = useState("");
     const [reward, setReward] = useState("0");
     const [isPublic, setIsPublic] = useState(true);
+    const [targetAudience, setTargetAudience] = useState("ALL");
     const [imageStr, setImageStr] = useState<string>("");
     const [serviceId, setServiceId] = useState<string>("");
     const [actionText, setActionText] = useState<string>("");
@@ -69,6 +70,7 @@ export default function AdminTasksPage() {
             setDescription(task.description);
             setReward(task.reward_amount.toString());
             setIsPublic(task.is_public);
+            setTargetAudience(task.target_audience || "ALL");
             setImageStr(task.image_url || "");
             setServiceId(task.service_id || "");
             setActionText(task.action_text || "");
@@ -79,6 +81,7 @@ export default function AdminTasksPage() {
             setDescription("");
             setReward("0");
             setIsPublic(true);
+            setTargetAudience("ALL");
             setImageStr("");
             setServiceId("");
             setActionText("");
@@ -99,6 +102,7 @@ export default function AdminTasksPage() {
                 description,
                 reward_amount: reward,
                 is_public: isPublic,
+                target_audience: targetAudience,
                 image_url: imageStr,
                 service_id: serviceId || null,
                 action_text: actionText || null,
@@ -215,6 +219,13 @@ export default function AdminTasksPage() {
                                     <span className="text-lg font-bold text-green-600">₹{task.reward_amount}</span>
                                 </div>
                                 <div className="flex justify-between items-center gap-2 pt-2 border-t">
+                                    <Button variant="outline" size="sm" onClick={() => {
+                                        const url = `${window.location.origin}/customer/tasks?highlight_task=${task.id}`;
+                                        navigator.clipboard.writeText(url);
+                                        toast.success("Link copied to clipboard!");
+                                    }} className="flex-1" title="Share Task">
+                                        <Share2 className="w-4 h-4" />
+                                    </Button>
                                     <Button variant="outline" size="sm" onClick={() => handleOpenDialog(task)} className="flex-1">
                                         <Pencil className="w-4 h-4 mr-2" /> Edit
                                     </Button>
@@ -246,6 +257,19 @@ export default function AdminTasksPage() {
                         <div className="grid gap-2">
                             <Label htmlFor="reward">Reward Amount (₹)</Label>
                             <Input id="reward" type="number" value={reward} onChange={(e) => setReward(e.target.value)} placeholder="0" />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="targetAudience">Target Audience</Label>
+                            <select 
+                                id="targetAudience"
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                                value={targetAudience}
+                                onChange={(e) => setTargetAudience(e.target.value)}
+                            >
+                                <option value="ALL">All (Customers & Creators)</option>
+                                <option value="CUSTOMER_ONLY">Customers Only</option>
+                                <option value="CREATOR_ONLY">Creators Only</option>
+                            </select>
                         </div>
                         <div className="grid gap-2">
                             <Label htmlFor="service">Assign to Service (Optional)</Label>

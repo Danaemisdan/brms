@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { MultiImageDropzone } from "@/components/ui/multi-image-dropzone";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { MessageCircle, Search, Filter } from "lucide-react";
+import { MessageCircle, Search, Filter, Share2 } from "lucide-react";
 
 const API_URL = ("").replace(/\/+$/, "");
 
@@ -47,6 +47,7 @@ export default function AdminProducts() {
         deadline: "",
         total_slots: "",
         is_public: true, // Defaults to public
+        target_audience: "ALL",
         wa_target: ["all_customers"],
         wa_custom_phones: "",
         wa_template: "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
@@ -192,6 +193,7 @@ export default function AdminProducts() {
             deadline: product.deadline ? new Date(product.deadline).toISOString().split('T')[0] : "",
             total_slots: String(product.total_slots),
             is_public: product.is_public !== false, // defaults to true
+            target_audience: product.target_audience || "ALL",
             wa_target: product.wa_target ? product.wa_target.split(",") : ["all_customers"],
             wa_custom_phones: product.wa_custom_phones || "",
             wa_template: product.wa_template || "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
@@ -529,6 +531,19 @@ export default function AdminProducts() {
                                     {servicesList.map(s => (
                                         <option key={s.id} value={s.id}>{s.name}</option>
                                     ))}
+                                </select>
+                            </div>
+                            <div className="space-y-2 md:col-span-2">
+                                <Label className="text-foreground/60 uppercase tracking-widest text-[10px]">Target Audience <span className="text-red-500">*</span></Label>
+                                <select
+                                    className="h-12 w-full rounded-sm border border-border/10 bg-foreground/40 px-3 text-foreground text-sm font-sans outline-none focus:border-primary/50"
+                                    value={form.target_audience}
+                                    onChange={e => setForm({ ...form, target_audience: e.target.value })}
+                                    required
+                                >
+                                    <option value="ALL">All (Customers & Creators)</option>
+                                    <option value="CUSTOMER_ONLY">Customers Only</option>
+                                    <option value="CREATOR_ONLY">Creators Only</option>
                                 </select>
                             </div>
                             <div className="space-y-2 md:col-span-2">
@@ -947,6 +962,13 @@ export default function AdminProducts() {
                                                 }}
                                             >
                                                 <MessageCircle className="w-4 h-4 mr-1" /> WhatsApp
+                                            </Button>
+                                            <Button variant="outline" size="sm" onClick={() => {
+                                                const url = `${window.location.origin}/customer?highlight_product=${p.id}`;
+                                                navigator.clipboard.writeText(url);
+                                                toast.success("Link copied to clipboard!");
+                                            }}>
+                                                <Share2 className="w-4 h-4 mr-1" /> Share
                                             </Button>
                                             <Button variant="outline" size="sm" onClick={() => handleEditClick(p)}>Edit</Button>
                                             <Button variant="destructive" size="sm" onClick={() => handleDelete(p.id)}>Delete</Button>

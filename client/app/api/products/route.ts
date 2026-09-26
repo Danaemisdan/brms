@@ -5,11 +5,16 @@ import { requireAuth, requireRole } from '@/lib/auth';
 import { syncProductToSheet } from '@/lib/services/googleSheets.service';
 
 export async function GET(req: NextRequest) {
-    const session = requireRole(req, ['ADMIN', 'VENDOR', 'CUSTOMER']);
+    const session = requireRole(req, ['ADMIN', 'VENDOR', 'CUSTOMER', 'CREATOR']);
     if (session instanceof NextResponse) return session;
 
     try {
-        const whereClause = session.role === "CUSTOMER" ? { status: 'ACTIVE', is_public: true } : {};
+        let whereClause: any = {};
+        if (session.role === "CUSTOMER") {
+            whereClause = { status: 'ACTIVE', is_public: true, target_audience: { in: ['ALL', 'CUSTOMER_ONLY'] } };
+        } else if (session.role === "CREATOR") {
+            whereClause = { status: 'ACTIVE', is_public: true, target_audience: { in: ['ALL', 'CREATOR_ONLY'] } };
+        }
 
         const products = await prisma.product.findMany({
             where: whereClause,
@@ -48,6 +53,7 @@ export async function POST(req: NextRequest) {
             deadline,
             instructions,
             is_public,
+            target_audience,
             delivery_type,
             exchange_image,
             wa_target,
@@ -105,6 +111,7 @@ export async function POST(req: NextRequest) {
                 deadline: new Date(deadline),
                 instructions,
                 is_public: is_public !== undefined ? Boolean(is_public) : true,
+                target_audience: target_audience || "ALL",
                 status: initialStatus,
                 delivery_type: delivery_type || "ORIGINAL",
                 exchange_image: exchange_image || null,

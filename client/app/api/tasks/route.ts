@@ -1,15 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
-import { requireRole } from '@/lib/auth';
+import { requireRole, getSession } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const isPublic = searchParams.get('is_public');
         
-        let whereClause = {};
+        let whereClause: any = {};
         if (isPublic === 'true') {
-            whereClause = { is_public: true };
+            const session = getSession(req);
+            const targetIn = ['ALL'];
+            if (session?.role === 'CUSTOMER') targetIn.push('CUSTOMER_ONLY');
+            if (session?.role === 'CREATOR') targetIn.push('CREATOR_ONLY');
+            
+            whereClause = { 
+                is_public: true,
+                target_audience: { in: targetIn }
+            };
         }
 
         const tasks = await prisma.task.findMany({
@@ -40,6 +48,7 @@ export async function POST(req: NextRequest) {
                 action_url: body.action_url || null,
                 reward_amount: parseFloat(body.reward_amount) || 0,
                 is_public: body.is_public ?? true,
+                target_audience: body.target_audience || "ALL",
                 service_id: body.service_id || null,
             }
         });

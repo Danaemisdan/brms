@@ -31,6 +31,7 @@ export default function CustomFormBuilderPage() {
     const [sheetName, setSheetName] = useState("");
     const [fields, setFields] = useState<FieldDef[]>([]);
     const [serviceId, setServiceId] = useState<string>("");
+    const [targetAudience, setTargetAudience] = useState("ALL");
     const [services, setServices] = useState<any[]>([]);
 
     useEffect(() => {
@@ -62,6 +63,7 @@ export default function CustomFormBuilderPage() {
                 setSheetName(data.sheet_name);
                 setFields(data.fields || []);
                 setServiceId(data.service_id || "");
+                setTargetAudience(data.target_audience || "ALL");
             }
         } catch (error) {
             toast.error("Failed to load form details");
@@ -108,6 +110,7 @@ export default function CustomFormBuilderPage() {
                 name: formName,
                 sheet_name: sheetName,
                 fields: fields,
+                target_audience: targetAudience,
                 service_id: serviceId || null,
             };
 
@@ -180,6 +183,18 @@ export default function CustomFormBuilderPage() {
                             {services.map(s => (
                                 <option key={s.id} value={s.id}>{s.name}</option>
                             ))}
+                        </select>
+                    </div>
+                    <div className="grid gap-2">
+                        <Label>Target Audience</Label>
+                        <select 
+                            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background"
+                            value={targetAudience}
+                            onChange={(e) => setTargetAudience(e.target.value)}
+                        >
+                            <option value="ALL">All (Customers & Creators)</option>
+                            <option value="CUSTOMER_ONLY">Customers Only</option>
+                            <option value="CREATOR_ONLY">Creators Only</option>
                         </select>
                     </div>
                 </CardContent>

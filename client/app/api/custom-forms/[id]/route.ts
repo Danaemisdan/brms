@@ -6,7 +6,7 @@ export async function GET(
     req: NextRequest,
     context: { params: Promise<{ id: string }> }
 ) {
-    const session = requireRole(req, ['ADMIN']);
+    const session = requireRole(req, ['ADMIN', 'CUSTOMER', 'CREATOR']);
     if (session instanceof NextResponse) return session;
 
     try {
@@ -14,13 +14,25 @@ export async function GET(
         const form = await prisma.customForm.findUnique({
             where: { id },
             include: {
-                records: {
+                records: session.role === 'ADMIN' ? {
                     orderBy: { created_at: 'desc' }
-                }
+                } : false
             }
         });
         
         if (!form) return NextResponse.json({ error: 'Form not found' }, { status: 404 });
+
+        if (session.role !== 'ADMIN') {
+            if (!form.is_public) {
+                return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+            }
+            if (form.target_audience === 'CUSTOMER_ONLY' && session.role !== 'CUSTOMER') {
+                return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+            }
+            if (form.target_audience === 'CREATOR_ONLY' && session.role !== 'CREATOR') {
+                return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+            }
+        }
 
         return NextResponse.json(form);
     } catch (error) {
@@ -47,6 +59,7 @@ export async function PUT(
                 sheet_name: body.sheet_name,
                 fields: body.fields,
                 is_public: body.is_public,
+                target_audience: body.target_audience || "ALL",
                 service_id: body.service_id || null,
             }
         });

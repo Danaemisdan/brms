@@ -118,6 +118,7 @@ model Product {
   deadline      DateTime
   instructions  String
   is_public     Boolean  @default(true)
+  target_audience String @default("ALL")
   status        String   @default("DRAFT")
   delivery_type String?  @default("ORIGINAL") // ORIGINAL | EXCHANGE
   exchange_image String?
@@ -289,6 +290,7 @@ model Task {
   action_url    String?
   reward_amount Float    @default(0)
   is_public     Boolean  @default(true)
+  target_audience String @default("ALL")
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 }
@@ -301,6 +303,7 @@ model CustomForm {
   sheet_name  String
   fields      Json
   is_public   Boolean  @default(false)
+  target_audience String @default("ALL")
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 

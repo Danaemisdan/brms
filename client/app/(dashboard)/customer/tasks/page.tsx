@@ -9,8 +9,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Share2 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 export default function CustomerTasksPage() {
+    const searchParams = useSearchParams();
     const [tasks, setTasks] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [submitTaskModal, setSubmitTaskModal] = useState<any>(null);
@@ -21,6 +24,22 @@ export default function CustomerTasksPage() {
     useEffect(() => {
         fetchTasks();
     }, []);
+
+    useEffect(() => {
+        const highlightTaskId = searchParams.get("highlight_task");
+        if (highlightTaskId && tasks.length > 0) {
+            setTimeout(() => {
+                const el = document.getElementById(`task-${highlightTaskId}`);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.classList.add("ring-4", "ring-primary", "ring-offset-2", "scale-[1.02]", "transition-all", "duration-500");
+                    setTimeout(() => {
+                        el.classList.remove("ring-4", "ring-primary", "ring-offset-2", "scale-[1.02]");
+                    }, 3000);
+                }
+            }, 500);
+        }
+    }, [searchParams, tasks]);
 
     const fetchTasks = async () => {
         setIsLoading(true);
@@ -79,7 +98,7 @@ export default function CustomerTasksPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {tasks.map(task => (
-                        <Card key={task.id} className="overflow-hidden flex flex-col hover:shadow-lg transition-shadow border-gray-200">
+                        <Card id={`task-${task.id}`} key={task.id} className="overflow-hidden flex flex-col hover:shadow-lg transition-shadow border-gray-200">
                             {task.image_url ? (
                                 <div className="h-48 w-full bg-gray-100 overflow-hidden relative border-b">
                                     <img src={task.image_url} alt={task.title} className="object-cover w-full h-full" />
@@ -105,13 +124,20 @@ export default function CustomerTasksPage() {
                             <CardContent className="flex-1 pb-4">
                                 <p className="text-gray-600 text-sm whitespace-pre-line">{task.description}</p>
                             </CardContent>
-                            <CardFooter className="pt-0 bg-gray-50 p-4 border-t">
+                            <CardFooter className="pt-0 bg-gray-50 p-4 border-t gap-2 flex">
+                                <Button variant="outline" className="px-3 border-primary/20 text-primary hover:bg-primary/5" onClick={() => {
+                                    const url = `${window.location.origin}/customer/tasks?highlight_task=${task.id}`;
+                                    navigator.clipboard.writeText(url);
+                                    toast.success("Link copied to clipboard!");
+                                }} title="Share Task">
+                                    <Share2 className="w-4 h-4" />
+                                </Button>
                                 {task.action_url ? (
-                                    <Button className="w-full font-semibold" onClick={() => window.open(task.action_url, '_blank')}>
+                                    <Button className="flex-1 font-semibold" onClick={() => window.open(task.action_url, '_blank')}>
                                         {task.action_text || "Complete Task"}
                                     </Button>
                                 ) : (
-                                    <Button className="w-full font-semibold" onClick={() => setSubmitTaskModal(task)}>
+                                    <Button className="flex-1 font-semibold" onClick={() => setSubmitTaskModal(task)}>
                                         {task.action_text || "Submit Task Proof"}
                                     </Button>
                                 )}

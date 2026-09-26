@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { Share2 } from "lucide-react";
 
 const API_URL = "";
 
@@ -49,7 +50,21 @@ function CustomerDashboardContent() {
                 openSubmitModal(prod);
             }
         }
-    }, [autoSubmitId, products]);
+        
+        const highlightProductId = searchParams.get("highlight_product");
+        if (highlightProductId && products.length > 0) {
+            setTimeout(() => {
+                const el = document.getElementById(`product-${highlightProductId}`);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    el.classList.add("ring-4", "ring-red-500", "ring-offset-2", "scale-[1.02]", "transition-all", "duration-500");
+                    setTimeout(() => {
+                        el.classList.remove("ring-4", "ring-red-500", "ring-offset-2", "scale-[1.02]");
+                    }, 3000);
+                }
+            }, 500); // small delay to ensure DOM is ready
+        }
+    }, [autoSubmitId, searchParams, products]);
 
     const fetchPublicProducts = async () => {
         try {
@@ -169,7 +184,7 @@ function CustomerDashboardContent() {
                         const images = parseImages(product.product_image);
                         return (
                             
-                            <Card key={product.id} className="overflow-hidden flex flex-col relative rounded-2xl shadow-sm border border-gray-100">
+                            <Card id={`product-${product.id}`} key={product.id} className="overflow-hidden flex flex-col relative rounded-2xl shadow-sm border border-gray-100">
                                 {/* Top Right Cashback Badge */}
                                 <div className="absolute top-4 right-0 z-10 bg-red-600 text-white font-bold text-xs px-3 py-1.5 rounded-l-lg shadow-sm">
                                     LESS ₹{product.refund_amount} CASHBACK
@@ -236,6 +251,13 @@ function CustomerDashboardContent() {
                                             <Button variant="outline" className="w-full border-red-200 text-red-700 hover:bg-red-50">Buy Now</Button>
                                         </a>
                                         <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white" onClick={() => openSubmitModal(product)}>Submit ID</Button>
+                                        <Button variant="outline" className="border-red-200 text-red-700 hover:bg-red-50 px-3" onClick={() => {
+                                            const url = `${window.location.origin}/customer?highlight_product=${product.id}`;
+                                            navigator.clipboard.writeText(url);
+                                            toast.success("Link copied to clipboard!");
+                                        }} title="Share Deal">
+                                            <Share2 className="w-4 h-4" />
+                                        </Button>
                                     </div>
                                 </CardContent>
                             </Card>

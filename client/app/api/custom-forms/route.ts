@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
                 sheet_name: body.sheet_name,
                 fields: body.fields || [],
                 is_public: body.is_public ?? false,
+                target_audience: body.target_audience || "ALL",
                 service_id: body.service_id || null,
             }
         });

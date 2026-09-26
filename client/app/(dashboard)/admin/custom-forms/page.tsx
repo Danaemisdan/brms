@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Trash2, Edit } from "lucide-react";
+import { Plus, Trash2, Edit, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
@@ -86,6 +86,13 @@ export default function CustomFormsPage() {
                                 </p>
                                 
                                 <div className="flex justify-between items-center gap-2 pt-2 border-t mt-auto" onClick={(e) => e.stopPropagation()}>
+                                    <Button variant="outline" size="sm" onClick={() => {
+                                        const url = `${window.location.origin}/customer/forms/${form.id}`;
+                                        navigator.clipboard.writeText(url);
+                                        toast.success("Link copied to clipboard!");
+                                    }} title="Share Form">
+                                        <Share2 className="w-4 h-4" />
+                                    </Button>
                                     <Link href={`/admin/custom-forms/builder?id=${form.id}`} className="flex-1">
                                         <Button variant="outline" size="sm" className="w-full">
                                             <Edit className="w-4 h-4 mr-2" /> Edit Schema
