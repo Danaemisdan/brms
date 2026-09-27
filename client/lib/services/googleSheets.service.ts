@@ -475,46 +475,103 @@ export async function pullUpdatesFromSheet() {
         // 1. Pull Orders from Q2 General Order
         const ordersRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: `'Q2 General Order'!A2:W` });
         const orderRows = ordersRes.data.values || [];
+        
+        // Fetch existing orders in one go to prevent massive DB calls
+        const allOrderIds = orderRows.map(r => r[4]).filter(Boolean);
+        const existingOrders = await prisma.order.findMany({
+            where: { order_id: { in: allOrderIds } },
+            select: { order_id: true, status: true, remarks: true }
+        });
+        const orderMap = new Map(existingOrders.map(o => [o.order_id, o]));
+
+        const updates = [];
         for (const row of orderRows) {
             const orderId = row[4]; // Column E: Order ID
             const sheetStatus = row[21]; // Column V: System Status
             const remarks = row[22]; // Column W: System Remarks
             
             if (orderId && sheetStatus) {
-                const status = mapSystemStatus(sheetStatus);
-                await prisma.order.updateMany({
-                    where: { order_id: orderId },
-                    data: {
-                        status: status,
-                        remarks: remarks || null
-                    }
-                });
+                const newStatus = mapSystemStatus(sheetStatus);
+                const existing = orderMap.get(orderId);
+                
+                // Only update if something actually changed!
+                if (!existing || existing.status !== newStatus || existing.remarks !== (remarks || null)) {
+                    updates.push(
+                        prisma.order.updateMany({
+                            where: { order_id: orderId },
+                            data: {
+                                status: newStatus,
+                                remarks: remarks || null
+                            }
+                        })
+                    );
+                }
             }
+        }
+        
+        if (updates.length > 0) {
+            console.log(`[Google Sheets] Executing ${updates.length} order updates...`);
+            // Run them in transactions of 50 to avoid timeout
+            for (let i = 0; i < updates.length; i += 50) {
+                await prisma.$transaction(updates.slice(i, i + 50));
+            }
+        } else {
+            console.log('[Google Sheets] No order status changes detected.');
         }
 
         // 2. Pull Refunds from Q2 General refund
         const refundsRes = await sheets.spreadsheets.values.get({ spreadsheetId, range: `'Q2 General refund'!A2:Q` });
         const refundRows = refundsRes.data.values || [];
+        
+        const allRefundOrderIds = refundRows.map(r => r[3]).filter(Boolean);
+        const existingOrdersForRefund = await prisma.order.findMany({
+            where: { order_id: { in: allRefundOrderIds } },
+            select: { id: true, order_id: true }
+        });
+        const orderIdToInternalId = new Map(existingOrdersForRefund.map(o => [o.order_id, o.id]));
+        
+        const existingRefunds = await prisma.refund.findMany({
+            where: { order_id: { in: Array.from(orderIdToInternalId.values()) } },
+            select: { order_id: true, status: true, batch_id: true }
+        });
+        const refundMap = new Map(existingRefunds.map(r => [r.order_id, r]));
+
+        const refundUpdates = [];
         for (const row of refundRows) {
-            const orderId = row[3]; // Column D: Order ID
-            // Status is often updated manually in Column O (14). Fallback to Column P (15) if O is empty.
+            const sheetOrderId = row[3]; // Column D: Order ID
             let rawRefundStatus = row[14]; 
             if (!rawRefundStatus || rawRefundStatus.trim() === "") {
                 rawRefundStatus = row[15];
             }
             
-            if (orderId && rawRefundStatus) {
+            if (sheetOrderId && rawRefundStatus) {
                 const refundStatus = mapSystemStatus(rawRefundStatus);
-                const order = await prisma.order.findUnique({ where: { order_id: orderId }, select: { id: true } });
-                if (order) {
-                    await prisma.refund.updateMany({
-                        where: { order_id: order.id },
-                        data: {
-                            status: refundStatus
-                        }
-                    });
+                const internalOrderId = orderIdToInternalId.get(sheetOrderId);
+                
+                if (internalOrderId) {
+                    const existing = refundMap.get(internalOrderId);
+                    // Update only if status changed
+                    if (!existing || existing.status !== refundStatus) {
+                        refundUpdates.push(
+                            prisma.refund.updateMany({
+                                where: { order_id: internalOrderId },
+                                data: {
+                                    status: refundStatus
+                                }
+                            })
+                        );
+                    }
                 }
             }
+        }
+        
+        if (refundUpdates.length > 0) {
+            console.log(`[Google Sheets] Executing ${refundUpdates.length} refund updates...`);
+            for (let i = 0; i < refundUpdates.length; i += 50) {
+                await prisma.$transaction(refundUpdates.slice(i, i + 50));
+            }
+        } else {
+            console.log('[Google Sheets] No refund status changes detected.');
         }
 
         // 3. Pull Products from Matrix
