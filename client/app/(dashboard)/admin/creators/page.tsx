@@ -7,9 +7,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/apiFetch";
 
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+
 export default function AdminCreatorsPage() {
     const [creators, setCreators] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [filterStatus, setFilterStatus] = useState("ALL");
 
     useEffect(() => {
         fetchCreators();
@@ -49,70 +54,110 @@ export default function AdminCreatorsPage() {
         }
     };
 
+    const filteredCreators = creators.filter(c => {
+        const matchesSearch = c.name?.toLowerCase().includes(searchQuery.toLowerCase()) || c.email?.toLowerCase().includes(searchQuery.toLowerCase());
+        if (filterStatus === "VERIFIED") return matchesSearch && c.creator_profile?.is_verified;
+        if (filterStatus === "PENDING") return matchesSearch && !c.creator_profile?.is_verified;
+        return matchesSearch;
+    });
+
     return (
-        <div className="p-6 max-w-6xl mx-auto space-y-6">
+        <div className="p-6 max-w-[1400px] mx-auto space-y-6">
             <h1 className="text-3xl font-bold tracking-tight">Creator Verification</h1>
             <p className="text-muted-foreground">Review and verify creator profiles before they can access the platform.</p>
 
-            {isLoading ? (
-                <div className="flex justify-center p-12"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>
-            ) : creators.length === 0 ? (
-                <div className="text-center p-12 bg-white rounded-lg border">No creators registered yet.</div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {creators.map(creator => {
-                        const profile = creator.creator_profile;
-                        return (
-                            <Card key={creator.id} className={`overflow-hidden border-2 ${profile?.is_verified ? 'border-green-100' : 'border-yellow-100'}`}>
-                                <CardHeader className="pb-2 bg-gray-50 border-b">
-                                    <CardTitle className="text-xl">{creator.name}</CardTitle>
-                                    <p className="text-sm text-gray-500">{creator.mobile} {creator.email && `| ${creator.email}`}</p>
-                                </CardHeader>
-                                <CardContent className="pt-4 space-y-4">
-                                    {profile ? (
-                                        <>
-                                            <div className="grid grid-cols-2 gap-2 text-sm">
-                                                <div className="font-semibold">Category:</div>
-                                                <div>{profile.content_category || 'N/A'}</div>
-                                                <div className="font-semibold">Followers:</div>
-                                                <div>{profile.follower_count.toLocaleString()}</div>
-                                                <div className="font-semibold">Engagement:</div>
-                                                <div>{profile.engagement_rate}%</div>
-                                            </div>
-                                            <div className="flex flex-col gap-1 mt-2">
-                                                {profile.profile_urls && profile.profile_urls.length > 0 ? (
-                                                    profile.profile_urls.map((url: string, idx: number) => (
-                                                        <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-sm hover:underline">
-                                                            Profile Link {idx + 1}
-                                                        </a>
-                                                    ))
-                                                ) : (
-                                                    <span className="text-gray-400 text-sm">No profile links</span>
-                                                )}
-                                            </div>
-                                            <div className="pt-4 border-t flex justify-between items-center">
-                                                {profile.is_verified ? (
-                                                    <span className="text-green-600 flex items-center text-sm font-semibold"><CheckCircle className="w-4 h-4 mr-1"/> Verified ({profile.category_tier})</span>
-                                                ) : (
-                                                    <span className="text-yellow-600 flex items-center text-sm font-semibold"><XCircle className="w-4 h-4 mr-1"/> Pending</span>
-                                                )}
-                                                
-                                                {!profile.is_verified ? (
-                                                    <Button size="sm" onClick={() => handleVerify(creator.id, true, "Standard")}>Verify</Button>
-                                                ) : (
-                                                    <Button size="sm" variant="outline" onClick={() => handleVerify(creator.id, false, "")}>Revoke</Button>
-                                                )}
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <div className="text-sm text-gray-500 text-center py-4">Profile not set up yet</div>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        );
-                    })}
-                </div>
-            )}
+            <Card>
+                <CardHeader className="pb-4">
+                    <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                        <input 
+                            type="text" 
+                            placeholder="Search by name or email..." 
+                            className="flex h-10 w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                        <div className="flex gap-2 w-full md:w-auto">
+                            <Button variant={filterStatus === "ALL" ? "default" : "outline"} onClick={() => setFilterStatus("ALL")} size="sm">All</Button>
+                            <Button variant={filterStatus === "PENDING" ? "default" : "outline"} onClick={() => setFilterStatus("PENDING")} size="sm">Pending</Button>
+                            <Button variant={filterStatus === "VERIFIED" ? "default" : "outline"} onClick={() => setFilterStatus("VERIFIED")} size="sm">Verified</Button>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    {isLoading ? (
+                        <div className="flex justify-center p-12"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>
+                    ) : filteredCreators.length === 0 ? (
+                        <div className="text-center p-12 text-muted-foreground">No creators found.</div>
+                    ) : (
+                        <div className="rounded-md border overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow className="bg-slate-50">
+                                        <TableHead>Creator Details</TableHead>
+                                        <TableHead>Category</TableHead>
+                                        <TableHead>Stats</TableHead>
+                                        <TableHead>Links</TableHead>
+                                        <TableHead>Status</TableHead>
+                                        <TableHead className="text-right">Action</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {filteredCreators.map(creator => {
+                                        const profile = creator.creator_profile;
+                                        return (
+                                            <TableRow key={creator.id}>
+                                                <TableCell>
+                                                    <div className="font-semibold">{creator.name}</div>
+                                                    <div className="text-xs text-muted-foreground">{creator.mobile}</div>
+                                                    <div className="text-xs text-muted-foreground">{creator.email}</div>
+                                                </TableCell>
+                                                <TableCell>
+                                                    {profile?.content_category ? (
+                                                        <Badge variant="secondary">{profile.content_category}</Badge>
+                                                    ) : <span className="text-xs text-muted-foreground">N/A</span>}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {profile ? (
+                                                        <div className="text-xs space-y-1">
+                                                            <div><span className="text-muted-foreground">Followers:</span> {profile.follower_count.toLocaleString()}</div>
+                                                            <div><span className="text-muted-foreground">Engagement:</span> {profile.engagement_rate}%</div>
+                                                        </div>
+                                                    ) : <span className="text-xs text-muted-foreground">N/A</span>}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {profile?.profile_urls && profile.profile_urls.length > 0 ? (
+                                                        <div className="flex flex-col gap-1">
+                                                            {profile.profile_urls.map((url: string, idx: number) => (
+                                                                <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-xs hover:underline truncate max-w-[150px]">
+                                                                    Link {idx + 1}
+                                                                </a>
+                                                            ))}
+                                                        </div>
+                                                    ) : <span className="text-xs text-muted-foreground">None</span>}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {profile?.is_verified ? (
+                                                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100"><CheckCircle className="w-3 h-3 mr-1"/> Verified</Badge>
+                                                    ) : (
+                                                        <Badge variant="outline" className="text-yellow-600 border-yellow-200 bg-yellow-50"><XCircle className="w-3 h-3 mr-1"/> Pending</Badge>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-right">
+                                                    {!profile?.is_verified ? (
+                                                        <Button size="sm" onClick={() => handleVerify(creator.id, true, "Standard")}>Verify</Button>
+                                                    ) : (
+                                                        <Button size="sm" variant="ghost" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleVerify(creator.id, false, "")}>Revoke</Button>
+                                                    )}
+                                                </TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
+                                </TableBody>
+                            </Table>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
         </div>
     );
 }
