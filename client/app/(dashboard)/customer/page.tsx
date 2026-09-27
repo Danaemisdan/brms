@@ -12,8 +12,22 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { Share2 } from "lucide-react";
+import { Share2, ShoppingBag } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { motion } from "framer-motion";
+
+const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+        opacity: 1,
+        transition: { staggerChildren: 0.1 }
+    }
+};
+
+const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
+};
 
 const API_URL = "";
 
@@ -197,101 +211,135 @@ function CustomerDashboardContent() {
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">Active Campaigns</h1>
-                <p className="text-gray-500">Buy these products, upload your order proof, and get refunded after reviewing.</p>
-            </div>
+            <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent">Live Deals</h1>
+                <p className="text-lg text-muted-foreground max-w-2xl mt-1">
+                    Claim these premium products for free after cashback. Hurry, slots fill up fast!
+                </p>
+            </motion.div>
 
             {products.length === 0 ? (
-                <Card className="p-8 text-center text-gray-500">
-                    No active campaigns available at the moment. Please check back later!
-                </Card>
+                <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="text-center p-16 bg-white/60 backdrop-blur-md rounded-3xl border border-white/40 shadow-xl flex flex-col items-center justify-center min-h-[400px]"
+                >
+                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
+                        <ShoppingBag className="w-10 h-10 text-gray-400" />
+                    </div>
+                    <p className="text-2xl font-semibold text-slate-800">No active campaigns right now</p>
+                    <p className="text-muted-foreground mt-2">Check back soon for new premium freebies.</p>
+                </motion.div>
             ) : (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <motion.div 
+                    variants={containerVariants}
+                    initial="hidden"
+                    animate="show"
+                    className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+                >
                     {products.map((product) => {
                         const images = parseImages(product.product_image);
                         return (
-                            
-                            <Card id={`product-${product.id}`} key={product.id} className="overflow-hidden flex flex-col relative rounded-2xl shadow-sm border border-gray-100">
-                                {/* Top Right Cashback Badge */}
-                                <div className="absolute top-4 right-0 z-10 bg-red-600 text-white font-bold text-xs px-3 py-1.5 rounded-l-lg shadow-sm">
-                                    LESS ₹{product.refund_amount} CASHBACK
-                                </div>
-                                
-                                {/* Image Section */}
-                                <div className="bg-gray-50 h-56 flex items-center justify-center relative group p-4">
-                                    {images.length > 0 ? (
-                                        <div className="flex overflow-x-auto w-full h-full snap-x snap-mandatory hide-scrollbar">
-                                            {images.map((img, idx) => (
-                                                <div key={idx} className="w-full h-full flex-shrink-0 snap-center flex items-center justify-center">
-                                                    <img src={img} alt={`${product.product_name} - ${idx + 1}`} className="max-h-full max-w-full object-contain mix-blend-multiply rounded-lg" />
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <span className="text-gray-400">No Image</span>
-                                    )}
-                                    {images.length > 1 && (
-                                        <div className="absolute bottom-2 right-2 bg-foreground/50 text-foreground text-[10px] px-2 py-0.5 rounded-full pointer-events-none">
-                                            {images.length} images (scroll ➡️)
-                                        </div>
-                                    )}
-                                </div>
-
-                                <CardContent className="flex-1 p-5 space-y-4 bg-white flex flex-col">
-                                    <div>
-                                        {/* Category Pill */}
-                                        <Badge variant="outline" className="text-red-600 border-red-200 bg-white hover:bg-red-50 font-semibold mb-3 rounded-md px-3">
-                                            {product.platform?.toUpperCase() || "DEAL"}
-                                        </Badge>
-                                        
-                                        {/* Brand & Name */}
-                                        <p className="text-xs font-bold text-slate-400 tracking-wider uppercase mb-1">{product.brand}</p>
-                                        <h3 className="font-bold text-lg leading-tight line-clamp-2 text-slate-900">{product.product_name}</h3>
+                            <motion.div variants={itemVariants} key={product.id}>
+                                <Card 
+                                    id={`product-${product.id}`} 
+                                    className="overflow-hidden flex flex-col relative rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100/60 bg-white/80 backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] group"
+                                >
+                                    {/* Top Right Cashback Badge */}
+                                    <div className="absolute top-4 right-0 z-20 bg-gradient-to-r from-red-600 to-red-500 text-white font-extrabold text-xs px-4 py-1.5 rounded-l-full shadow-lg shadow-red-500/30 transform group-hover:scale-105 transition-transform origin-right">
+                                        LESS ₹{product.refund_amount} CASHBACK
                                     </div>
                                     
-                                    {/* Pricing Blocks */}
-                                    <div className="grid grid-cols-2 gap-3 mt-2">
-                                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Selling Price</p>
-                                            <p className="font-bold text-xl text-slate-900">₹{product.real_price || (Number(product.offer_price || 0) + Number(product.refund_amount || 0))}</p>
+                                    {/* Image Section */}
+                                    <div className="bg-gradient-to-br from-slate-50 to-slate-100 h-64 flex items-center justify-center relative p-4 overflow-hidden">
+                                        <div className="absolute inset-0 bg-black/5 z-10 group-hover:bg-transparent transition-colors duration-500" />
+                                        {images.length > 0 ? (
+                                            <div className="flex overflow-x-auto w-full h-full snap-x snap-mandatory hide-scrollbar relative z-0">
+                                                {images.map((img, idx) => (
+                                                    <div key={idx} className="w-full h-full flex-shrink-0 snap-center flex items-center justify-center">
+                                                        <img src={img} alt={`${product.product_name} - ${idx + 1}`} className="max-h-full max-w-full object-contain mix-blend-multiply rounded-xl transition-transform duration-700 group-hover:scale-110" />
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <div className="flex flex-col items-center justify-center text-slate-300">
+                                                <ShoppingBag className="w-12 h-12 mb-2 opacity-50" />
+                                                <span className="font-medium text-sm">No Image</span>
+                                            </div>
+                                        )}
+                                        {images.length > 1 && (
+                                            <div className="absolute bottom-3 right-3 z-20 bg-black/60 backdrop-blur-md text-white font-medium text-[10px] px-3 py-1 rounded-full pointer-events-none shadow-md">
+                                                {images.length} images (scroll ➡️)
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <CardContent className="flex-1 p-6 space-y-5 bg-white/90 flex flex-col justify-between">
+                                        <div>
+                                            <Badge variant="outline" className="bg-red-50/50 text-red-600 border-red-200 hover:bg-red-50 font-bold tracking-wide mb-3 rounded-lg px-3 py-1 text-[10px]">
+                                                {product.platform?.toUpperCase() || "DEAL"}
+                                            </Badge>
+                                            
+                                            <p className="text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase mb-1">{product.brand}</p>
+                                            <h3 className="font-bold text-xl leading-tight line-clamp-2 text-slate-900 group-hover:text-red-600 transition-colors">{product.product_name}</h3>
                                         </div>
-                                        <div className="bg-red-50/50 p-3 rounded-xl border border-red-50">
-                                            <p className="text-[10px] font-bold text-red-500 uppercase tracking-wide">Final Cost</p>
-                                            <p className="font-bold text-xl text-red-700">₹{product.offer_price || (product.real_price ? product.real_price - product.refund_amount : 0)}</p>
+                                        
+                                        {/* Pricing Blocks */}
+                                        <div className="grid grid-cols-2 gap-4 mt-2">
+                                            <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex flex-col items-center justify-center transition-colors group-hover:bg-white group-hover:shadow-sm">
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Selling Price</span>
+                                                <span className="font-black text-xl text-slate-300 line-through decoration-slate-300/50">₹{product.real_price || (Number(product.offer_price || 0) + Number(product.refund_amount || 0))}</span>
+                                            </div>
+                                            <div className="bg-red-50/80 p-3.5 rounded-2xl border border-red-100 flex flex-col items-center justify-center transition-colors group-hover:bg-red-100/50 group-hover:shadow-sm">
+                                                <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1">Final Cost</span>
+                                                <span className="font-black text-2xl text-red-600">₹{product.offer_price || (product.real_price ? product.real_price - product.refund_amount : 0)}</span>
+                                            </div>
                                         </div>
-                                    </div>
 
+                                        {/* Terms */}
+                                        <div className="flex items-center justify-start mt-2">
+                                            <button onClick={(e) => { e.preventDefault(); setTermsProduct(product); setIsTermsModalOpen(true); }} className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-red-500 transition-colors uppercase tracking-wider cursor-pointer py-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                                                Terms & Conditions
+                                            </button>
+                                        </div>
 
-
-                                    {/* Terms and Links */}
-                                    <div className="flex items-center justify-between mt-auto pt-2">
-                                        <button onClick={(e) => { e.preventDefault(); setTermsProduct(product); setIsTermsModalOpen(true); }} className="flex items-center gap-1 text-xs font-bold text-slate-400 hover:text-slate-600 transition-colors uppercase tracking-wider cursor-pointer">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                                            Terms & Conditions
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-0.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                                        </button>
-                                    </div>
-
-                                    {/* Action Buttons */}
-                                    <div className="flex gap-2 pt-2">
-                                        <a href={product.product_link} target="_blank" rel="noreferrer" className="flex-1">
-                                            <Button variant="outline" className="w-full border-red-200 text-red-700 hover:bg-red-50">Buy Now</Button>
-                                        </a>
-                                        <Button className="flex-1 bg-red-600 hover:bg-red-700 text-white" onClick={() => openSubmitModal(product)}>Submit ID</Button>
-                                        <Button variant="outline" className="border-red-200 text-red-700 hover:bg-red-50 px-3" onClick={() => {
-                                            const url = `${window.location.origin}/customer?highlight_product=${product.id}`;
-                                            navigator.clipboard.writeText(url);
-                                            toast.success("Link copied to clipboard!");
-                                        }} title="Share Deal">
-                                            <Share2 className="w-4 h-4" />
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                        {/* Action Buttons */}
+                                        <div className="flex gap-3 pt-2">
+                                            <a href={product.product_link} target="_blank" rel="noreferrer" className="flex-1">
+                                                <Button variant="outline" className="w-full h-12 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 font-bold text-sm shadow-sm transition-all hover:shadow-md">
+                                                    Buy Now
+                                                </Button>
+                                            </a>
+                                            <Button 
+                                                className="flex-1 h-12 rounded-xl bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-bold text-sm shadow-md hover:shadow-xl hover:shadow-red-500/20 transition-all hover:-translate-y-0.5" 
+                                                onClick={() => openSubmitModal(product)}
+                                            >
+                                                Submit Proof
+                                            </Button>
+                                            <Button 
+                                                variant="outline" 
+                                                className="h-12 w-12 rounded-xl border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900 shadow-sm transition-all" 
+                                                onClick={() => {
+                                                    const url = `${window.location.origin}/customer?highlight_product=${product.id}`;
+                                                    navigator.clipboard.writeText(url);
+                                                    toast.success("Link copied to clipboard!");
+                                                }} 
+                                                title="Share Deal"
+                                            >
+                                                <Share2 className="w-5 h-5" />
+                                            </Button>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </motion.div>
                         )
                     })}
-                </div>
+                </motion.div>
             )}
 
             <Dialog open={isSubmitModalOpen} onOpenChange={setIsSubmitModalOpen}>
