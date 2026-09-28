@@ -103,10 +103,13 @@ export function TrendingDeals() {
                     {item.deal_type || item.brand}
                   </div>
                   <img 
-                    src={item.product_image || "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400&auto=format&fit=crop"} 
+                    src={item.product_image || "https://placehold.co/400x400/f8f9fa/a1a1aa?text=Sample+Lelo"} 
                     alt={item.product_name} 
-                    className="w-full h-full object-cover mix-blend-multiply opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out" 
-                    onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400&auto=format&fit=crop" }}
+                    className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out" 
+                    onError={(e) => { 
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = "https://placehold.co/400x400/f8f9fa/a1a1aa?text=Sample+Lelo"; 
+                    }}
                   />
                 </div>
                 

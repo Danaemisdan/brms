@@ -77,11 +77,12 @@ export function HeroScroller() {
         {loopItems.map((item, idx) => (
           <div key={`${item.id}-${idx}`} className="relative w-full h-[400px] flex-shrink-0 bg-white rounded-[32px] overflow-hidden group cursor-pointer border border-gray-50 shadow-sm">
             <img 
-              src={item.product_image || "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400"} 
+              src={item.product_image || "https://placehold.co/400x400/f8f9fa/a1a1aa?text=Sample+Lelo"} 
               alt={item.product_name} 
-              className="w-full h-full object-cover opacity-90 mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out"
+              className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out"
               onError={(e) => {
-                e.currentTarget.src = "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400";
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "https://placehold.co/400x400/f8f9fa/a1a1aa?text=Sample+Lelo";
               }}
             />
             

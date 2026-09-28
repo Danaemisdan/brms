@@ -97,10 +97,13 @@ export function HotSamples() {
                   </div>
                   <div className="flex-1 w-full bg-[#f3f0e9] rounded-[20px] mb-8 overflow-hidden relative">
                     <img 
-                      src={products[0].product_image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop"} 
+                      src={products[0].product_image || "https://placehold.co/800x800/f3f0e9/a1a1aa?text=Sample+Lelo"} 
                       alt={products[0].product_name} 
-                      className="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out" 
-                      onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop" }}
+                      className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out" 
+                      onError={(e) => { 
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = "https://placehold.co/800x800/f3f0e9/a1a1aa?text=Sample+Lelo"; 
+                      }}
                     />
                   </div>
                   <div className="px-5 pb-5">
@@ -128,10 +131,13 @@ export function HotSamples() {
                   </div>
                   <div className="w-40 h-40 bg-[#fdf5f7] rounded-2xl flex-shrink-0 overflow-hidden">
                       <img 
-                        src={products[1].product_image || "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop"} 
+                        src={products[1].product_image || "https://placehold.co/400x400/fdf5f7/a1a1aa?text=Sample+Lelo"} 
                         alt={products[1].product_name} 
-                        className="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out" 
-                        onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop" }}
+                        className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out" 
+                        onError={(e) => { 
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = "https://placehold.co/400x400/fdf5f7/a1a1aa?text=Sample+Lelo"; 
+                        }}
                       />
                   </div>
                 </MagicCard>
@@ -155,10 +161,13 @@ export function HotSamples() {
                 <MagicCard className="md:col-span-1 md:row-span-1 p-4 flex flex-col group cursor-pointer">
                   <div className="w-full flex-1 bg-[#f4f2f9] rounded-xl mb-4 overflow-hidden relative">
                       <img 
-                        src={products[3].product_image || "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400&auto=format&fit=crop"} 
+                        src={products[3].product_image || "https://placehold.co/400x400/f4f2f9/a1a1aa?text=Sample+Lelo"} 
                         alt={products[3].product_name} 
-                        className="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out absolute inset-0" 
-                        onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400&auto=format&fit=crop" }}
+                        className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out absolute inset-0" 
+                        onError={(e) => { 
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = "https://placehold.co/400x400/f4f2f9/a1a1aa?text=Sample+Lelo"; 
+                        }}
                       />
                   </div>
                   <div className="px-2 pb-2">
