@@ -82,7 +82,19 @@ export function TrendingDeals() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {loading ? (
-             <div className="col-span-3 text-center py-10 text-gray-500 text-sm tracking-widest uppercase">Loading latest drops...</div>
+             <>
+               {[1, 2, 3].map((i) => (
+                 <div key={i} className="p-2 flex flex-col border border-gray-100 rounded-[24px] shadow-sm animate-pulse bg-white">
+                   <div className="w-full aspect-[4/3] rounded-[20px] mb-6 bg-gray-100" />
+                   <div className="flex justify-between items-start px-4 pb-4">
+                     <div className="space-y-3 w-full">
+                       <div className="h-6 bg-gray-100 rounded w-3/4" />
+                       <div className="h-6 bg-gray-100 rounded w-1/4" />
+                     </div>
+                   </div>
+                 </div>
+               ))}
+             </>
           ) : (
             products.map((item, idx) => (
               <MagicCard key={item.id} className="group cursor-pointer p-2 flex flex-col">
@@ -94,6 +106,7 @@ export function TrendingDeals() {
                     src={item.product_image || "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400&auto=format&fit=crop"} 
                     alt={item.product_name} 
                     className="w-full h-full object-cover mix-blend-multiply opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out" 
+                    onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400&auto=format&fit=crop" }}
                   />
                 </div>
                 

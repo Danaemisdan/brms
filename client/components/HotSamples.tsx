@@ -58,7 +58,35 @@ export function HotSamples() {
         <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-6 h-auto md:h-[600px]">
           
           {loading ? (
-            <div className="md:col-span-4 flex items-center justify-center text-gray-500 uppercase tracking-widest text-sm py-10">Loading curated samples...</div>
+             <>
+               <div className="md:col-span-2 md:row-span-2 p-3 bg-white rounded-3xl border animate-pulse flex flex-col">
+                 <div className="flex-1 w-full bg-gray-100 rounded-[20px] mb-8" />
+                 <div className="px-5 pb-5 space-y-4">
+                   <div className="h-8 bg-gray-100 rounded w-1/2" />
+                   <div className="h-4 bg-gray-100 rounded w-3/4" />
+                   <div className="h-6 bg-gray-100 rounded w-1/4" />
+                 </div>
+               </div>
+               <div className="md:col-span-2 md:row-span-1 p-8 bg-white rounded-3xl border animate-pulse flex items-center gap-8">
+                  <div className="flex-1 space-y-4">
+                    <div className="h-6 bg-gray-100 rounded w-1/2" />
+                    <div className="h-4 bg-gray-100 rounded w-full" />
+                  </div>
+                  <div className="w-40 h-40 bg-gray-100 rounded-2xl shrink-0" />
+               </div>
+               <div className="md:col-span-1 md:row-span-1 bg-gray-900 rounded-[24px] p-8 animate-pulse flex flex-col">
+                  <div className="h-6 bg-gray-800 rounded w-1/2 mb-4" />
+                  <div className="h-4 bg-gray-800 rounded w-3/4 mt-auto mb-4" />
+                  <div className="h-8 bg-gray-800 rounded w-1/2" />
+               </div>
+               <div className="md:col-span-1 md:row-span-1 p-4 bg-white rounded-[24px] border animate-pulse flex flex-col">
+                  <div className="w-full flex-1 bg-gray-100 rounded-xl mb-4" />
+                  <div className="px-2 pb-2 space-y-2">
+                    <div className="h-5 bg-gray-100 rounded w-3/4" />
+                    <div className="h-5 bg-gray-100 rounded w-1/4" />
+                  </div>
+               </div>
+             </>
           ) : (
             <>
               {/* Main Large Card (Spans 2 columns, 2 rows) */}
@@ -68,7 +96,12 @@ export function HotSamples() {
                     Earn {products[0].refund_amount ? `₹${products[0].refund_amount}` : "100%"} Refund
                   </div>
                   <div className="flex-1 w-full bg-[#f3f0e9] rounded-[20px] mb-8 overflow-hidden relative">
-                    <img src={products[0].product_image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop"} alt={products[0].product_name} className="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out" />
+                    <img 
+                      src={products[0].product_image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop"} 
+                      alt={products[0].product_name} 
+                      className="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out" 
+                      onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop" }}
+                    />
                   </div>
                   <div className="px-5 pb-5">
                     <h3 className="text-3xl font-black tracking-tighter mb-3">{products[0].product_name}</h3>
@@ -94,7 +127,12 @@ export function HotSamples() {
                       </div>
                   </div>
                   <div className="w-40 h-40 bg-[#fdf5f7] rounded-2xl flex-shrink-0 overflow-hidden">
-                      <img src={products[1].product_image || "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop"} alt={products[1].product_name} className="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out" />
+                      <img 
+                        src={products[1].product_image || "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop"} 
+                        alt={products[1].product_name} 
+                        className="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out" 
+                        onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?q=80&w=400&auto=format&fit=crop" }}
+                      />
                   </div>
                 </MagicCard>
               )}
@@ -116,7 +154,12 @@ export function HotSamples() {
               {products[3] && (
                 <MagicCard className="md:col-span-1 md:row-span-1 p-4 flex flex-col group cursor-pointer">
                   <div className="w-full flex-1 bg-[#f4f2f9] rounded-xl mb-4 overflow-hidden relative">
-                      <img src={products[3].product_image || "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400&auto=format&fit=crop"} alt={products[3].product_name} className="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out absolute inset-0" />
+                      <img 
+                        src={products[3].product_image || "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400&auto=format&fit=crop"} 
+                        alt={products[3].product_name} 
+                        className="w-full h-full object-cover mix-blend-multiply opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out absolute inset-0" 
+                        onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400&auto=format&fit=crop" }}
+                      />
                   </div>
                   <div className="px-2 pb-2">
                     <h3 className="text-lg font-bold tracking-tight mb-1 line-clamp-1">{products[3].product_name}</h3>
