@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import { api } from "@/lib/api";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Product {
   id: string;
@@ -23,7 +24,7 @@ export function HeroScroller() {
       try {
         const res = await api.get("/products/public", { requiresAuth: false });
         if (res.data && res.data.length > 0) {
-          setProducts(res.data.slice(0, 5)); // Take top 5 for hero
+          setProducts(res.data.slice(0, 5));
         }
       } catch (err) {
         console.error("Failed to load hero products", err);
@@ -34,18 +35,37 @@ export function HeroScroller() {
     fetchProducts();
   }, []);
 
-  // If no products, show coming soon placeholders
+  if (loading) {
+    return (
+      <div className="relative h-[400px] md:h-[500px] w-full max-w-[420px] mx-auto overflow-hidden rounded-[40px] shadow-[0_40px_80px_rgba(0,0,0,0.07)] border border-gray-100 bg-[#f8f6f5] flex flex-col gap-4 p-4 pt-10">
+        {[1, 2].map((i) => (
+          <div key={i} className="relative w-full h-[400px] flex-shrink-0 bg-white rounded-[32px] overflow-hidden border border-gray-50 shadow-sm animate-pulse">
+            <Skeleton className="w-full h-full absolute inset-0 rounded-[32px]" />
+            <div className="absolute bottom-4 left-4 right-4">
+              <div className="bg-white/80 p-5 rounded-[20px] border border-white/50 shadow-lg space-y-3">
+                 <Skeleton className="h-4 w-1/3" />
+                 <Skeleton className="h-6 w-3/4" />
+                 <div className="flex justify-between items-center mt-3">
+                   <Skeleton className="h-6 w-16" />
+                   <Skeleton className="h-8 w-20 rounded-full" />
+                 </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   const displayItems = products.length > 0 ? products : [
     { id: "1", brand: "Sample Lelo", product_name: "Premium Samples Coming Soon", product_image: "https://images.unsplash.com/photo-1615397323209-b003a2c262c5?q=80&w=800&auto=format&fit=crop", real_price: 0, offer_price: 0 },
     { id: "2", brand: "Sample Lelo", product_name: "Exclusive Drops Weekly", product_image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?q=80&w=800&auto=format&fit=crop", real_price: 0, offer_price: 0 },
   ];
 
-  // Duplicate items to create a seamless infinite loop
   const loopItems = [...displayItems, ...displayItems, ...displayItems];
 
   return (
     <div className="relative h-[400px] md:h-[500px] w-full max-w-[420px] mx-auto overflow-hidden rounded-[40px] shadow-[0_40px_80px_rgba(0,0,0,0.07)] border border-gray-100 bg-[#f8f6f5]">
-      {/* Top and Bottom Fade Overlays */}
       <div className="absolute top-0 inset-x-0 h-20 bg-gradient-to-b from-[#f8f6f5] to-transparent z-10 pointer-events-none"></div>
       <div className="absolute bottom-0 inset-x-0 h-20 bg-gradient-to-t from-[#f8f6f5] to-transparent z-10 pointer-events-none"></div>
 
@@ -59,7 +79,10 @@ export function HeroScroller() {
             <img 
               src={item.product_image || "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400"} 
               alt={item.product_name} 
-              className="w-full h-full object-cover opacity-90 mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out" 
+              className="w-full h-full object-cover opacity-90 mix-blend-multiply group-hover:scale-110 transition-transform duration-700 ease-out"
+              onError={(e) => {
+                e.currentTarget.src = "https://images.unsplash.com/photo-1548843232-4e5659837c73?q=80&w=400";
+              }}
             />
             
             <div className="absolute top-4 left-4 right-4 flex justify-between items-start">
