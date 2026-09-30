@@ -602,10 +602,11 @@ export async function pullUpdatesFromSheet() {
                 });
 
                 if (!existingBrand) {
+                    const randomMobile = "0" + Math.floor(100000000 + Math.random() * 900000000).toString();
                     const newBrandUser = await prisma.user.create({
                         data: {
                             name: brand,
-                            mobile: "0000000000", // Placeholder until updated in frontend
+                            mobile: randomMobile, // Placeholder until updated in frontend
                             password_hash: "matrix_imported_placeholder",
                             role: 'VENDOR'
                         }
