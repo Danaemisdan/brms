@@ -611,16 +611,48 @@ export async function pullUpdatesFromSheet() {
             }
 
             if (productName) {
-                await prisma.product.updateMany({
-                    where: { product_name: productName },
-                    data: {
-                        brand: brand || undefined,
-                        product_link: productLink || undefined,
-                        total_slots: slots || undefined,
-                        real_price: cost || undefined,
-                        status: status || undefined
-                    }
+                const existingProduct = await prisma.product.findFirst({
+                    where: { product_name: productName }
                 });
+
+                if (existingProduct) {
+                    await prisma.product.update({
+                        where: { id: existingProduct.id },
+                        data: {
+                            brand: brand || undefined,
+                            product_link: productLink || undefined,
+                            total_slots: slots || undefined,
+                            real_price: cost || undefined,
+                            status: status || undefined
+                        }
+                    });
+                } else {
+                    // Create dummy client for imported products
+                    let dummyClient = await prisma.client.findFirst({ where: { company_name: "Imported from Sheets" } });
+                    if (!dummyClient) {
+                        const dummyUser = await prisma.user.create({
+                            data: { name: "Imported Client User", mobile: "0000000001", role: "CLIENT" }
+                        });
+                        dummyClient = await prisma.client.create({
+                            data: { user_id: dummyUser.id, company_name: "Imported from Sheets" }
+                        });
+                    }
+
+                    await prisma.product.create({
+                        data: {
+                            client_id: dummyClient.id,
+                            brand: brand || "Unknown Brand",
+                            product_name: productName,
+                            product_link: productLink || "https://amazon.in",
+                            platform: "AMAZON",
+                            total_slots: slots || 10,
+                            real_price: cost || 0,
+                            instructions: "Automatically imported from Google Sheets Matrix tab.",
+                            deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+                            status: status || "DRAFT"
+                        }
+                    });
+                }
             }
         }
 

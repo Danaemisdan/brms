@@ -14,11 +14,10 @@ async function main() {
     create: {
       email: 'admin@brms.app',
       name: 'Admin User',
-      password: hashedPassword,
+      password_hash: hashedPassword,
       role: 'ADMIN',
-      email_verified: true,
-      wallet_balance: 0,
-      verification_status: 'VERIFIED'
+      mobile: '+1000000000',
+      wallet_balance: 0
     },
   });
 
