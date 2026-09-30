@@ -164,7 +164,8 @@ export default function AdminDashboard() {
                 toast.success("Successfully synced with Google Sheets!");
                 await fetchDashboardData();
             } else {
-                toast.error("Failed to sync with Google Sheets.");
+                const data = await res.json().catch(() => ({}));
+                toast.error(data.message || "Failed to sync with Google Sheets.");
             }
         } catch (error) {
             console.error("Sync failed:", error);
