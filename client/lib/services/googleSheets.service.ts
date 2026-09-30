@@ -449,7 +449,9 @@ export async function appendRowToSheet(sheetName: string, rowData: any[]) {
 export async function pullUpdatesFromSheet() {
     const sheets = getSheetsClient();
     const spreadsheetId = getSpreadsheetId();
-    if (!sheets || !spreadsheetId) return;
+    if (!sheets || !spreadsheetId) {
+        throw new Error("Google Sheets sync failed: Missing credentials or Spreadsheet ID in environment variables. Please configure GOOGLE_CLIENT_EMAIL, GOOGLE_PRIVATE_KEY, and GOOGLE_SHEETS_SPREADSHEET_ID.");
+    }
 
     try {
         console.log('[Google Sheets] Starting two-way sync pull...');
