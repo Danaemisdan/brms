@@ -11,9 +11,9 @@ export async function GET(req: NextRequest) {
     try {
         let whereClause: any = {};
         if (session.role === "CUSTOMER") {
-            whereClause = { status: 'ACTIVE', is_public: true, target_audience: { in: ['ALL', 'CUSTOMER_ONLY'] } };
+            whereClause = { status: { equals: 'ACTIVE', mode: 'insensitive' }, is_public: true, target_audience: { in: ['ALL', 'CUSTOMER_ONLY'] } };
         } else if (session.role === "CREATOR") {
-            whereClause = { status: 'ACTIVE', is_public: true, target_audience: { in: ['ALL', 'CREATOR_ONLY'] } };
+            whereClause = { status: { equals: 'ACTIVE', mode: 'insensitive' }, is_public: true, target_audience: { in: ['ALL', 'CREATOR_ONLY'] } };
         }
 
         const products = await prisma.product.findMany({

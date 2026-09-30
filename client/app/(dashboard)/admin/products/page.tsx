@@ -478,7 +478,7 @@ export default function AdminProducts() {
                         <CardTitle className="text-sm font-medium text-emerald-800">Active Campaigns</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-gray-900">{products.filter(p => p.status === 'ACTIVE').length}</div>
+                        <div className="text-2xl font-bold text-gray-900">{products.filter(p => p.status?.toUpperCase() === 'ACTIVE').length}</div>
                     </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-orange-50 to-white shadow-sm border-orange-100">
@@ -486,7 +486,7 @@ export default function AdminProducts() {
                         <CardTitle className="text-sm font-medium text-orange-800">Pending Requests</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-gray-900">{products.filter(p => p.status === 'REQUESTED').length}</div>
+                        <div className="text-2xl font-bold text-gray-900">{products.filter(p => p.status?.toUpperCase() === 'REQUESTED').length}</div>
                     </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-purple-50 to-white shadow-sm border-purple-100">
@@ -888,7 +888,7 @@ export default function AdminProducts() {
                             const matchesSearch = p.product_name?.toLowerCase().includes(searchStr) ||
                                 p.brand?.brand_name?.toLowerCase().includes(searchStr);
 
-                            const matchesStatus = statusFilter === "ALL" || p.status === statusFilter;
+                            const matchesStatus = statusFilter === "ALL" || p.status?.toUpperCase() === statusFilter;
                             return matchesSearch && matchesStatus;
                         });
 
@@ -934,10 +934,10 @@ export default function AdminProducts() {
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${p.status === "ACTIVE" ? "bg-green-100 text-green-800" : "bg-gray-100 text-foreground/50"}`}>
+                                    <span className={`px-2 py-1 text-xs font-semibold rounded-full ${p.status?.toUpperCase() === "ACTIVE" ? "bg-green-100 text-green-800" : "bg-gray-100 text-foreground/50"}`}>
                                         {p.status}
                                     </span>
-                                    {p.status === "REQUESTED" ? (
+                                    {p.status?.toUpperCase() === "REQUESTED" ? (
                                         <>
                                             <Button variant="outline" size="sm" className="border-green-600 text-green-600 hover:bg-green-50" onClick={() => handleStatusUpdate(p.id, "ACTIVE")}>
                                                 Accept

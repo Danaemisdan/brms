@@ -61,8 +61,8 @@ export default function AdminDashboard() {
                 const pendingRefundsCount = orders.filter((o: any) => o.refund?.status === "PENDING").length;
                 const totalRefundAmount = orders.filter((o: any) => o.refund?.status === "REFUNDED").reduce((sum: number, o: any) => sum + o.refund.amount, 0);
                 const uniqueCustomers = new Set(orders.map((o: any) => o.user_id)).size;
-                const activeProducts = products.filter((p: any) => p.status === "ACTIVE").length;
-                const draftProducts = products.filter((p: any) => p.status === "REQUESTED" || p.status === "DRAFT");
+                const activeProducts = products.filter((p: any) => p.status?.toUpperCase() === "ACTIVE").length;
+                const draftProducts = products.filter((p: any) => p.status?.toUpperCase() === "REQUESTED" || p.status?.toUpperCase() === "DRAFT");
 
                 setStats({
                     activeProducts,

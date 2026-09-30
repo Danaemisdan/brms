@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
         const totalUsers = await prisma.user.count({ where: { role: "CUSTOMER" } });
         const totalBrands = await prisma.user.count({ where: { role: "VENDOR" } });
 
-        const activeProducts = await prisma.product.count({ where: { status: "ACTIVE" } });
+        const activeProducts = await prisma.product.count({ where: { status: { equals: "ACTIVE", mode: "insensitive" } } });
 
         const orders = await prisma.order.findMany({
             include: { refund: true }

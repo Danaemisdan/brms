@@ -660,7 +660,7 @@ export async function pullUpdatesFromSheet() {
                             real_price: cost || 0,
                             instructions: "Automatically imported from Google Sheets Matrix tab.",
                             deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
-                            status: status || "DRAFT"
+                            status: status ? status.toUpperCase() : "DRAFT"
                         }
                     });
                 }
