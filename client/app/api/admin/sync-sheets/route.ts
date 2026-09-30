@@ -9,8 +9,8 @@ export async function POST(req: NextRequest) {
     try {
         await pullUpdatesFromSheet();
         return NextResponse.json({ success: true, message: "Successfully synced with Google Sheets." }, { status: 200 });
-    } catch (error) {
+    } catch (error: any) {
         console.error("Force sync failed:", error);
-        return NextResponse.json({ success: false, message: "Failed to sync with Google Sheets." }, { status: 500 });
+        return NextResponse.json({ success: false, message: error.message || "Failed to sync with Google Sheets." }, { status: 500 });
     }
 }

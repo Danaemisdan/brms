@@ -659,5 +659,6 @@ export async function pullUpdatesFromSheet() {
         console.log('[Google Sheets] Two-way sync pull completed successfully.');
     } catch (error) {
         console.error('[Google Sheets] Error pulling updates:', error);
+        throw error;
     }
 }
