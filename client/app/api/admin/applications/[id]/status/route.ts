@@ -11,7 +11,7 @@ export async function POST(
 
     try {
         const { id } = await context.params; // application_id
-        const body = await req.json(); // { status: 'SHORTLISTED' | 'APPROVED' | 'REJECTED' }
+        const body = await req.json(); // { status, remarks }
 
         const application = await prisma.activityApplication.findUnique({
             where: { id },
@@ -22,16 +22,32 @@ export async function POST(
             return NextResponse.json({ error: 'Application not found' }, { status: 404 });
         }
 
+        const newStatus = body.status;
+        const remarks = body.remarks || "";
+
         const updated = await prisma.activityApplication.update({
             where: { id },
             data: {
-                status: body.status,
-                approved_at: body.status === 'APPROVED' ? new Date() : undefined
+                status: newStatus,
+                approved_at: newStatus === 'APPROVED' ? new Date() : undefined
             }
         });
 
-        // If APPROVED, credit the wallet
-        if (body.status === 'APPROVED' && application.status !== 'APPROVED') {
+        // 1. SHORTLISTED notification
+        if (newStatus === 'SHORTLISTED') {
+            await prisma.notification.create({
+                data: {
+                    user_id: application.creator_id,
+                    type: 'GENERAL',
+                    title: `Shortlisted: ${application.activity.title}`,
+                    message: `Congratulations! You have been shortlisted for this activity. Please complete the required activity and submit your Reel link through the Creator Dashboard.`,
+                    channel: 'DASHBOARD'
+                }
+            }).catch(e => console.error("Notification error:", e));
+        }
+
+        // 2. APPROVED notification & wallet credit
+        if (newStatus === 'APPROVED' && application.status !== 'APPROVED') {
             await prisma.user.update({
                 where: { id: application.creator_id },
                 data: {
@@ -40,6 +56,42 @@ export async function POST(
                     }
                 }
             });
+
+            await prisma.notification.create({
+                data: {
+                    user_id: application.creator_id,
+                    type: 'GENERAL',
+                    title: `Reel Approved: ${application.activity.title}`,
+                    message: `Your Reel for '${application.activity.title}' has been approved! ₹${application.activity.reward_amount} has been credited to your Creator Wallet. Approved payments are processed within 15 days of Reel approval.`,
+                    channel: 'DASHBOARD'
+                }
+            }).catch(e => console.error("Notification error:", e));
+        }
+
+        // 3. REJECTED notification
+        if (newStatus === 'REJECTED') {
+            await prisma.notification.create({
+                data: {
+                    user_id: application.creator_id,
+                    type: 'GENERAL',
+                    title: `Activity Status: ${application.activity.title}`,
+                    message: `Your application or submission for '${application.activity.title}' was rejected.${remarks ? ` Reason: ${remarks}` : ''}`,
+                    channel: 'DASHBOARD'
+                }
+            }).catch(e => console.error("Notification error:", e));
+        }
+
+        // 4. CORRECTION_REQUIRED notification
+        if (newStatus === 'CORRECTION_REQUIRED') {
+            await prisma.notification.create({
+                data: {
+                    user_id: application.creator_id,
+                    type: 'CORRECTION',
+                    title: `Correction Required: ${application.activity.title}`,
+                    message: `Corrections required for your submission on '${application.activity.title}'.${remarks ? ` Note: ${remarks}` : ' Please review guidelines and submit updated Reel link.'}`,
+                    channel: 'DASHBOARD'
+                }
+            }).catch(e => console.error("Notification error:", e));
         }
 
         return NextResponse.json({ success: true, application: updated });

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireRole } from '@/lib/auth';
@@ -8,13 +9,53 @@ export async function GET(req: NextRequest) {
 
     try {
         let profile = await prisma.creatorProfile.findUnique({
-            where: { user_id: session.userId }
+            where: { user_id: session.userId },
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                        email: true,
+                        mobile: true,
+                        wallet_balance: true,
+                        upi_id: true,
+                        role: true
+                    }
+                }
+            }
         });
 
         if (!profile) {
-            // Create a stub profile if missing
+            // Check if user exists
+            const user = await prisma.user.findUnique({
+                where: { id: session.userId },
+                select: {
+                    name: true,
+                    email: true,
+                    mobile: true,
+                    wallet_balance: true,
+                    upi_id: true,
+                    role: true
+                }
+            });
+
+            if (!user) {
+                return NextResponse.json({ error: 'User not found' }, { status: 404 });
+            }
+
             profile = await prisma.creatorProfile.create({
-                data: { user_id: session.userId }
+                data: { user_id: session.userId },
+                include: {
+                    user: {
+                        select: {
+                            name: true,
+                            email: true,
+                            mobile: true,
+                            wallet_balance: true,
+                            upi_id: true,
+                            role: true
+                        }
+                    }
+                }
             });
         }
 
@@ -32,6 +73,16 @@ export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
 
+        const followerCount = parseInt(body.follower_count) || 0;
+        const engagementRate = parseFloat(body.engagement_rate) || 0;
+
+        // Auto-suggest category tier based on follower count if not explicitly set
+        let suggestedTier = null;
+        if (followerCount >= 100000) suggestedTier = "Macro Creator";
+        else if (followerCount >= 25000) suggestedTier = "Mid-Tier Creator";
+        else if (followerCount >= 5000) suggestedTier = "Micro Creator";
+        else if (followerCount >= 500) suggestedTier = "Nano Creator";
+
         // Update profile
         const profile = await prisma.creatorProfile.upsert({
             where: { user_id: session.userId },
@@ -41,9 +92,10 @@ export async function POST(req: NextRequest) {
                 follower_range: body.follower_range || null,
                 content_types: body.content_types || [],
                 collaboration_types: body.collaboration_types || [],
-                follower_count: parseInt(body.follower_count) || 0,
-                content_category: body.content_category,
-                engagement_rate: parseFloat(body.engagement_rate) || 0,
+                follower_count: followerCount,
+                content_category: body.content_category || null,
+                engagement_rate: engagementRate,
+                ...(suggestedTier ? { category_tier: suggestedTier } : {})
             },
             create: {
                 user_id: session.userId,
@@ -52,9 +104,22 @@ export async function POST(req: NextRequest) {
                 follower_range: body.follower_range || null,
                 content_types: body.content_types || [],
                 collaboration_types: body.collaboration_types || [],
-                follower_count: parseInt(body.follower_count) || 0,
-                content_category: body.content_category,
-                engagement_rate: parseFloat(body.engagement_rate) || 0,
+                follower_count: followerCount,
+                content_category: body.content_category || null,
+                engagement_rate: engagementRate,
+                category_tier: suggestedTier || "Nano Creator"
+            },
+            include: {
+                user: {
+                    select: {
+                        name: true,
+                        email: true,
+                        mobile: true,
+                        wallet_balance: true,
+                        upi_id: true,
+                        role: true
+                    }
+                }
             }
         });
 

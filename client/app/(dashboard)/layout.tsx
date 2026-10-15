@@ -16,7 +16,7 @@ const brandNav = [
 
 const customerNav = [
     { label: "Deals", href: "/customer" },
-    { label: "Creator Deals", href: "/creator" },
+    { label: "Creator Dashboard", href: "/creator" },
     { label: "Track order status", href: "/customer/submissions" },
     { label: "Tasks & Offers", href: "/customer/tasks" },
     { label: "Payment Info", href: "/customer/payment-info" },

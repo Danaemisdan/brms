@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireRole } from '@/lib/auth';
@@ -10,7 +11,20 @@ export async function GET(req: NextRequest) {
         const activities = await prisma.activity.findMany({
             orderBy: { created_at: 'desc' },
             include: {
-                applications: true
+                applications: {
+                    include: {
+                        creator: {
+                            select: {
+                                id: true,
+                                name: true,
+                                mobile: true,
+                                email: true,
+                                creator_profile: true
+                            }
+                        }
+                    },
+                    orderBy: { applied_at: 'desc' }
+                }
             }
         });
         

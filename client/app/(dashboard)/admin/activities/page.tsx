@@ -1,15 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus } from "lucide-react";
+import { Plus, CheckCircle, XCircle, ExternalLink, RefreshCw, Sparkles, Video, Clock, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/apiFetch";
-
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
@@ -18,7 +18,11 @@ export default function AdminActivitiesPage() {
     const [isLoading, setIsLoading] = useState(true);
     const [isCreating, setIsCreating] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    
+
+    // Correction / Feedback Dialog
+    const [correctionAppId, setCorrectionAppId] = useState<string | null>(null);
+    const [correctionRemark, setCorrectionRemark] = useState("");
+
     const [formData, setFormData] = useState({
         title: "",
         description: "",
@@ -56,7 +60,7 @@ export default function AdminActivitiesPage() {
             });
 
             if (res.ok) {
-                toast.success("Activity created successfully");
+                toast.success("Activity published successfully! Verified creators can now apply.");
                 setIsCreating(false);
                 setFormData({ title: "", description: "", requirements: "", reward_amount: "", deadline: "" });
                 fetchActivities();
@@ -68,21 +72,30 @@ export default function AdminActivitiesPage() {
         }
     };
 
-    const handleStatusUpdate = async (applicationId: string, status: string) => {
+    const handleStatusUpdate = async (applicationId: string, status: string, remarks?: string) => {
         try {
             const res = await apiFetch(`/api/admin/applications/${applicationId}/status`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ status })
+                body: JSON.stringify({ status, remarks })
             });
+
             if (res.ok) {
-                toast.success(`Application marked as ${status}`);
+                if (status === 'SHORTLISTED') {
+                    toast.success("Creator shortlisted! Notification sent: 'Congratulations! You have been shortlisted for this activity...'");
+                } else if (status === 'APPROVED') {
+                    toast.success("Reel approved! Reward credited directly to creator's wallet.");
+                } else {
+                    toast.success(`Application updated to ${status}`);
+                }
+                setCorrectionAppId(null);
+                setCorrectionRemark("");
                 fetchActivities();
             } else {
                 toast.error("Failed to update status");
             }
         } catch {
-            toast.error("Error updating status");
+            toast.error("Error updating application status");
         }
     };
 
@@ -92,132 +105,284 @@ export default function AdminActivitiesPage() {
     );
 
     return (
-        <div className="p-6 max-w-[1400px] mx-auto space-y-6">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="space-y-8 relative z-10 pb-16">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-6">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Creator Activities</h1>
-                    <p className="text-muted-foreground mt-1">Manage campaigns and review creator submissions.</p>
+                    <h1 className="text-3xl font-extrabold text-primary tracking-wider uppercase">
+                        Creator Activities & Submissions
+                    </h1>
+                    <p className="text-sm font-sans tracking-wide text-foreground/50 mt-1">
+                        Publish campaigns, shortlist verified creators, and review submitted Reel deliverables.
+                    </p>
                 </div>
-                <Button onClick={() => setIsCreating(!isCreating)} className="shrink-0">
-                    <Plus className="mr-2 h-4 w-4" /> {isCreating ? 'Cancel' : 'New Activity'}
-                </Button>
+                <div className="flex gap-2">
+                    <Button 
+                        variant="outline" 
+                        onClick={fetchActivities}
+                        className="border-white/10 text-foreground hover:bg-white/5 text-xs h-10 px-3 rounded-lg"
+                    >
+                        <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Refresh
+                    </Button>
+                    <Button 
+                        onClick={() => setIsCreating(!isCreating)} 
+                        className="bg-primary hover:bg-primary/90 text-black font-bold uppercase tracking-wider text-xs h-10 px-4 rounded-lg shadow-sm"
+                    >
+                        <Plus className="mr-1.5 h-4 w-4" /> {isCreating ? 'Cancel' : 'New Activity'}
+                    </Button>
+                </div>
             </div>
 
+            {/* Create Activity Form */}
             {isCreating && (
-                <Card className="border-primary/20 bg-primary/5">
-                    <CardHeader>
-                        <CardTitle>Create New Activity</CardTitle>
-                        <CardDescription>Post a new campaign for creators to apply to.</CardDescription>
+                <Card className="glass-panel border-primary/30 rounded-2xl p-6 shadow-xl">
+                    <CardHeader className="p-0 pb-4">
+                        <CardTitle className="text-lg font-bold text-primary flex items-center gap-2">
+                            <Sparkles className="w-4 h-4" />
+                            Create New Creator Activity Campaign
+                        </CardTitle>
+                        <CardDescription className="text-xs text-foreground/50">
+                            Verified creators will be able to view and apply for this activity through their Creator Dashboard.
+                        </CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="p-0 pt-2">
                         <form onSubmit={handleCreate} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label>Title</Label>
-                                    <Input value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required placeholder="E.g., Diwali Fashion Campaign" />
+                                    <Label className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
+                                        Campaign Title <span className="text-red-500">*</span>
+                                    </Label>
+                                    <Input 
+                                        value={formData.title} 
+                                        onChange={e => setFormData({...formData, title: e.target.value})} 
+                                        required 
+                                        placeholder="e.g. Summer Skincare Reel Campaign" 
+                                        className="h-11 bg-white/5 border-white/10 text-xs rounded-xl"
+                                    />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label>Reward Amount (₹)</Label>
-                                    <Input type="number" value={formData.reward_amount} onChange={e => setFormData({...formData, reward_amount: e.target.value})} required placeholder="1500" />
+                                    <Label className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
+                                        Creator Payout Reward (₹) <span className="text-red-500">*</span>
+                                    </Label>
+                                    <Input 
+                                        type="number" 
+                                        value={formData.reward_amount} 
+                                        onChange={e => setFormData({...formData, reward_amount: e.target.value})} 
+                                        required 
+                                        placeholder="1500" 
+                                        className="h-11 bg-white/5 border-white/10 text-xs rounded-xl"
+                                    />
                                 </div>
                             </div>
+
                             <div className="space-y-2">
-                                <Label>Description</Label>
-                                <Textarea value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} required placeholder="Describe the campaign..." />
+                                <Label className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
+                                    Description & Overview <span className="text-red-500">*</span>
+                                </Label>
+                                <Textarea 
+                                    value={formData.description} 
+                                    onChange={e => setFormData({...formData, description: e.target.value})} 
+                                    required 
+                                    placeholder="Provide context about the brand, product, and campaign objective..." 
+                                    className="bg-white/5 border-white/10 text-xs rounded-xl min-h-[70px]"
+                                />
                             </div>
+
                             <div className="space-y-2">
-                                <Label>Requirements</Label>
-                                <Textarea value={formData.requirements} onChange={e => setFormData({...formData, requirements: e.target.value})} required placeholder="1 Instagram Reel, tags, mentions..." />
+                                <Label className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
+                                    Activity Deliverables & Guidelines <span className="text-red-500">*</span>
+                                </Label>
+                                <Textarea 
+                                    value={formData.requirements} 
+                                    onChange={e => setFormData({...formData, requirements: e.target.value})} 
+                                    required 
+                                    placeholder="1 Instagram Reel (minimum 30s), mandatory tags @samplelelo, keywords, review guidelines..." 
+                                    className="bg-white/5 border-white/10 text-xs rounded-xl min-h-[70px]"
+                                />
                             </div>
-                            <Button type="submit">Publish Activity</Button>
+
+                            <div className="flex justify-end gap-3 pt-2">
+                                <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    className="border-white/10 text-xs h-10 px-4 rounded-xl" 
+                                    onClick={() => setIsCreating(false)}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button 
+                                    type="submit" 
+                                    className="bg-primary hover:bg-primary/90 text-black font-bold uppercase tracking-wider text-xs h-10 px-6 rounded-xl"
+                                >
+                                    Publish Campaign
+                                </Button>
+                            </div>
                         </form>
                     </CardContent>
                 </Card>
             )}
 
-            <Card>
-                <CardHeader className="pb-4">
-                    <input 
+            {/* Activities Table */}
+            <Card className="glass-panel border-white/5 rounded-2xl overflow-hidden shadow-xl">
+                <CardHeader className="pb-3 border-b border-white/5">
+                    <Input 
                         type="text" 
-                        placeholder="Search activities by title..." 
-                        className="flex h-10 w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        placeholder="Search activities by title or keyword..." 
+                        className="h-10 max-w-sm bg-white/5 border-white/10 text-xs text-foreground placeholder:text-foreground/40 rounded-xl"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </CardHeader>
-                <CardContent>
+                <CardContent className="p-0">
                     {isLoading ? (
-                        <div className="flex justify-center p-12"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>
+                        <div className="p-16 text-center text-xs text-foreground/50 animate-pulse">Loading activity records...</div>
                     ) : filteredActivities.length === 0 ? (
-                        <div className="text-center p-12 text-muted-foreground border border-dashed rounded-lg">No activities found.</div>
+                        <div className="p-16 text-center text-xs text-foreground/50">No activities found. Click "New Activity" to create one.</div>
                     ) : (
-                        <div className="rounded-md border overflow-hidden">
+                        <div className="overflow-x-auto">
                             <Table>
-                                <TableHeader className="bg-slate-50">
-                                    <TableRow>
-                                        <TableHead>Campaign Title</TableHead>
-                                        <TableHead>Reward</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead>Applicants</TableHead>
-                                        <TableHead>Applications & Submissions</TableHead>
+                                <TableHeader className="bg-white/5">
+                                    <TableRow className="border-white/5 hover:bg-transparent">
+                                        <TableHead className="text-xs font-semibold text-foreground/70">Campaign Details</TableHead>
+                                        <TableHead className="text-xs font-semibold text-foreground/70">Reward</TableHead>
+                                        <TableHead className="text-xs font-semibold text-foreground/70">Status</TableHead>
+                                        <TableHead className="text-xs font-semibold text-foreground/70">Applicant Applications & Reel Submissions</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {filteredActivities.map(activity => (
-                                        <TableRow key={activity.id} className="align-top">
-                                            <TableCell className="max-w-[250px]">
-                                                <div className="font-semibold">{activity.title}</div>
-                                                <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{activity.description}</div>
-                                                <div className="text-xs font-medium text-slate-500 mt-2">Reqs: {activity.requirements}</div>
+                                        <TableRow key={activity.id} className="align-top border-white/5 hover:bg-white/5">
+                                            <TableCell className="max-w-[280px]">
+                                                <div className="font-bold text-sm text-foreground">{activity.title}</div>
+                                                <div className="text-xs text-foreground/60 mt-1 line-clamp-2">{activity.description}</div>
+                                                <div className="text-[11px] text-foreground/50 mt-2 bg-black/40 p-2 rounded-lg border border-white/5">
+                                                    <strong className="text-primary">Deliverables:</strong> {activity.requirements}
+                                                </div>
                                             </TableCell>
-                                            <TableCell className="font-medium text-green-600">
+                                            <TableCell className="font-mono font-bold text-emerald-400">
                                                 ₹{activity.reward_amount}
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline">{activity.status}</Badge>
-                                            </TableCell>
-                                            <TableCell>
-                                                <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 shadow-none">
-                                                    {activity.applications.length}
+                                                <Badge variant="outline" className="text-[10px] bg-white/5 border-white/10 text-foreground/80">
+                                                    {activity.status}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
                                                 {activity.applications.length === 0 ? (
-                                                    <span className="text-xs text-muted-foreground italic">No applications</span>
+                                                    <span className="text-xs text-foreground/40 italic">No applications received yet</span>
                                                 ) : (
                                                     <div className="space-y-3">
-                                                        {activity.applications.map((app: any) => (
-                                                            <div key={app.id} className="text-sm bg-slate-50 p-2 rounded-md border flex flex-col sm:flex-row gap-3 justify-between sm:items-center">
-                                                                <div>
-                                                                    <div className="font-medium text-xs">Creator #{app.creator_id}</div>
-                                                                    <div className="text-[10px] text-muted-foreground">Applied: {new Date(app.applied_at).toLocaleDateString()}</div>
-                                                                    <div className="mt-1">
-                                                                        <Badge variant={app.status === 'APPROVED' ? 'default' : app.status === 'REJECTED' ? 'destructive' : 'secondary'} className="text-[10px] h-4 px-1 py-0 shadow-none">
-                                                                            {app.status}
-                                                                        </Badge>
+                                                        {activity.applications.map((app: any) => {
+                                                            const creator = app.creator;
+                                                            const prof = creator?.creator_profile;
+
+                                                            return (
+                                                                <div key={app.id} className="p-3.5 bg-black/40 rounded-xl border border-white/10 flex flex-col md:flex-row gap-3 justify-between items-start md:items-center">
+                                                                    <div className="space-y-1">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <span className="font-bold text-xs text-foreground">
+                                                                                {creator?.name || `Creator #${app.creator_id.substring(0, 8)}`}
+                                                                            </span>
+                                                                            {prof?.category_tier && (
+                                                                                <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20">
+                                                                                    {prof.category_tier}
+                                                                                </Badge>
+                                                                            )}
+                                                                        </div>
+                                                                        <div className="text-[11px] text-foreground/60">
+                                                                            {creator?.mobile} • {prof?.content_category || "General"} • {prof?.follower_count ? `${prof.follower_count.toLocaleString()} Followers` : (prof?.follower_range || "")}
+                                                                        </div>
+                                                                        {prof?.profile_urls?.[0] && (
+                                                                            <a href={prof.profile_urls[0]} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline text-[11px] flex items-center gap-1 font-mono">
+                                                                                <ExternalLink className="w-3 h-3" /> Profile Link
+                                                                            </a>
+                                                                        )}
+                                                                        <div className="flex items-center gap-2 pt-1">
+                                                                            <Badge 
+                                                                                className={`text-[10px] ${
+                                                                                    app.status === 'APPROVED' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' :
+                                                                                    app.status === 'SHORTLISTED' ? 'bg-blue-500/20 text-blue-300 border-blue-500/30' :
+                                                                                    app.status === 'SUBMITTED' ? 'bg-amber-500/20 text-amber-300 border-amber-500/30' :
+                                                                                    app.status === 'REJECTED' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
+                                                                                    'bg-white/10 text-foreground/70'
+                                                                                }`}
+                                                                            >
+                                                                                {app.status === 'SUBMITTED' ? 'Reel Submitted (Review Required)' : app.status}
+                                                                            </Badge>
+                                                                            {app.reel_link && (
+                                                                                <a 
+                                                                                    href={app.reel_link} 
+                                                                                    target="_blank" 
+                                                                                    rel="noopener noreferrer" 
+                                                                                    className="text-xs text-blue-400 hover:text-blue-300 font-bold inline-flex items-center gap-1 underline"
+                                                                                >
+                                                                                    <Video className="w-3.5 h-3.5" /> View Submitted Reel 🔗
+                                                                                </a>
+                                                                            )}
+                                                                        </div>
                                                                     </div>
-                                                                    {app.reel_link && (
-                                                                        <a href={app.reel_link} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-[10px] hover:underline mt-1 inline-block">
-                                                                            View Reel 🔗
-                                                                        </a>
-                                                                    )}
+
+                                                                    {/* Action Buttons for Application Lifecycle */}
+                                                                    <div className="flex items-center gap-2 shrink-0">
+                                                                        {app.status === 'PENDING' && (
+                                                                            <>
+                                                                                <Button 
+                                                                                    size="sm" 
+                                                                                    variant="outline" 
+                                                                                    className="h-8 text-xs border-red-500/30 text-red-400 hover:bg-red-500/10 px-3 rounded-lg"
+                                                                                    onClick={() => handleStatusUpdate(app.id, 'REJECTED')}
+                                                                                >
+                                                                                    Reject
+                                                                                </Button>
+                                                                                <Button 
+                                                                                    size="sm" 
+                                                                                    className="h-8 text-xs bg-blue-600 hover:bg-blue-500 text-white px-3.5 rounded-lg shadow-sm"
+                                                                                    onClick={() => handleStatusUpdate(app.id, 'SHORTLISTED')}
+                                                                                >
+                                                                                    Shortlist Creator
+                                                                                </Button>
+                                                                            </>
+                                                                        )}
+
+                                                                        {app.status === 'SUBMITTED' && (
+                                                                            <>
+                                                                                <Button 
+                                                                                    size="sm" 
+                                                                                    variant="outline" 
+                                                                                    className="h-8 text-xs border-amber-500/30 text-amber-400 hover:bg-amber-500/10 px-3 rounded-lg"
+                                                                                    onClick={() => {
+                                                                                        setCorrectionAppId(app.id);
+                                                                                        setCorrectionRemark("Please check mandatory hashtags and brand tag");
+                                                                                    }}
+                                                                                >
+                                                                                    Correction
+                                                                                </Button>
+                                                                                <Button 
+                                                                                    size="sm" 
+                                                                                    variant="outline" 
+                                                                                    className="h-8 text-xs border-red-500/30 text-red-400 hover:bg-red-500/10 px-2.5 rounded-lg"
+                                                                                    onClick={() => handleStatusUpdate(app.id, 'REJECTED', 'Deliverable did not meet guidelines')}
+                                                                                >
+                                                                                    Reject
+                                                                                </Button>
+                                                                                <Button 
+                                                                                    size="sm" 
+                                                                                    className="h-8 text-xs bg-emerald-600 hover:bg-emerald-500 text-white px-4 rounded-lg shadow-sm font-semibold"
+                                                                                    onClick={() => handleStatusUpdate(app.id, 'APPROVED')}
+                                                                                >
+                                                                                    Approve Reel & Pay
+                                                                                </Button>
+                                                                            </>
+                                                                        )}
+
+                                                                        {app.status === 'APPROVED' && (
+                                                                            <span className="text-[11px] font-mono font-bold text-emerald-400 flex items-center gap-1">
+                                                                                <CheckCircle className="w-3.5 h-3.5" /> Credited
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
-                                                                <div className="flex gap-1">
-                                                                    {app.status === 'PENDING' && (
-                                                                        <>
-                                                                            <Button size="sm" variant="outline" className="h-6 text-[10px] px-2 text-red-600" onClick={() => handleStatusUpdate(app.id, 'REJECTED')}>Reject</Button>
-                                                                            <Button size="sm" className="h-6 text-[10px] px-2" onClick={() => handleStatusUpdate(app.id, 'SHORTLISTED')}>Shortlist</Button>
-                                                                        </>
-                                                                    )}
-                                                                    {app.status === 'SUBMITTED' && (
-                                                                        <>
-                                                                            <Button size="sm" variant="outline" className="h-6 text-[10px] px-2 text-red-600" onClick={() => handleStatusUpdate(app.id, 'REJECTED')}>Reject</Button>
-                                                                            <Button size="sm" className="h-6 text-[10px] px-2 bg-green-600 hover:bg-green-700" onClick={() => handleStatusUpdate(app.id, 'APPROVED')}>Approve</Button>
-                                                                        </>
-                                                                    )}
-                                                                </div>
-                                                            </div>
-                                                        ))}
+                                                            );
+                                                        })}
                                                     </div>
                                                 )}
                                             </TableCell>
@@ -229,6 +394,47 @@ export default function AdminActivitiesPage() {
                     )}
                 </CardContent>
             </Card>
+
+            {/* Request Correction Modal */}
+            <Dialog open={!!correctionAppId} onOpenChange={(open) => !open && setCorrectionAppId(null)}>
+                <DialogContent className="max-w-md bg-neutral-900 border-white/10 p-6 rounded-2xl text-foreground">
+                    <DialogHeader>
+                        <DialogTitle className="text-amber-400 font-bold text-lg flex items-center gap-2">
+                            <AlertTriangle className="w-5 h-5 text-amber-400" />
+                            Request Reel Correction
+                        </DialogTitle>
+                        <DialogDescription className="text-xs text-foreground/50">
+                            Specify what changes the creator needs to make. This note will be sent directly to their Creator Dashboard.
+                        </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-4 pt-3">
+                        <Textarea 
+                            value={correctionRemark}
+                            onChange={e => setCorrectionRemark(e.target.value)}
+                            placeholder="e.g. Please add mandatory brand tag @samplelelo in caption and resubmit Reel link"
+                            className="bg-black/60 border-white/15 text-xs text-foreground rounded-xl min-h-[80px]"
+                        />
+
+                        <div className="flex gap-3">
+                            <Button 
+                                variant="outline" 
+                                className="flex-1 border-white/10 text-xs h-10 rounded-xl"
+                                onClick={() => setCorrectionAppId(null)}
+                            >
+                                Cancel
+                            </Button>
+                            <Button 
+                                className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs h-10 rounded-xl"
+                                disabled={!correctionRemark.trim()}
+                                onClick={() => correctionAppId && handleStatusUpdate(correctionAppId, 'CORRECTION_REQUIRED', correctionRemark)}
+                            >
+                                Send Correction Request
+                            </Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

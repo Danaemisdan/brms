@@ -1,9 +1,10 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireRole } from '@/lib/auth';
 
 export async function GET(req: NextRequest) {
-    const session = requireRole(req, ['CREATOR']);
+    const session = requireRole(req, ['CREATOR', 'CUSTOMER']);
     if (session instanceof NextResponse) return session;
 
     try {
@@ -12,7 +13,11 @@ export async function GET(req: NextRequest) {
         });
 
         if (!profile || !profile.is_verified) {
-            return NextResponse.json({ error: 'Creator not verified' }, { status: 403 });
+            return NextResponse.json({ 
+                error: 'Creator profile not verified by Sample Lelo Team',
+                is_verified: false,
+                is_submitted: Boolean(profile?.platforms && profile.platforms.length > 0)
+            }, { status: 403 });
         }
 
         const activities = await prisma.activity.findMany({

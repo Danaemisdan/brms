@@ -6,7 +6,7 @@ export async function POST(
     req: NextRequest,
     context: { params: Promise<{ id: string }> }
 ) {
-    const session = requireRole(req, ['CREATOR']);
+    const session = requireRole(req, ['CREATOR', 'CUSTOMER']);
     if (session instanceof NextResponse) return session;
 
     try {
@@ -17,7 +17,15 @@ export async function POST(
         });
 
         if (!profile || !profile.is_verified) {
-            return NextResponse.json({ error: 'Creator not verified' }, { status: 403 });
+            return NextResponse.json({ error: 'Creator not verified. Your profile must be verified by the Sample Lelo Team before applying.' }, { status: 403 });
+        }
+
+        const activity = await prisma.activity.findUnique({
+            where: { id }
+        });
+
+        if (!activity || activity.status !== 'OPEN') {
+            return NextResponse.json({ error: 'Activity is no longer accepting applications' }, { status: 400 });
         }
 
         const application = await prisma.activityApplication.create({
@@ -31,6 +39,6 @@ export async function POST(
         return NextResponse.json({ success: true, application });
     } catch (error) {
         console.error('Apply for activity error:', error);
-        return NextResponse.json({ error: 'Internal server error or already applied' }, { status: 500 });
+        return NextResponse.json({ error: 'You have already applied for this activity or request failed' }, { status: 500 });
     }
 }

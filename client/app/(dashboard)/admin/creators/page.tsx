@@ -1,20 +1,29 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle, XCircle } from "lucide-react";
+import { CheckCircle, XCircle, ExternalLink, ShieldCheck, Search, Users, Award, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/apiFetch";
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+const CREATOR_TIERS = [
+    "Nano Creator (500 - 5K)",
+    "Micro Creator (5K - 25K)",
+    "Mid-Tier Creator (25K - 100K)",
+    "Macro Creator (100K+)",
+    "Elite Creator"
+];
 
 export default function AdminCreatorsPage() {
     const [creators, setCreators] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState("");
-    const [filterStatus, setFilterStatus] = useState("ALL");
+    const [filterStatus, setFilterStatus] = useState<"ALL" | "PENDING" | "VERIFIED">("ALL");
+    const [selectedTiers, setSelectedTiers] = useState<Record<string, string>>({});
 
     useEffect(() => {
         fetchCreators();
@@ -27,16 +36,32 @@ export default function AdminCreatorsPage() {
             if (res.ok) {
                 const data = await res.json();
                 setCreators(data);
+                
+                // Initialize tier mappings
+                const tiers: Record<string, string> = {};
+                data.forEach((c: any) => {
+                    tiers[c.id] = c.creator_profile?.category_tier || getDefaultTier(c.creator_profile?.follower_count);
+                });
+                setSelectedTiers(tiers);
             }
         } catch (error) {
-            toast.error("Failed to load creators");
+            toast.error("Failed to load creator list.");
         } finally {
             setIsLoading(false);
         }
     };
 
-    const handleVerify = async (id: string, isVerified: boolean, tier: string) => {
+    const getDefaultTier = (count?: number) => {
+        if (!count) return "Micro Creator (5K - 25K)";
+        if (count >= 100000) return "Macro Creator (100K+)";
+        if (count >= 25000) return "Mid-Tier Creator (25K - 100K)";
+        if (count >= 5000) return "Micro Creator (5K - 25K)";
+        return "Nano Creator (500 - 5K)";
+    };
+
+    const handleVerify = async (id: string, isVerified: boolean) => {
         try {
+            const tier = selectedTiers[id] || "Micro Creator (5K - 25K)";
             const res = await apiFetch(`/api/admin/creators/${id}/verify`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -44,119 +69,235 @@ export default function AdminCreatorsPage() {
             });
 
             if (res.ok) {
-                toast.success(isVerified ? "Creator verified" : "Creator unverified");
+                toast.success(isVerified ? `Creator verified as ${tier}` : "Creator verification revoked");
                 fetchCreators();
             } else {
-                toast.error("Failed to update status");
+                toast.error("Failed to update creator status");
             }
         } catch (error) {
-            toast.error("An error occurred");
+            toast.error("An error occurred during verification");
         }
     };
 
     const filteredCreators = creators.filter(c => {
-        const matchesSearch = c.name?.toLowerCase().includes(searchQuery.toLowerCase()) || c.email?.toLowerCase().includes(searchQuery.toLowerCase());
+        const query = searchQuery.toLowerCase();
+        const matchesSearch = 
+            c.name?.toLowerCase().includes(query) || 
+            c.email?.toLowerCase().includes(query) ||
+            c.mobile?.includes(query) ||
+            c.creator_profile?.content_category?.toLowerCase().includes(query);
+
         if (filterStatus === "VERIFIED") return matchesSearch && c.creator_profile?.is_verified;
         if (filterStatus === "PENDING") return matchesSearch && !c.creator_profile?.is_verified;
         return matchesSearch;
     });
 
-    return (
-        <div className="p-6 max-w-[1400px] mx-auto space-y-6">
-            <h1 className="text-3xl font-bold tracking-tight">Creator Verification</h1>
-            <p className="text-muted-foreground">Review and verify creator profiles before they can access the platform.</p>
+    const pendingCount = creators.filter(c => !c.creator_profile?.is_verified).length;
+    const verifiedCount = creators.filter(c => c.creator_profile?.is_verified).length;
 
-            <Card>
-                <CardHeader className="pb-4">
-                    <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-                        <input 
-                            type="text" 
-                            placeholder="Search by name or email..." 
-                            className="flex h-10 w-full md:max-w-sm rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+    return (
+        <div className="space-y-8 relative z-10 pb-16">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-6">
+                <div>
+                    <h1 className="text-3xl font-extrabold text-primary tracking-wider uppercase">
+                        Creator Profile Verification
+                    </h1>
+                    <p className="text-sm font-sans tracking-wide text-foreground/50 mt-1">
+                        Review, categorize, and verify creator submissions before granting dashboard access.
+                    </p>
+                </div>
+                <Button 
+                    variant="outline" 
+                    onClick={fetchCreators}
+                    className="border-primary/40 text-primary hover:bg-primary/10 tracking-wider uppercase text-xs rounded-lg h-10 px-4"
+                >
+                    <RefreshCw className="w-3.5 h-3.5 mr-2" /> Refresh List
+                </Button>
+            </div>
+
+            {/* Quick Metrics */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <Card className="glass-panel border-white/5 p-4 rounded-xl">
+                    <span className="text-[11px] font-semibold text-foreground/50 uppercase tracking-wider">Total Creators</span>
+                    <div className="text-2xl font-bold font-mono text-primary mt-1">{creators.length}</div>
+                </Card>
+                <Card className="glass-panel border-amber-500/20 bg-amber-500/5 p-4 rounded-xl">
+                    <span className="text-[11px] font-semibold text-amber-400 uppercase tracking-wider">Pending Verification</span>
+                    <div className="text-2xl font-bold font-mono text-amber-300 mt-1">{pendingCount}</div>
+                </Card>
+                <Card className="glass-panel border-emerald-500/20 bg-emerald-500/5 p-4 rounded-xl">
+                    <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">Verified Creators</span>
+                    <div className="text-2xl font-bold font-mono text-emerald-300 mt-1">{verifiedCount}</div>
+                </Card>
+            </div>
+
+            {/* Search and Filters */}
+            <Card className="glass-panel border-white/5 rounded-2xl p-4">
+                <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <div className="relative w-full md:max-w-md">
+                        <Search className="w-4 h-4 text-foreground/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <Input 
+                            placeholder="Search creator by name, mobile, email, or category..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
+                            className="pl-10 h-10 bg-white/5 border-white/10 text-xs text-foreground placeholder:text-foreground/40 rounded-xl"
                         />
-                        <div className="flex gap-2 w-full md:w-auto">
-                            <Button variant={filterStatus === "ALL" ? "default" : "outline"} onClick={() => setFilterStatus("ALL")} size="sm">All</Button>
-                            <Button variant={filterStatus === "PENDING" ? "default" : "outline"} onClick={() => setFilterStatus("PENDING")} size="sm">Pending</Button>
-                            <Button variant={filterStatus === "VERIFIED" ? "default" : "outline"} onClick={() => setFilterStatus("VERIFIED")} size="sm">Verified</Button>
-                        </div>
                     </div>
-                </CardHeader>
-                <CardContent>
-                    {isLoading ? (
-                        <div className="flex justify-center p-12"><div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" /></div>
-                    ) : filteredCreators.length === 0 ? (
-                        <div className="text-center p-12 text-muted-foreground">No creators found.</div>
-                    ) : (
-                        <div className="rounded-md border overflow-x-auto">
-                            <Table>
-                                <TableHeader>
-                                    <TableRow className="bg-slate-50">
-                                        <TableHead>Creator Details</TableHead>
-                                        <TableHead>Category</TableHead>
-                                        <TableHead>Stats</TableHead>
-                                        <TableHead>Links</TableHead>
-                                        <TableHead>Status</TableHead>
-                                        <TableHead className="text-right">Action</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {filteredCreators.map(creator => {
-                                        const profile = creator.creator_profile;
-                                        return (
-                                            <TableRow key={creator.id}>
-                                                <TableCell>
-                                                    <div className="font-semibold">{creator.name}</div>
-                                                    <div className="text-xs text-muted-foreground">{creator.mobile}</div>
-                                                    <div className="text-xs text-muted-foreground">{creator.email}</div>
-                                                </TableCell>
-                                                <TableCell>
-                                                    {profile?.content_category ? (
-                                                        <Badge variant="secondary">{profile.content_category}</Badge>
-                                                    ) : <span className="text-xs text-muted-foreground">N/A</span>}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {profile ? (
-                                                        <div className="text-xs space-y-1">
-                                                            <div><span className="text-muted-foreground">Followers:</span> {profile.follower_count.toLocaleString()}</div>
-                                                            <div><span className="text-muted-foreground">Engagement:</span> {profile.engagement_rate}%</div>
+                    <div className="flex gap-2 w-full md:w-auto">
+                        <Button 
+                            variant={filterStatus === "ALL" ? "default" : "outline"} 
+                            onClick={() => setFilterStatus("ALL")} 
+                            size="sm"
+                            className="text-xs h-9 px-3 rounded-lg"
+                        >
+                            All ({creators.length})
+                        </Button>
+                        <Button 
+                            variant={filterStatus === "PENDING" ? "default" : "outline"} 
+                            onClick={() => setFilterStatus("PENDING")} 
+                            size="sm"
+                            className="text-xs h-9 px-3 rounded-lg text-amber-400 border-amber-500/30"
+                        >
+                            Pending Review ({pendingCount})
+                        </Button>
+                        <Button 
+                            variant={filterStatus === "VERIFIED" ? "default" : "outline"} 
+                            onClick={() => setFilterStatus("VERIFIED")} 
+                            size="sm"
+                            className="text-xs h-9 px-3 rounded-lg text-emerald-400 border-emerald-500/30"
+                        >
+                            Verified ({verifiedCount})
+                        </Button>
+                    </div>
+                </div>
+            </Card>
+
+            {/* Creators Table */}
+            <Card className="glass-panel border-white/5 rounded-2xl overflow-hidden shadow-xl">
+                {isLoading ? (
+                    <div className="p-16 text-center text-xs text-foreground/50 animate-pulse">Loading creator records...</div>
+                ) : filteredCreators.length === 0 ? (
+                    <div className="p-16 text-center text-xs text-foreground/50">No creator profiles match your filters.</div>
+                ) : (
+                    <div className="overflow-x-auto">
+                        <Table>
+                            <TableHeader className="bg-white/5">
+                                <TableRow className="border-white/5 hover:bg-transparent">
+                                    <TableHead className="text-xs font-semibold text-foreground/70">Creator Profile</TableHead>
+                                    <TableHead className="text-xs font-semibold text-foreground/70">Category & Audience</TableHead>
+                                    <TableHead className="text-xs font-semibold text-foreground/70">Social Links</TableHead>
+                                    <TableHead className="text-xs font-semibold text-foreground/70">Assign Creator Range / Tier</TableHead>
+                                    <TableHead className="text-xs font-semibold text-foreground/70">Status</TableHead>
+                                    <TableHead className="text-right text-xs font-semibold text-foreground/70">Actions</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredCreators.map(creator => {
+                                    const prof = creator.creator_profile;
+                                    const isVerified = Boolean(prof?.is_verified);
+                                    const creatorTier = selectedTiers[creator.id] || prof?.category_tier || "Micro Creator (5K - 25K)";
+
+                                    return (
+                                        <TableRow key={creator.id} className="border-white/5 hover:bg-white/5">
+                                            <TableCell>
+                                                <div className="font-bold text-sm text-foreground">{creator.name}</div>
+                                                <div className="text-xs text-foreground/60">{creator.mobile}</div>
+                                                <div className="text-xs text-foreground/50">{creator.email || "No email"}</div>
+                                            </TableCell>
+
+                                            <TableCell>
+                                                <div className="space-y-1">
+                                                    <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20">
+                                                        {prof?.content_category || "General"}
+                                                    </Badge>
+                                                    <div className="text-xs text-foreground/70 font-mono">
+                                                        Followers: <strong className="text-foreground">{prof?.follower_count ? prof.follower_count.toLocaleString() : (prof?.follower_range || "N/A")}</strong>
+                                                    </div>
+                                                    {prof?.engagement_rate ? (
+                                                        <div className="text-[11px] text-foreground/50 font-mono">
+                                                            Engagement: {prof.engagement_rate}%
                                                         </div>
-                                                    ) : <span className="text-xs text-muted-foreground">N/A</span>}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {profile?.profile_urls && profile.profile_urls.length > 0 ? (
-                                                        <div className="flex flex-col gap-1">
-                                                            {profile.profile_urls.map((url: string, idx: number) => (
-                                                                <a key={idx} href={url} target="_blank" rel="noopener noreferrer" className="text-blue-600 text-xs hover:underline truncate max-w-[150px]">
-                                                                    Link {idx + 1}
-                                                                </a>
-                                                            ))}
-                                                        </div>
-                                                    ) : <span className="text-xs text-muted-foreground">None</span>}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {profile?.is_verified ? (
-                                                        <Badge className="bg-green-100 text-green-700 hover:bg-green-100"><CheckCircle className="w-3 h-3 mr-1"/> Verified</Badge>
-                                                    ) : (
-                                                        <Badge variant="outline" className="text-yellow-600 border-yellow-200 bg-yellow-50"><XCircle className="w-3 h-3 mr-1"/> Pending</Badge>
-                                                    )}
-                                                </TableCell>
-                                                <TableCell className="text-right">
-                                                    {!profile?.is_verified ? (
-                                                        <Button size="sm" onClick={() => handleVerify(creator.id, true, "Standard")}>Verify</Button>
-                                                    ) : (
-                                                        <Button size="sm" variant="ghost" className="text-red-600 hover:text-red-700 hover:bg-red-50" onClick={() => handleVerify(creator.id, false, "")}>Revoke</Button>
-                                                    )}
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
-                                </TableBody>
-                            </Table>
-                        </div>
-                    )}
-                </CardContent>
+                                                    ) : null}
+                                                </div>
+                                            </TableCell>
+
+                                            <TableCell>
+                                                {prof?.profile_urls && prof.profile_urls.length > 0 ? (
+                                                    <div className="space-y-1 max-w-[200px]">
+                                                        {prof.profile_urls.map((url: string, i: number) => (
+                                                            <a 
+                                                                key={i} 
+                                                                href={url} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer" 
+                                                                className="text-primary hover:underline text-xs flex items-center gap-1 truncate"
+                                                            >
+                                                                <ExternalLink className="w-3 h-3 shrink-0" /> {url}
+                                                            </a>
+                                                        ))}
+                                                        {prof.platforms?.length > 0 && (
+                                                            <div className="text-[10px] text-foreground/40 mt-1">
+                                                                Platforms: {prof.platforms.join(", ")}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <span className="text-xs text-foreground/40 italic">No links submitted</span>
+                                                )}
+                                            </TableCell>
+
+                                            <TableCell>
+                                                <select
+                                                    className="h-9 rounded-lg border border-white/10 bg-black/60 px-2.5 text-foreground text-xs font-sans outline-none focus:border-primary/50"
+                                                    value={creatorTier}
+                                                    disabled={isVerified}
+                                                    onChange={e => setSelectedTiers({ ...selectedTiers, [creator.id]: e.target.value })}
+                                                >
+                                                    {CREATOR_TIERS.map(tier => (
+                                                        <option key={tier} value={tier}>{tier}</option>
+                                                    ))}
+                                                </select>
+                                            </TableCell>
+
+                                            <TableCell>
+                                                {isVerified ? (
+                                                    <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/40 text-xs px-2.5 py-0.5 flex items-center gap-1 w-fit">
+                                                        <CheckCircle className="w-3 h-3" /> Verified
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge variant="outline" className="bg-amber-500/10 text-amber-400 border-amber-500/30 text-xs px-2.5 py-0.5 flex items-center gap-1 w-fit">
+                                                        <XCircle className="w-3 h-3" /> Pending Review
+                                                    </Badge>
+                                                )}
+                                            </TableCell>
+
+                                            <TableCell className="text-right">
+                                                {!isVerified ? (
+                                                    <Button 
+                                                        size="sm" 
+                                                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs h-8 px-4 rounded-lg shadow-sm"
+                                                        onClick={() => handleVerify(creator.id, true)}
+                                                    >
+                                                        Verify Creator
+                                                    </Button>
+                                                ) : (
+                                                    <Button 
+                                                        size="sm" 
+                                                        variant="outline" 
+                                                        className="border-red-500/30 text-red-400 hover:bg-red-500/10 text-xs h-8 px-3 rounded-lg"
+                                                        onClick={() => handleVerify(creator.id, false)}
+                                                    >
+                                                        Revoke
+                                                    </Button>
+                                                )}
+                                            </TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+                            </TableBody>
+                        </Table>
+                    </div>
+                )}
             </Card>
         </div>
     );

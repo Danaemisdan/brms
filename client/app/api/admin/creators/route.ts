@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireRole } from '@/lib/auth';
@@ -8,7 +9,12 @@ export async function GET(req: NextRequest) {
 
     try {
         const creators = await prisma.user.findMany({
-            where: { role: 'CREATOR' },
+            where: {
+                OR: [
+                    { role: 'CREATOR' },
+                    { creator_profile: { isNot: null } }
+                ]
+            },
             include: { creator_profile: true },
             orderBy: { created_at: 'desc' }
         });
