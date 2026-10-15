@@ -13,6 +13,7 @@ const API_URL = "";
 export default function AdminDashboard() {
     const [stats, setStats] = useState({
         activeProducts: 0,
+        ordersValidating: 0,
         pendingRefunds: 0,
         totalCustomers: 0, // Using unique orders as a proxy for now
         totalRefunded: 0,
@@ -64,8 +65,11 @@ export default function AdminDashboard() {
                 const activeProducts = products.filter((p: any) => p.status?.toUpperCase() === "ACTIVE").length;
                 const draftProducts = products.filter((p: any) => p.status?.toUpperCase() === "REQUESTED" || p.status?.toUpperCase() === "DRAFT");
 
+                const validatingOrdersCount = orders.filter((o: any) => o.status === "Order Validating" || o.status === "SUBMITTED").length;
+
                 setStats({
                     activeProducts,
+                    ordersValidating: validatingOrdersCount,
                     pendingRefunds: pendingRefundsCount,
                     totalCustomers: uniqueCustomers,
                     totalRefunded: totalRefundAmount,
@@ -176,13 +180,13 @@ export default function AdminDashboard() {
     };
 
     const metrics = [
+        { label: "Orders Validating", value: stats.ordersValidating || 0 },
         { label: "Active Products", value: stats.activeProducts },
         { label: "Pending Products", value: stats.pendingProducts },
         { label: "Total Customers", value: stats.totalCustomers },
         { label: "Pending Refunds", value: stats.pendingRefunds },
         { label: "Review Queue", value: `${stats.reviewQueuePending}P / ${stats.reviewQueueInProgress}IP` },
         { label: "WhatsApp Queue", value: `${stats.whatsappQueuePending}P / ${stats.whatsappQueueInProgress}IP` },
-        { label: "Total Vendors", value: "1 (Admin)" },
         { label: "Total Refunded", value: `₹${stats.totalRefunded}` },
     ];
 
@@ -207,6 +211,29 @@ export default function AdminDashboard() {
                 <p className="text-primary/70 py-8 font-sans tracking-widest text-xs uppercase animate-pulse">Loading intelligence...</p>
             ) : (
                 <>
+                    {/* Order Verification Center Banner */}
+                    {(stats.ordersValidating || 0) > 0 && (
+                        <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
+                            <div className="flex items-center gap-3">
+                                <span className="h-3 w-3 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
+                                <div>
+                                    <h3 className="font-bold text-amber-400 text-sm tracking-wide">
+                                        Order Verification Center: {stats.ordersValidating} Orders Awaiting Manual Review
+                                    </h3>
+                                    <p className="text-foreground/60 text-xs mt-0.5">
+                                        Validate slots and dispatch automated confirmation emails to customers.
+                                    </p>
+                                </div>
+                            </div>
+                            <Button 
+                                className="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs tracking-wider uppercase h-9 px-4 rounded-lg shrink-0"
+                                onClick={() => window.location.href = '/admin/orders'}
+                            >
+                                Review Orders
+                            </Button>
+                        </div>
+                    )}
+
                     {/* Metrics */}
                     <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
                         {metrics.map((m, i) => (

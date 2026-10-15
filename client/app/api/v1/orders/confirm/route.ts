@@ -1,11 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 import { requireRole } from '@/lib/auth';
-
-// Placeholder for Email Dispatch
-async function dispatchConfirmationEmail(orderId: string, userEmail: string) {
-    console.log(`[Email Dispatch Stub] Sending order confirmation to ${userEmail} for Order ${orderId}`);
-}
+import { sendOrderConfirmationEmail } from '@/lib/mailer';
 
 export async function POST(req: NextRequest) {
     const session = requireRole(req, ['ADMIN']);
@@ -18,8 +14,14 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
         }
 
-        const order = await prisma.order.findUnique({
-            where: { id: order_id },
+        // Search by DB uuid or ecommerce order_id
+        const order = await prisma.order.findFirst({
+            where: {
+                OR: [
+                    { id: order_id },
+                    { order_id: order_id }
+                ]
+            },
             include: { product: true, user: true }
         });
 
@@ -27,41 +29,76 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Order not found' }, { status: 404 });
         }
 
-        // Slot Validation
-        if (order.product.filled_slots < order.product.total_slots) {
+        // Slot Validation: verify slots available
+        if (order.product.filled_slots <= order.product.total_slots) {
             // Condition Check: Slots Exist
-            // 1. Increment filled_slots
-            await prisma.product.update({
-                where: { id: order.product.id },
-                data: { filled_slots: { increment: 1 } }
-            });
-
-            // 2. Update order status to CONFIRMED
+            // 1. Update order status to 'Order Confirmed (dating)'
             const updatedOrder = await prisma.order.update({
                 where: { id: order.id },
-                data: { status: 'CONFIRMED' }
+                data: { 
+                    status: 'Order Confirmed (dating)',
+                    remarks: 'Order Confirmed (dating)'
+                },
+                include: { product: true, user: true }
             });
 
-            // 3. Automated Mail Trigger (Placeholder)
-            if (order.user.email) {
-                await dispatchConfirmationEmail(order.order_id, order.user.email);
+            // 2. Automated Mail Trigger
+            if (order.user?.email) {
+                await sendOrderConfirmationEmail({
+                    to: order.user.email,
+                    customerName: order.user.name || order.profile_name || "Valued Customer",
+                    orderId: order.order_id,
+                    productName: order.product.product_name,
+                    platform: order.product.platform,
+                    amount: order.product.refund_amount || order.amount,
+                    remarks: 'Order Confirmed (dating)'
+                }).catch(err => console.error("Error dispatching confirmation email:", err));
             }
+
+            // 3. Create in-app notification
+            await prisma.notification.create({
+                data: {
+                    user_id: order.user_id,
+                    type: 'GENERAL',
+                    title: 'Order Confirmed!',
+                    message: `Your order #${order.order_id} for "${order.product.product_name}" has been verified by the admin team. Confirmation email dispatched.`,
+                    channel: 'DASHBOARD'
+                }
+            }).catch(err => console.error("Notification creation error:", err));
+
+            const { syncOrderToSheet } = await import('@/lib/services/googleSheets.service');
+            await syncOrderToSheet(order.id).catch(err => console.error("Sheet sync error:", err));
 
             return NextResponse.json({ 
                 success: true, 
-                message: 'Order confirmed successfully', 
+                message: 'Order verified and confirmed successfully. Confirmation email dispatched.', 
                 order: updatedOrder 
             });
         } else {
             // Condition Check: No Slots
-            // Terminate confirmation and initiate "Refund Entry"
+            // Terminate confirmation and initiate "Refund Entry" workflow
             const updatedOrder = await prisma.order.update({
                 where: { id: order.id },
                 data: {
-                    status: 'REFUND_ENTRY',
+                    status: 'Order Rejected (No More Slots)',
+                    remarks: 'Order Rejected (No More Slots)',
                     refund_entry: true
-                }
+                },
+                include: { product: true, user: true }
             });
+
+            await prisma.notification.create({
+                data: {
+                    user_id: order.user_id,
+                    type: 'GENERAL',
+                    title: 'Order Rejected (No More Slots)',
+                    message: `Campaign slots for "${order.product.product_name}" are full. Order routed to refund entry workflow.`,
+                    channel: 'DASHBOARD'
+                }
+            }).catch(err => console.error("Notification creation error:", err));
+
+            const { syncOrderToSheet } = await import('@/lib/services/googleSheets.service');
+            await syncOrderToSheet(order.id).catch(err => console.error("Sheet sync error:", err));
 
             return NextResponse.json({ 
                 success: false, 

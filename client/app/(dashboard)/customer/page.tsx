@@ -169,7 +169,7 @@ function CustomerDashboardContent() {
                 throw new Error(data.error || "Submission failed");
             }
 
-            toast.success("Order Proof Submitted Successfully! You can track refunds in the 'My Submissions' tab.");
+            toast.success("Order submitted! Under admin validation — you will receive an email once confirmed.");
             setIsSubmitModalOpen(false);
         } catch (error: any) {
             setSubmitError(error.message || "Failed to submit order proof. Try again.");

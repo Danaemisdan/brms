@@ -37,7 +37,8 @@ export async function POST(req: NextRequest) {
                 profile_name,
                 reference_name: reference_name || null,
                 screenshot_url: screenshot_url || "https://dummyimage.com/600x400/000/fff&text=Screenshot",
-                status: "SUBMITTED"
+                status: "Order Validating",
+                remarks: "Order Validating"
             },
             include: {
                 product: true
@@ -54,16 +55,16 @@ export async function POST(req: NextRequest) {
             }
         });
 
-        const user = await prisma.user.findUnique({ where: { id: session.userId } });
-        if (user && user.email) {
-            await sendEmail(
-                user.email,
-                "Order Successfully Submitted",
-                `<h1>Thank you for your submission!</h1>
-                 <p>Your order ID <strong>${order_id}</strong> for product ID <strong>${product_id}</strong> has been successfully recorded.</p>
-                 <p>You can track its status from your dashboard.</p>`
-            );
-        }
+        // Create an in-app notification for the customer
+        await prisma.notification.create({
+            data: {
+                user_id: session.userId,
+                type: 'GENERAL',
+                title: 'Order Submitted - Under Validation',
+                message: `Your order #${order_id} for "${product.product_name}" is currently being manually reviewed by our admin team. You will receive an email once it is confirmed.`,
+                channel: 'DASHBOARD'
+            }
+        }).catch(err => console.error("Notification creation error:", err));
 
         // Push to Google Sheets in the background
         // IMPORTANT: Await the sheet sync so Vercel doesn't kill the background task!

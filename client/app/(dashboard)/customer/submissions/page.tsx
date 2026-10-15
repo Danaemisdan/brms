@@ -1,7 +1,6 @@
 "use client";
 
 import { apiFetch } from "@/lib/apiFetch";
-
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Card, CardTitle, CardDescription, CardHeader, CardContent } from "@/components/ui/card";
@@ -12,9 +11,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { isDateMatch, DateFilterType } from "@/lib/dateUtils";
-import Link from "next/link";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/ui/image-upload";
+import { 
+    Clock, 
+    CheckCircle2, 
+    AlertTriangle, 
+    XCircle, 
+    Sparkles, 
+    Wallet, 
+    ArrowUpRight, 
+    CreditCard, 
+    Info, 
+    UploadCloud,
+    HelpCircle,
+    RefreshCw
+} from "lucide-react";
 
 const API_URL = "";
 
@@ -31,15 +43,22 @@ function CustomerSubmissionsContent() {
     // Active products for selection
     const [products, setProducts] = useState<any[]>([]);
 
+    // Modals
     const [isRefundModalOpen, setIsRefundModalOpen] = useState(false);
     const [activeOrder, setActiveOrder] = useState<any>(null);
     const [reviewScreenshot, setReviewScreenshot] = useState("");
+    const [returnWindowScreenshot, setReturnWindowScreenshot] = useState("");
     const [managerName, setManagerName] = useState("");
+
+    // UPI Withdrawal Modal
+    const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
+    const [withdrawAmount, setWithdrawAmount] = useState("");
+    const [withdrawUpi, setWithdrawUpi] = useState("");
+    const [isWithdrawing, setIsWithdrawing] = useState(false);
 
     // Add New Modal State
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [orderForm, setOrderForm] = useState<{productId: string, orderId: string, amount: string, profileName?: string, referenceName?: string, screenshot: string}>({ productId: "", orderId: "", amount: "", profileName: "", referenceName: "", screenshot: "" });
-    const [searchQuery, setSearchQuery] = useState("");
     const [submitError, setSubmitError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -65,6 +84,9 @@ function CustomerSubmissionsContent() {
             if (res.ok) {
                 const data = await res.json();
                 setUserProfile(data.user);
+                if (data.user?.upi_id) {
+                    setWithdrawUpi(data.user.upi_id);
+                }
             }
         } catch (error) {
             console.error("Failed to load user profile");
@@ -74,15 +96,11 @@ function CustomerSubmissionsContent() {
     useEffect(() => {
         if (!autoSubmitId) return;
 
-        // Give priority to locally fetched products if they exist
         const matched = products.find(p => p.id === autoSubmitId);
         if (matched) {
             setOrderForm(prev => ({ ...prev, productId: matched.id }));
-            setSearchQuery(`${matched.product_name} (${matched.platform} - ₹${matched.refund_amount})`);
             setIsAddModalOpen(true);
         } else if (products.length > 0) {
-            // Only attempt exclusive fetch AFTER the main products array has loaded
-            // to avoid race conditions where it fetches the campaign and then `products` reset it
             const fetchExclusive = async () => {
                 try {
                     const res = await apiFetch(`${API_URL}/api/products/${autoSubmitId}/campaign`);
@@ -94,7 +112,6 @@ function CustomerSubmissionsContent() {
                                 return [...prev, data.product];
                             });
                             setOrderForm(prev => ({ ...prev, productId: data.product.id }));
-                            setSearchQuery(`${data.product.product_name} (${data.product.platform} - ₹${data.product.refund_amount})`);
                             setIsAddModalOpen(true);
                         }
                     }
@@ -136,17 +153,11 @@ function CustomerSubmissionsContent() {
         }
     };
 
-    const statusColor: Record<string, string> = {
-        SUBMITTED: "bg-yellow-100 text-yellow-800",
-        VERIFIED: "bg-green-100 text-green-800",
-        REJECTED: "bg-red-100 text-red-800",
-        REFUNDED: "bg-purple-100 text-purple-800"
-    };
-
     const openRefundModal = (order: any) => {
         setActiveOrder(order);
         setIsRefundModalOpen(true);
         setReviewScreenshot("");
+        setReturnWindowScreenshot("");
     };
 
     const openRetryModal = (order: any) => {
@@ -160,6 +171,49 @@ function CustomerSubmissionsContent() {
         setIsRetryModalOpen(true);
     };
 
+    const handleWithdrawUpi = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const amt = parseFloat(withdrawAmount);
+        if (!amt || amt <= 0) {
+            toast.error("Please enter a valid amount.");
+            return;
+        }
+        if (!withdrawUpi.trim()) {
+            toast.error("Please provide a valid UPI ID (e.g. mobile@upi).");
+            return;
+        }
+        if (amt > (userProfile?.wallet_balance || 0)) {
+            toast.error("Withdrawal amount cannot exceed your wallet balance.");
+            return;
+        }
+
+        setIsWithdrawing(true);
+        try {
+            const token = localStorage.getItem("token");
+            const res = await apiFetch(`${API_URL}/api/v1/wallet/redeem-upi`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ amount: amt, upi_id: withdrawUpi.trim() })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                toast.success(data.message || `₹${amt} transferred to your UPI successfully!`);
+                setIsWithdrawModalOpen(false);
+                setWithdrawAmount("");
+                await fetchUserProfile();
+            } else {
+                toast.error(data.error || "Withdrawal failed. Please check details.");
+            }
+        } catch (err) {
+            toast.error("Error processing UPI withdrawal.");
+        } finally {
+            setIsWithdrawing(false);
+        }
+    };
+
     const handleApplyRefundSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!reviewScreenshot) {
@@ -170,9 +224,7 @@ function CustomerSubmissionsContent() {
         try {
             const token = localStorage.getItem("token") || "";
             const payload = JSON.parse(atob(token.split('.')[1]));
-
-            // We default to the profile's encrypted bank data for the refund method
-            const defaultUpiId = userProfile?.encrypted_bank_data || "Default Account";
+            const defaultUpiId = userProfile?.upi_id || userProfile?.encrypted_bank_data || "Default Account";
 
             const res = await apiFetch(`${API_URL}/api/orders/${activeOrder.id}/refund`, {
                 method: "POST",
@@ -183,6 +235,7 @@ function CustomerSubmissionsContent() {
                 body: JSON.stringify({
                     review_url: "",
                     review_screenshot: reviewScreenshot,
+                    return_window_screenshot: returnWindowScreenshot,
                     upi_id: defaultUpiId,
                     qr_code_url: "",
                     mobile: payload.mobile || "",
@@ -195,14 +248,15 @@ function CustomerSubmissionsContent() {
                 throw new Error(data.error || "Failed");
             }
 
-            toast.success("Review link and refund details submitted successfully! Your refund will be processed shortly.");
+            toast.success("Proofs submitted! Our admin team is verifying your Review SS & Return Window SS.");
             setIsRefundModalOpen(false);
             setActiveOrder(null);
             setReviewScreenshot("");
+            setReturnWindowScreenshot("");
             setManagerName("");
             fetchMyOrders();
         } catch (error: any) {
-            toast.error(error.message || "Failed to submit refund claim. Are you sure you haven't already applied?");
+            toast.error(error.message || "Failed to submit refund claim.");
         } finally {
             setIsSubmitting(false);
         }
@@ -221,7 +275,6 @@ function CustomerSubmissionsContent() {
         }
 
         setIsSubmitting(true);
-
         try {
             const payload = {
                 product_id: orderForm.productId,
@@ -247,10 +300,9 @@ function CustomerSubmissionsContent() {
                 throw new Error(data.error || "Submission failed");
             }
 
-            toast.success("Order Proof Submitted Successfully!");
+            toast.success("Order Submitted! It is now in 'Order Validating'. You will receive an email once verified.");
             setIsAddModalOpen(false);
             setOrderForm({ productId: "", orderId: "", amount: "", profileName: "", referenceName: "", screenshot: "" });
-            setSearchQuery("");
             fetchMyOrders();
         } catch (error: any) {
             setSubmitError(error.message || "Failed to submit order proof. Try again.");
@@ -290,7 +342,7 @@ function CustomerSubmissionsContent() {
                 throw new Error(data.error || "Retry failed");
             }
 
-            toast.success("Order Resubmitted Successfully!");
+            toast.success("Order Resubmitted for Admin Verification!");
             setIsRetryModalOpen(false);
             fetchMyOrders();
         } catch (error: any) {
@@ -300,314 +352,464 @@ function CustomerSubmissionsContent() {
         }
     };
 
-    const placedTotal = orders.filter(o => o.status === 'SUBMITTED' || o.status === 'VALIDATING').reduce((acc, curr) => acc + (Number(curr.refundAmount) || 0), 0);
-    const pendingTotal = orders.filter(o => o.status === 'VALIDATED' && o.refundStatus !== 'REFUNDED' && o.refundStatus !== 'APPROVED').reduce((acc, curr) => acc + (Number(curr.refundAmount) || 0), 0);
-    const confirmedTotal = orders.filter(o => o.status === 'VALIDATED' && o.refundStatus === 'APPROVED').reduce((acc, curr) => acc + (Number(curr.refundAmount) || 0), 0);
-    const processedTotal = orders.filter(o => o.refundStatus === 'REFUNDED').reduce((acc, curr) => acc + (Number(curr.refundAmount) || 0), 0);
-    const totalProfit = placedTotal + pendingTotal + confirmedTotal + processedTotal;
+    const renderStatusBadge = (status: string) => {
+        switch (status) {
+            case "Order Validating":
+            case "SUBMITTED":
+                return (
+                    <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200 flex items-center gap-1.5 py-1 px-2.5">
+                        <Clock className="w-3 h-3 animate-spin" />
+                        Order Validating
+                    </Badge>
+                );
+            case "Order Confirmed (dating)":
+            case "Order Confirmed":
+                return (
+                    <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 flex items-center gap-1.5 py-1 px-2.5">
+                        <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                        Order Confirmed
+                    </Badge>
+                );
+            case "Order Cancelled":
+                return (
+                    <Badge variant="outline" className="bg-gray-100 text-gray-700 border-gray-200 flex items-center gap-1.5 py-1 px-2.5">
+                        <XCircle className="w-3 h-3 text-gray-500" />
+                        Order Cancelled
+                    </Badge>
+                );
+            case "Order Rejected (No More Slots)":
+                return (
+                    <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200 flex items-center gap-1.5 py-1 px-2.5">
+                        <AlertTriangle className="w-3 h-3 text-red-500" />
+                        Rejected (No Slots)
+                    </Badge>
+                );
+            case "Order Approved (After Submission of Review SS & Return Window SS)":
+                return (
+                    <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200 flex items-center gap-1.5 py-1 px-2.5">
+                        <Sparkles className="w-3 h-3 text-teal-600" />
+                        Order Approved (Proofs OK)
+                    </Badge>
+                );
+            case "Refund Processing (15 days of Order Confirmation)":
+                return (
+                    <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 flex items-center gap-1.5 py-1 px-2.5">
+                        <Wallet className="w-3 h-3 text-purple-600" />
+                        Refund Processing (15d)
+                    </Badge>
+                );
+            case "Refund Reject, Wrong Written":
+                return (
+                    <Badge variant="outline" className="bg-orange-50 text-orange-700 border-orange-200 flex items-center gap-1.5 py-1 px-2.5">
+                        <AlertTriangle className="w-3 h-3 text-orange-600" />
+                        Refund Reject (Wrong Written)
+                    </Badge>
+                );
+            default:
+                return (
+                    <Badge variant="outline" className="bg-gray-50 text-gray-700 border-gray-200">
+                        {status}
+                    </Badge>
+                );
+        }
+    };
 
-    const placedCount = orders.filter(o => o.status === 'SUBMITTED' || o.status === 'VALIDATING').length;
-    const pendingCount = orders.filter(o => o.status === 'VALIDATED' && o.refundStatus !== 'REFUNDED' && o.refundStatus !== 'APPROVED').length;
-    const confirmedCount = orders.filter(o => o.status === 'VALIDATED' && o.refundStatus === 'APPROVED').length;
-    const processedCount = orders.filter(o => o.refundStatus === 'REFUNDED').length;
-    const totalOrderCount = placedCount + pendingCount + confirmedCount + processedCount;
+    // Calculate totals
+    const walletBalance = userProfile?.wallet_balance || 0;
+    const validatingCount = orders.filter(o => o.status === "Order Validating" || o.status === "SUBMITTED").length;
+    const confirmedCount = orders.filter(o => o.status === "Order Confirmed (dating)" || o.status === "Order Confirmed").length;
+    const approvedCount = orders.filter(o => o.status === "Order Approved (After Submission of Review SS & Return Window SS)").length;
+    const refundedCount = orders.filter(o => o.status.includes("Refund Processing") || o.refundStatus === "REFUNDED").length;
 
     return (
-        <div className="space-y-6">
-            <div className="flex items-center justify-between">
+        <div className="space-y-8 pb-12">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">Track Order Status</h1>
-                    <p className="text-gray-500">Track your order statuses and claim refunds for successful reviews.</p>
+                    <h1 className="text-3xl font-bold tracking-tight text-gray-900">Track Order Status & Payouts</h1>
+                    <p className="text-gray-500 text-sm mt-1">
+                        Manual review verification, automated confirmation emails, and instant UPI wallet settlements.
+                    </p>
                 </div>
-                <Button onClick={() => setIsAddModalOpen(true)}>Submit new order</Button>
+                <Button 
+                    onClick={() => setIsAddModalOpen(true)}
+                    className="bg-[#eb5757] hover:bg-[#d64c4c] text-white shadow-sm font-semibold rounded-lg"
+                >
+                    Submit New Order
+                </Button>
             </div>
 
-            <Card className="bg-white shadow-sm border-gray-100">
-                <CardHeader className="pb-2">
-                    <CardTitle className="text-center text-xl font-bold text-gray-900">Profit & Orders Overview</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <div className="text-center mb-6">
-                        <span className="text-4xl font-extrabold tracking-tight text-gray-900">₹{totalProfit}</span>
-                        <div className="text-sm text-gray-500 font-medium mt-1">{totalOrderCount} Total Orders</div>
+            {/* Wallet Settlement & Balance Hero Card */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <Card className="md:col-span-2 bg-gradient-to-br from-gray-900 via-neutral-900 to-black text-white p-6 rounded-2xl shadow-xl border border-gray-800 relative overflow-hidden">
+                    <div className="absolute right-0 top-0 translate-x-12 -translate-y-8 w-64 h-64 bg-red-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+                        <div>
+                            <span className="text-xs uppercase tracking-wider text-gray-400 font-medium flex items-center gap-1.5">
+                                <Wallet className="w-3.5 h-3.5 text-red-400" />
+                                Available Wallet Balance
+                            </span>
+                            <div className="text-4xl font-extrabold tracking-tight mt-1 text-white">
+                                ₹{walletBalance.toFixed(2)}
+                            </div>
+                            <p className="text-xs text-gray-400 mt-2 flex items-center gap-1">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                                Approved refunds are automatically collected and credited to this wallet.
+                            </p>
+                        </div>
+                        <div className="flex flex-col gap-2 w-full md:w-auto">
+                            <Button 
+                                onClick={() => setIsWithdrawModalOpen(true)}
+                                className="bg-[#eb5757] hover:bg-[#d64c4c] text-white font-semibold h-11 px-6 rounded-xl shadow-lg flex items-center justify-center gap-2"
+                            >
+                                <ArrowUpRight className="w-4 h-4" />
+                                Withdraw via UPI
+                            </Button>
+                            {userProfile?.upi_id && (
+                                <span className="text-[11px] text-gray-400 text-center font-mono">
+                                    VPA: {userProfile.upi_id}
+                                </span>
+                            )}
+                        </div>
                     </div>
+                </Card>
 
-                    <div className="space-y-4 max-w-md mx-auto">
-                        <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-                            <div>
-                                <div className="text-lg font-bold text-gray-900">₹{confirmedTotal}</div>
-                                <div className="text-xs text-gray-500 mt-1">Available for payment</div>
+                <Card className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+                    <div>
+                        <span className="text-xs uppercase tracking-wider text-gray-500 font-semibold">Active Pipeline</span>
+                        <div className="grid grid-cols-2 gap-3 mt-3">
+                            <div className="bg-amber-50 p-2.5 rounded-lg border border-amber-100">
+                                <div className="text-xs text-amber-700 font-medium">Validating</div>
+                                <div className="text-xl font-bold text-amber-900 mt-0.5">{validatingCount}</div>
                             </div>
-                            <div className="flex items-center gap-4">
-                                <div className="text-sm font-semibold text-gray-700">{confirmedCount} {confirmedCount === 1 ? 'Order' : 'Orders'}</div>
-                                <div className="flex items-center gap-2 px-3 py-1 bg-green-50 border border-green-200 text-green-700 rounded-md text-sm font-medium w-28 justify-center">
-                                    <div className="w-2 h-2 rounded-full bg-green-500"></div> Confirmed
-                                </div>
+                            <div className="bg-emerald-50 p-2.5 rounded-lg border border-emerald-100">
+                                <div className="text-xs text-emerald-700 font-medium">Confirmed</div>
+                                <div className="text-xl font-bold text-emerald-900 mt-0.5">{confirmedCount}</div>
                             </div>
-                        </div>
-
-                        <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-                            <div>
-                                <div className="text-lg font-bold text-gray-900">₹{pendingTotal}</div>
+                            <div className="bg-teal-50 p-2.5 rounded-lg border border-teal-100">
+                                <div className="text-xs text-teal-700 font-medium">Approved</div>
+                                <div className="text-xl font-bold text-teal-900 mt-0.5">{approvedCount}</div>
                             </div>
-                            <div className="flex items-center gap-4">
-                                <div className="text-sm font-semibold text-gray-700">{pendingCount} {pendingCount === 1 ? 'Order' : 'Orders'}</div>
-                                <div className="flex items-center gap-2 px-3 py-1 bg-yellow-50 border border-yellow-200 text-yellow-700 rounded-md text-sm font-medium w-28 justify-center">
-                                    <div className="w-2 h-2 rounded-full bg-yellow-500"></div> Pending
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-                            <div>
-                                <div className="text-lg font-bold text-gray-900">₹{processedTotal}</div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="text-sm font-semibold text-gray-700">{processedCount} {processedCount === 1 ? 'Order' : 'Orders'}</div>
-                                <div className="flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 text-blue-700 rounded-md text-sm font-medium w-28 justify-center">
-                                    <div className="w-2 h-2 rounded-full bg-blue-500"></div> Processed
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div className="flex items-center justify-between pb-2">
-                            <div>
-                                <div className="text-lg font-bold text-gray-900">₹{placedTotal}</div>
-                            </div>
-                            <div className="flex items-center gap-4">
-                                <div className="text-sm font-semibold text-gray-700">{placedCount} {placedCount === 1 ? 'Order' : 'Orders'}</div>
-                                <div className="flex items-center gap-2 px-3 py-1 bg-gray-50 border border-gray-200 text-gray-700 rounded-md text-sm font-medium w-28 justify-center">
-                                    <div className="w-2 h-2 rounded-full bg-gray-500"></div> Placed
-                                </div>
+                            <div className="bg-purple-50 p-2.5 rounded-lg border border-purple-100">
+                                <div className="text-xs text-purple-700 font-medium">Refunded</div>
+                                <div className="text-xl font-bold text-purple-900 mt-0.5">{refundedCount}</div>
                             </div>
                         </div>
                     </div>
-
-                    <div className="mt-8 space-y-3 max-w-2xl mx-auto text-sm">
-                        <div className="flex gap-2">
-                            <div className="mt-1.5 w-2 h-2 rounded-full bg-green-500 shrink-0"></div>
-                            <p className="text-gray-600"><span className="font-bold text-gray-900">Confirmed Profit:</span> Profit that you can transfer to your bank account or redeem through other payment methods.</p>
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="mt-1.5 w-2 h-2 rounded-full bg-yellow-500 shrink-0"></div>
-                            <p className="text-gray-600"><span className="font-bold text-gray-900">Pending Profit:</span> Your Profit has been recorded and will be confirmed as per the partner's expected date.</p>
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="mt-1.5 w-2 h-2 rounded-full bg-blue-500 shrink-0"></div>
-                            <p className="text-gray-600"><span className="font-bold text-gray-900">Processed Profit:</span> Profit that has successfully been paid to you in the past.</p>
-                        </div>
-                        <div className="flex gap-2">
-                            <div className="mt-1.5 w-2 h-2 rounded-full bg-gray-500 shrink-0"></div>
-                            <p className="text-gray-600"><span className="font-bold text-gray-900">Placed Profit:</span> Orders submitted and awaiting initial verification.</p>
-                        </div>
+                    <div className="text-[11px] text-gray-400 mt-4 flex items-center gap-1">
+                        <Info className="w-3 h-3" />
+                        Verification updates send automated email notices.
                     </div>
-                </CardContent>
-            </Card>
+                </Card>
+            </div>
 
-            <div className="space-y-4">
-                <div className="flex flex-col md:flex-row gap-4 mb-4">
-                    <div className="flex-1">
-                        <Input
-                            placeholder="Search by product name or order ID..."
-                            value={searchTermFilter}
-                            onChange={(e) => setSearchTermFilter(e.target.value)}
-                        />
-                    </div>
-                    <select
-                        className="flex h-10 w-full md:w-[160px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                    >
-                        <option value="ALL">All Statuses</option>
-                        <option value="SUBMITTED">Submitted</option>
-                        <option value="VERIFIED">Verified</option>
-                        <option value="REJECTED">Rejected</option>
-                        <option value="REFUNDED">Refunded</option>
-                    </select>
-                    <select
-                        className="flex h-10 w-full md:w-[150px] rounded-md border border-input bg-background px-3 py-2 text-sm"
-                        value={dateFilter}
-                        onChange={(e) => setDateFilter(e.target.value as DateFilterType)}
-                    >
-                        <option value="ALL">All Time</option>
-                        <option value="TODAY">Today</option>
-                        <option value="YESTERDAY">Yesterday</option>
-                        <option value="LAST_7_DAYS">Last 7 Days</option>
-                        <option value="LAST_30_DAYS">Last 30 Days</option>
-                    </select>
+            {/* Lifecycle Guide Alert */}
+            <div className="bg-gray-50 rounded-xl p-4 border border-gray-200/80 text-xs text-gray-600 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                <div className="flex items-center gap-2">
+                    <span className="bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0">!</span>
+                    <span>
+                        <strong>Order Lifecycle Guide:</strong> Orders start at <strong>Order Validating</strong> ➔ Verified & Confirmed by Admin with email confirmation ➔ Upload Review & Return Window SS ➔ Approved for Refund & Wallet Credit.
+                    </span>
                 </div>
+                <button 
+                    onClick={() => { fetchMyOrders(); fetchUserProfile(); }} 
+                    className="inline-flex items-center gap-1 text-gray-700 hover:text-black font-semibold text-xs shrink-0"
+                >
+                    <RefreshCw className="w-3 h-3" /> Refresh Status
+                </button>
+            </div>
 
-                {isLoading ? (
-                    <p className="text-center text-gray-500 py-8">Loading submissions...</p>
-                ) : (() => {
-                    const filteredOrders = orders.filter((req) => {
-                        const searchStr = searchTermFilter.toLowerCase();
-                        const matchesSearch =
-                            req.productName?.toLowerCase().includes(searchStr) ||
-                            req.order_id?.toLowerCase().includes(searchStr);
+            {/* Filter and Search Bar */}
+            <div className="flex flex-col md:flex-row gap-3">
+                <div className="flex-1">
+                    <Input
+                        placeholder="Search by product name or Order ID..."
+                        value={searchTermFilter}
+                        onChange={(e) => setSearchTermFilter(e.target.value)}
+                        className="bg-white border-gray-200 h-10 rounded-lg text-sm"
+                    />
+                </div>
+                <select
+                    className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none focus:border-red-500"
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                >
+                    <option value="ALL">All Statuses ({orders.length})</option>
+                    <option value="Order Validating">1. Order Validating</option>
+                    <option value="Order Confirmed (dating)">2. Order Confirmed</option>
+                    <option value="Order Cancelled">3. Order Cancelled</option>
+                    <option value="Order Rejected (No More Slots)">4. Rejected (No More Slots)</option>
+                    <option value="Order Approved (After Submission of Review SS & Return Window SS)">5. Order Approved</option>
+                    <option value="Refund Processing (15 days of Order Confirmation)">6. Refund Processing (15d)</option>
+                    <option value="Refund Reject, Wrong Written">7. Refund Reject (Wrong Written)</option>
+                </select>
+                <select
+                    className="h-10 rounded-lg border border-gray-200 bg-white px-3 text-sm text-gray-700 outline-none focus:border-red-500"
+                    value={dateFilter}
+                    onChange={(e) => setDateFilter(e.target.value as DateFilterType)}
+                >
+                    <option value="ALL">All Time</option>
+                    <option value="TODAY">Today</option>
+                    <option value="YESTERDAY">Yesterday</option>
+                    <option value="LAST_7_DAYS">Last 7 Days</option>
+                    <option value="LAST_30_DAYS">Last 30 Days</option>
+                </select>
+            </div>
 
-                        // Adjust status filtering because `req.status` combines order and refund statuses contextually 
-                        let matchesStatus = true;
-                        if (statusFilter !== "ALL") {
-                            matchesStatus = req.status === statusFilter;
-                        }
+            {/* Orders Feed */}
+            {isLoading ? (
+                <div className="text-center py-16 text-gray-400 text-sm">
+                    <Clock className="w-6 h-6 animate-spin mx-auto mb-2 text-gray-400" />
+                    Loading your submissions...
+                </div>
+            ) : (() => {
+                const filteredOrders = orders.filter((req) => {
+                    const searchStr = searchTermFilter.toLowerCase();
+                    const matchesSearch =
+                        (req.productName?.toLowerCase() || "").includes(searchStr) ||
+                        (req.order_id?.toLowerCase() || "").includes(searchStr);
 
-                        const matchesDate = isDateMatch(req.created_at, dateFilter);
-
-                        return matchesSearch && matchesStatus && matchesDate;
-                    });
-
-                    if (filteredOrders.length === 0) {
-                        return <p className="text-center text-gray-500 py-8">{orders.length === 0 ? "You haven't submitted any orders yet." : "No submissions found matching filters."}</p>;
+                    let matchesStatus = true;
+                    if (statusFilter !== "ALL") {
+                        matchesStatus = 
+                            req.status === statusFilter ||
+                            (statusFilter === "Order Validating" && req.status === "SUBMITTED") ||
+                            (statusFilter === "Order Confirmed (dating)" && req.status === "Order Confirmed");
                     }
 
-                    
+                    const matchesDate = isDateMatch(req.created_at, dateFilter);
+                    return matchesSearch && matchesStatus && matchesDate;
+                });
+
+                if (filteredOrders.length === 0) {
                     return (
-                        <div className="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
-                            <table className="w-full text-sm text-left">
-                                <thead className="bg-gray-50 text-gray-700 font-semibold border-b">
-                                    <tr>
-                                        <th className="px-4 py-3">Product Name</th>
-                                        <th className="px-4 py-3">Order ID & Platform</th>
-                                        <th className="px-4 py-3">Refund Amount</th>
-                                        <th className="px-4 py-3">Order Status</th>
-                                        <th className="px-4 py-3">Review Status</th>
-                                        <th className="px-4 py-3">Refund Status</th>
-                                        <th className="px-4 py-3 text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-100 bg-white">
-                                    {filteredOrders.map((req) => {
-                                        const orderDate = req.created_at ? new Date(req.created_at) : new Date();
-                                        const now = new Date();
-                                        const daysSinceOrder = Math.floor((now.getTime() - orderDate.getTime()) / (1000 * 60 * 60 * 24));
-                                        
-                                        const isReviewLocked = daysSinceOrder < 5;
-                                        const isRefundLocked = daysSinceOrder < 10;
-
-                                        return (
-                                            <tr key={req.id} className="hover:bg-gray-50 transition-colors">
-                                                <td className="px-4 py-4 font-medium text-gray-900 max-w-[200px] truncate" title={req.productName}>
-                                                    {req.productName}
-                                                </td>
-                                                <td className="px-4 py-4">
-                                                    <div className="text-gray-900 font-mono text-xs bg-gray-100 px-2 py-1 rounded inline-block mb-1">{req.order_id}</div>
-                                                    <div className="text-gray-500 text-xs">{req.platform}</div>
-                                                </td>
-                                                <td className="px-4 py-4 font-semibold text-green-600">
-                                                    ₹{req.refundAmount}
-                                                </td>
-                                                <td className="px-4 py-4">
-                                                    <div className="flex flex-col gap-1">
-                                                        <span className={`px-2 py-1 text-xs font-semibold rounded-md w-fit ${statusColor[req.status] || "bg-gray-100 text-gray-800"}`}>
-                                                            {req.status}
-                                                        </span>
-                                                        {req.status === 'REJECTED' && req.remarks && (
-                                                            <span className="text-[10px] text-red-500 max-w-[150px] truncate" title={req.remarks}>
-                                                                Reason: {req.remarks}
-                                                            </span>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                                <td className="px-4 py-4">
-                                                    {req.hasReview ? (
-                                                        <Badge variant="outline" className="border-green-200 text-green-700 bg-green-50">Uploaded</Badge>
-                                                    ) : (
-                                                        <span className="text-gray-400 text-xs">Pending</span>
-                                                    )}
-                                                </td>
-                                                <td className="px-4 py-4">
-                                                    {req.hasRefund ? (
-                                                        <Badge variant="outline"
-                                                            className={
-                                                                req.refundStatus === 'REFUNDED' ? "border-green-200 text-green-700 bg-green-50" :
-                                                                req.refundStatus === 'FAILED' ? "border-red-200 text-red-700 bg-red-50" :
-                                                                req.refundStatus === 'PROCESSING' ? "border-blue-200 text-blue-700 bg-blue-50" :
-                                                                req.refundStatus === 'APPROVED' ? "border-emerald-200 text-emerald-700 bg-emerald-50" :
-                                                                "border-purple-200 text-purple-700 bg-purple-50"
-                                                            }
-                                                        >
-                                                            {req.refundStatus}
-                                                        </Badge>
-                                                    ) : (
-                                                        <span className="text-gray-400 text-xs">Not requested</span>
-                                                    )}
-                                                </td>
-                                                <td className="px-4 py-4 text-right">
-                                                    {!req.hasRefund && !req.hasReview ? (
-                                                        req.status === 'REJECTED' ? (
-                                                            <Button
-                                                                size="sm"
-                                                                className="bg-red-600 hover:bg-red-700"
-                                                                onClick={() => openRetryModal(req)}
-                                                            >
-                                                                Retry Order
-                                                            </Button>
-                                                        ) : (
-                                                            <Button
-                                                                size="sm"
-                                                                className="bg-blue-600 hover:bg-blue-700"
-                                                                onClick={() => openRefundModal(req)}
-                                                                disabled={isRefundLocked || req.status !== 'VALIDATED'}
-                                                                title={isRefundLocked ? `Unlocks in ${10 - daysSinceOrder} days` : "Apply for Refund"}
-                                                            >
-                                                                {isRefundLocked ? `🔒 Wait ${10 - daysSinceOrder}d` : "Apply for Refund"}
-                                                            </Button>
-                                                        )
-                                                    ) : (
-                                                        <Button size="sm" variant="outline" disabled className="text-xs">
-                                                            {req.refundStatus === 'REFUNDED' ? 'Completed' : req.refundStatus === 'FAILED' ? 'Failed' : req.refundStatus === 'APPROVED' ? 'Approved' : req.refundStatus === 'PROCESSING' ? 'Processing' : 'Requested'}
-                                                        </Button>
-                                                    )}
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
-                        </div>
+                        <Card className="p-12 text-center border-dashed border-gray-200 bg-gray-50/50 rounded-2xl">
+                            <p className="text-gray-500 font-medium">
+                                {orders.length === 0 ? "You haven't submitted any orders yet." : "No orders found matching filters."}
+                            </p>
+                            <Button 
+                                onClick={() => setIsAddModalOpen(true)} 
+                                variant="outline" 
+                                className="mt-4 border-gray-300"
+                            >
+                                Submit Your First Order
+                            </Button>
+                        </Card>
                     );
+                }
 
-                })()}
-            </div>
+                return (
+                    <div className="space-y-4">
+                        {filteredOrders.map((req) => {
+                            const isPending = req.status === "Order Validating" || req.status === "SUBMITTED";
+                            const isConfirmed = req.status === "Order Confirmed (dating)" || req.status === "Order Confirmed";
+                            const isRejected = req.status.includes("Reject") || req.status === "REJECTED";
+                            const isApproved = req.status.includes("Approved");
+                            const isRefundProcessing = req.status.includes("Refund Processing");
 
-            <Dialog open={isRefundModalOpen} onOpenChange={setIsRefundModalOpen}>
-                <DialogContent className="sm:max-w-md">
+                            return (
+                                <Card key={req.id} className="p-5 bg-white border border-gray-200 rounded-xl shadow-sm hover:border-gray-300 transition-all">
+                                    <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                                        <div className="space-y-2 flex-1">
+                                            <div className="flex items-center gap-3 flex-wrap">
+                                                <h3 className="font-bold text-gray-900 text-base">
+                                                    {req.productName}
+                                                </h3>
+                                                {renderStatusBadge(req.status)}
+                                                <span className="font-mono text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">
+                                                    {req.platform}
+                                                </span>
+                                            </div>
+
+                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                                                <span>
+                                                    Order ID: <strong className="font-mono text-gray-800">{req.order_id}</strong>
+                                                </span>
+                                                <span>
+                                                    Refund Value: <strong className="text-emerald-600 font-semibold">₹{req.refundAmount}</strong>
+                                                </span>
+                                                <span>
+                                                    Date: {new Date(req.created_at).toLocaleDateString()}
+                                                </span>
+                                            </div>
+
+                                            {/* Status Description Callout */}
+                                            {isPending && (
+                                                <div className="text-xs text-amber-700 bg-amber-50/80 border border-amber-200/60 p-2 rounded-lg flex items-center gap-2 max-w-xl">
+                                                    <Clock className="w-3.5 h-3.5 shrink-0" />
+                                                    <span>Our admin team is manually reviewing your order proof. You will receive an email confirmation once verified.</span>
+                                                </div>
+                                            )}
+
+                                            {isConfirmed && !req.hasReview && (
+                                                <div className="text-xs text-emerald-800 bg-emerald-50/80 border border-emerald-200/60 p-2 rounded-lg flex items-center gap-2 max-w-xl">
+                                                    <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                                                    <span>Order confirmed & verified! Please submit your Review Screenshot & Return Window Screenshot once the item arrives.</span>
+                                                </div>
+                                            )}
+
+                                            {req.remarks && req.remarks !== req.status && (
+                                                <div className="text-xs text-red-600 bg-red-50 p-2 rounded-lg border border-red-100 max-w-xl">
+                                                    <strong>Note:</strong> {req.remarks}
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Action buttons */}
+                                        <div className="flex items-center gap-2 lg:self-center">
+                                            {isRejected && (
+                                                <Button 
+                                                    size="sm" 
+                                                    className="bg-red-600 hover:bg-red-700 text-white text-xs font-semibold"
+                                                    onClick={() => openRetryModal(req)}
+                                                >
+                                                    Retry Order
+                                                </Button>
+                                            )}
+
+                                            {isConfirmed && !req.hasReview && (
+                                                <Button 
+                                                    size="sm" 
+                                                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center gap-1.5"
+                                                    onClick={() => openRefundModal(req)}
+                                                >
+                                                    <UploadCloud className="w-3.5 h-3.5" />
+                                                    Submit Review & Return Proofs
+                                                </Button>
+                                            )}
+
+                                            {req.hasReview && !isApproved && !isRefundProcessing && (
+                                                <Badge variant="outline" className="bg-teal-50 text-teal-700 border-teal-200 py-1 px-3">
+                                                    Review Proofs Uploaded (Under Admin Review)
+                                                </Badge>
+                                            )}
+
+                                            {isApproved && (
+                                                <Badge variant="outline" className="bg-teal-50 text-teal-800 border-teal-200 py-1 px-3 font-semibold">
+                                                    ✓ Approved for Settlement
+                                                </Badge>
+                                            )}
+
+                                            {isRefundProcessing && (
+                                                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 py-1 px-3 font-semibold">
+                                                    ₹ Credited to Wallet
+                                                </Badge>
+                                            )}
+                                        </div>
+                                    </div>
+                                </Card>
+                            );
+                        })}
+                    </div>
+                );
+            })()}
+
+            {/* Instant UPI Withdrawal Modal */}
+            <Dialog open={isWithdrawModalOpen} onOpenChange={setIsWithdrawModalOpen}>
+                <DialogContent className="sm:max-w-md bg-white rounded-2xl">
                     <DialogHeader>
-                        <DialogTitle>Apply for Refund</DialogTitle>
+                        <DialogTitle className="text-lg font-bold flex items-center gap-2 text-gray-900">
+                            <Wallet className="w-5 h-5 text-red-500" />
+                            Withdraw Funds to UPI
+                        </DialogTitle>
+                        <CardDescription className="text-xs text-gray-500">
+                            Transfer your internal wallet balance directly to your bank account via UPI VPA.
+                        </CardDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleWithdrawUpi} className="space-y-4 pt-2">
+                        <div className="bg-gray-50 p-3 rounded-xl border border-gray-200">
+                            <span className="text-xs text-gray-500 block">Available Balance</span>
+                            <span className="text-2xl font-bold text-gray-900">₹{walletBalance.toFixed(2)}</span>
+                        </div>
+
+                        <div>
+                            <Label className="text-xs font-semibold text-gray-700">Withdrawal Amount (₹) <span className="text-red-500">*</span></Label>
+                            <Input
+                                type="number"
+                                required
+                                min="1"
+                                max={walletBalance}
+                                placeholder="Enter amount to withdraw"
+                                value={withdrawAmount}
+                                onChange={(e) => setWithdrawAmount(e.target.value)}
+                                className="mt-1"
+                            />
+                        </div>
+
+                        <div>
+                            <Label className="text-xs font-semibold text-gray-700">UPI Virtual Payment Address (VPA) <span className="text-red-500">*</span></Label>
+                            <Input
+                                required
+                                placeholder="e.g. yourname@okaxis or 9876543210@paytm"
+                                value={withdrawUpi}
+                                onChange={(e) => setWithdrawUpi(e.target.value)}
+                                className="mt-1 font-mono text-sm"
+                            />
+                            <p className="text-[11px] text-gray-400 mt-1">Make sure this UPI address is active and linked to your bank account.</p>
+                        </div>
+
+                        <DialogFooter className="mt-6">
+                            <Button type="button" variant="outline" onClick={() => setIsWithdrawModalOpen(false)}>Cancel</Button>
+                            <Button 
+                                type="submit" 
+                                disabled={isWithdrawing || walletBalance <= 0} 
+                                className="bg-[#eb5757] hover:bg-[#d64c4c] text-white font-semibold"
+                            >
+                                {isWithdrawing ? "Processing UPI..." : "Confirm & Transfer"}
+                            </Button>
+                        </DialogFooter>
+                    </form>
+                </DialogContent>
+            </Dialog>
+
+            {/* Proofs Submission Modal (Review SS & Return Window SS) */}
+            <Dialog open={isRefundModalOpen} onOpenChange={setIsRefundModalOpen}>
+                <DialogContent className="sm:max-w-md bg-white rounded-2xl max-h-[90vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="text-lg font-bold text-gray-900">Submit Review & Return Proofs</DialogTitle>
+                        <CardDescription className="text-xs text-gray-500">
+                            Required to approve and settle your refund into your wallet.
+                        </CardDescription>
                     </DialogHeader>
                     {activeOrder && (
-                        <form onSubmit={handleApplyRefundSubmit} className="space-y-4 pt-4">
-                            <div>
-                                <h4 className="font-semibold text-lg">{activeOrder.productName}</h4>
-                                <p className="text-sm text-gray-500 mb-4">Upload your review screenshot and claim your ₹{activeOrder.refundAmount} refund instantly.</p>
+                        <form onSubmit={handleApplyRefundSubmit} className="space-y-4 pt-2">
+                            <div className="bg-gray-50 p-3 rounded-lg border border-gray-200 text-xs">
+                                <strong className="text-gray-900 block">{activeOrder.productName}</strong>
+                                <span className="text-gray-500">Order ID: {activeOrder.order_id} • Refund: ₹{activeOrder.refundAmount}</span>
                             </div>
 
-                            <div className="space-y-1 mt-4">
-                                <Label>Manager Name <span className="text-red-500">*</span></Label>
+                            <div>
+                                <Label className="text-xs font-semibold text-gray-700">Manager / Agent Name (Optional)</Label>
                                 <Input
-                                    className="mt-1 bg-white"
-                                    placeholder="Enter Manager Name"
-                                    required
+                                    className="mt-1 bg-white text-xs"
+                                    placeholder="Enter Manager Name if assigned"
                                     value={managerName}
                                     onChange={(e) => setManagerName(e.target.value)}
                                 />
                             </div>
 
-                            <div className="space-y-1 mt-4">
-                                <Label>Review Screenshot <span className="text-red-500">*</span></Label>
-                                <div className="mt-2">
-                                    <ImageUpload
-                                        value={reviewScreenshot}
-                                        onChange={(val) => setReviewScreenshot(val)}
-                                    />
-                                </div>
+                            <div>
+                                <Label className="text-xs font-semibold text-gray-700">1. Review Screenshot <span className="text-red-500">*</span></Label>
+                                <p className="text-[11px] text-gray-500 mb-1.5">Screenshot showing your published 5-star review on the ecommerce platform.</p>
+                                <ImageUpload
+                                    value={reviewScreenshot}
+                                    onChange={(val) => setReviewScreenshot(val)}
+                                />
+                            </div>
+
+                            <div>
+                                <Label className="text-xs font-semibold text-gray-700">2. Return Window Screenshot (Optional / Recommended)</Label>
+                                <p className="text-[11px] text-gray-500 mb-1.5">Screenshot showing return window has closed or product has been accepted.</p>
+                                <ImageUpload
+                                    value={returnWindowScreenshot}
+                                    onChange={(val) => setReturnWindowScreenshot(val)}
+                                />
                             </div>
 
                             <DialogFooter className="mt-6">
-                                <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => setIsRefundModalOpen(false)}>Back</Button>
-                                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-foreground">
-                                    {isSubmitting ? "Submitting..." : "Apply for Refund"}
+                                <Button type="button" variant="outline" onClick={() => setIsRefundModalOpen(false)}>Cancel</Button>
+                                <Button type="submit" disabled={isSubmitting} className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold">
+                                    {isSubmitting ? "Submitting Proofs..." : "Submit Proofs for Approval"}
                                 </Button>
                             </DialogFooter>
                         </form>
@@ -615,48 +817,41 @@ function CustomerSubmissionsContent() {
                 </DialogContent>
             </Dialog>
 
+            {/* Retry Modal */}
             <Dialog open={isRetryModalOpen} onOpenChange={setIsRetryModalOpen}>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md bg-white rounded-2xl">
                     <DialogHeader>
-                        <DialogTitle>Retry Rejected Order</DialogTitle>
+                        <DialogTitle className="text-lg font-bold text-gray-900">Resubmit Rejected Order</DialogTitle>
                     </DialogHeader>
                     {activeOrder && (
-                        <form className="space-y-4 pt-4" onSubmit={handleRetrySubmit}>
-                            <div className="bg-red-50 p-3 rounded-md border border-red-100">
-                                <h4 className="font-semibold text-red-800 text-sm">Reason for Rejection:</h4>
-                                <p className="text-sm text-red-600 mt-1">{activeOrder.remarks || "No reason provided."}</p>
+                        <form className="space-y-4 pt-2" onSubmit={handleRetrySubmit}>
+                            <div className="bg-red-50 p-3 rounded-lg border border-red-200">
+                                <span className="font-semibold text-red-800 text-xs block">Rejection Remark:</span>
+                                <p className="text-xs text-red-700 mt-0.5">{activeOrder.remarks || "No remark provided."}</p>
                             </div>
                             <div>
-                                <Label>Order ID <span className="text-red-500">*</span></Label>
+                                <Label className="text-xs font-semibold">Order ID <span className="text-red-500">*</span></Label>
                                 <Input
-                                    className="mt-1 bg-white"
-                                    placeholder="Enter Order ID"
+                                    className="mt-1 bg-white font-mono text-sm"
                                     required
                                     value={retryForm.orderId}
                                     onChange={(e) => setRetryForm({ ...retryForm, orderId: e.target.value })}
                                 />
                             </div>
-                            <div className="hidden">
-                                <Input
-                                    type="number"
-                                    value={retryForm.amount}
-                                    readOnly
-                                />
-                            </div>
-                            <div className="space-y-1">
-                                <Label>Order Screenshot <span className="text-red-500">*</span></Label>
-                                <div className="mt-2">
+                            <div>
+                                <Label className="text-xs font-semibold">New Full Order Screenshot <span className="text-red-500">*</span></Label>
+                                <div className="mt-1.5">
                                     <ImageUpload
                                         value={retryForm.screenshot}
                                         onChange={(val) => setRetryForm({ ...retryForm, screenshot: val })}
                                     />
                                 </div>
                             </div>
-                            {submitError && <p className="text-red-500 text-sm text-center">{submitError}</p>}
+                            {submitError && <p className="text-red-500 text-xs text-center">{submitError}</p>}
                             <DialogFooter className="mt-6">
-                                <Button type="button" variant="outline" className="w-full sm:w-auto" onClick={() => setIsRetryModalOpen(false)}>Cancel</Button>
-                                <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-sans tracking-widest uppercase transition-colors">
-                                    {isSubmitting ? "Submitting..." : "Resubmit Order"}
+                                <Button type="button" variant="outline" onClick={() => setIsRetryModalOpen(false)}>Cancel</Button>
+                                <Button type="submit" disabled={isSubmitting} className="bg-red-600 hover:bg-red-700 text-white">
+                                    {isSubmitting ? "Submitting..." : "Resubmit for Validation"}
                                 </Button>
                             </DialogFooter>
                         </form>
@@ -664,31 +859,28 @@ function CustomerSubmissionsContent() {
                 </DialogContent>
             </Dialog>
 
+            {/* Submit New Order Modal */}
             <Dialog
                 open={isAddModalOpen}
-                onOpenChange={(isOpen) => {
-                    if (!isOpen && autoSubmitId) {
-                        const confirmCancel = window.confirm("Are you sure you want to cancel submitting the order proof for this exclusive campaign?");
-                        if (!confirmCancel) return;
-                    }
-                    setIsAddModalOpen(isOpen);
-                }}
+                onOpenChange={(isOpen) => setIsAddModalOpen(isOpen)}
             >
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md bg-white rounded-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                        <DialogTitle>Submit New Order Proof</DialogTitle>
+                        <DialogTitle className="text-lg font-bold text-gray-900">Submit New Order Proof</DialogTitle>
+                        <CardDescription className="text-xs text-gray-500">
+                            Your order will enter <strong>Order Validating</strong> status. Once verified by the admin team, you will receive an email confirmation.
+                        </CardDescription>
                     </DialogHeader>
-                    <form className="space-y-4 pt-4" onSubmit={handleAddSubmit}>
+                    <form className="space-y-4 pt-2" onSubmit={handleAddSubmit}>
                         <div>
-                            <Label>Search & Select Product / Campaign <span className="text-red-500">*</span></Label>
-
+                            <Label className="text-xs font-semibold text-gray-700">Select Campaign / Product <span className="text-red-500">*</span></Label>
                             <Select
                                 value={orderForm.productId}
                                 onValueChange={(val) => setOrderForm({ ...orderForm, productId: val })}
                                 disabled={!!autoSubmitId}
                             >
                                 <SelectTrigger className="w-full mt-1 bg-white">
-                                    <SelectValue placeholder="Select a product from the list..." />
+                                    <SelectValue placeholder="Select active campaign..." />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {products.map(p => (
@@ -698,21 +890,19 @@ function CustomerSubmissionsContent() {
                                     ))}
                                 </SelectContent>
                             </Select>
-
-                            {products.length === 0 && <p className="text-xs text-red-500 mt-1">No active campaigns available to submit orders for.</p>}
                         </div>
                         <div>
-                            <Label>Order ID <span className="text-red-500">*</span></Label>
+                            <Label className="text-xs font-semibold text-gray-700">Order ID <span className="text-red-500">*</span></Label>
                             <Input
-                                className="mt-1 bg-white"
-                                placeholder="Enter Order ID"
+                                className="mt-1 bg-white font-mono text-sm"
+                                placeholder="e.g. 402-1234567-8901234"
                                 required
                                 value={orderForm.orderId}
                                 onChange={(e) => setOrderForm({ ...orderForm, orderId: e.target.value })}
                             />
                         </div>
                         <div>
-                            <Label>Total Amount Paid <span className="text-red-500">*</span></Label>
+                            <Label className="text-xs font-semibold text-gray-700">Amount Paid (₹) <span className="text-red-500">*</span></Label>
                             <Input
                                 className="mt-1 bg-white"
                                 placeholder="₹"
@@ -724,31 +914,21 @@ function CustomerSubmissionsContent() {
                             />
                         </div>
                         <div>
-                            <Label>Profile Name <span className="text-red-500">*</span></Label>
+                            <Label className="text-xs font-semibold text-gray-700">Profile Name on E-Commerce <span className="text-red-500">*</span></Label>
                             <Input
                                 className="mt-1 bg-white"
-                                placeholder="Enter your Profile Name"
+                                placeholder="Enter profile name shown in order"
                                 required
                                 value={orderForm.profileName || ""}
                                 onChange={(e) => setOrderForm({ ...orderForm, profileName: e.target.value })}
                             />
                         </div>
                         <div>
-                            <Label>Reference Name <span className="text-gray-500 text-xs font-normal ml-2">(Optional)</span></Label>
-                            <Input
-                                className="mt-1 bg-white"
-                                placeholder="Enter Reference Name"
-                                value={orderForm.referenceName || ""}
-                                onChange={(e) => setOrderForm({ ...orderForm, referenceName: e.target.value })}
-                            />
-                        </div>
-                        <div>
-                            <Label>Order Screenshot <span className="text-red-500">*</span></Label>
-                            <p className="text-xs text-red-600 font-medium my-1.5 flex items-start gap-1 p-2 bg-red-50 rounded-md border border-red-100">
-                                <span className="text-red-600 mt-0.5">⚠️</span>
-                                Please upload an uncropped "Full Long Screenshot" that clearly shows your actual Order ID, Customer Name, and Total Order Value. Small or cropped screenshots will be rejected by the AI.
+                            <Label className="text-xs font-semibold text-gray-700">Order Proof Screenshot <span className="text-red-500">*</span></Label>
+                            <p className="text-[11px] text-gray-500 mb-1.5">
+                                Please upload an uncropped screenshot showing your Order ID, Date, and Total Value.
                             </p>
-                            <div className="mt-2">
+                            <div className="mt-1">
                                 <ImageUpload
                                     value={orderForm.screenshot}
                                     onChange={(val) => setOrderForm({ ...orderForm, screenshot: val })}
@@ -758,8 +938,8 @@ function CustomerSubmissionsContent() {
 
                         {submitError && <p className="text-sm text-red-600 bg-red-50 p-2 rounded">{submitError}</p>}
 
-                        <Button type="submit" className="w-full mt-4" size="lg" disabled={isSubmitting}>
-                            {isSubmitting ? "Submitting..." : "Submit Order Details"}
+                        <Button type="submit" className="w-full mt-4 bg-[#eb5757] hover:bg-[#d64c4c] text-white font-semibold" size="lg" disabled={isSubmitting}>
+                            {isSubmitting ? "Submitting Proof..." : "Submit Order for Validation"}
                         </Button>
                     </form>
                 </DialogContent>
@@ -770,7 +950,7 @@ function CustomerSubmissionsContent() {
 
 export default function CustomerSubmissions() {
     return (
-        <Suspense fallback={<div className="py-12 text-center">Loading...</div>}>
+        <Suspense fallback={<div className="py-16 text-center text-gray-500">Loading Order Submissions...</div>}>
             <CustomerSubmissionsContent />
         </Suspense>
     );

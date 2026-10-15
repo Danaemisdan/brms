@@ -33,6 +33,8 @@ export async function GET(req: NextRequest) {
                 email: user.email,
                 mobile: user.mobile,
                 role: user.role,
+                wallet_balance: user.wallet_balance || 0,
+                upi_id: user.upi_id || paymentMethodString || null,
                 encrypted_bank_data: paymentMethodString,
             }
         }, { status: 200 });
