@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import { ShinyText } from "@/components/ui/ShinyText";
 import { VelocityScroll } from "@/components/ui/VelocityScroll";
-import { HeroScroller } from "@/components/HeroScroller";
+import { HeroSpotlight } from "@/components/HeroSpotlight";
 
 const POPULAR_CATEGORIES = [
   { label: "💄 Beauty & Skincare", href: "/browse?category=beauty" },
@@ -135,11 +135,10 @@ export default function Home() {
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="flex justify-center items-center relative w-full"
           >
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] bg-gradient-to-tr from-[#eb5757]/20 to-orange-400/20 rounded-full blur-[100px] pointer-events-none"></div>
-            <HeroScroller />
+            <HeroSpotlight />
           </motion.div>
         </div>
       </section>
