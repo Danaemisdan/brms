@@ -453,13 +453,13 @@ export default function AdminProducts() {
             <div className="flex items-center justify-between border-b border-border/5 pb-6 mb-6">
                 <div>
                     <h1 className="text-4xl font-sans font-bold text-primary tracking-wider uppercase">Manage Campaigns</h1>
-                    <p className="text-foreground/40 mt-2 font-sans tracking-wide text-sm">Deploy and orchestrate product intelligence operations.</p>
+                    <p className="text-foreground/40 mt-2 font-sans tracking-wide text-sm">Manage campaigns, allocate slots, and configure product listings.</p>
                 </div>
                 <Button onClick={() => {
                     if (showForm) resetForm();
                     else setShowForm(true);
                 }} className="bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20 font-sans tracking-widest uppercase text-xs h-12 px-6 rounded-sm transition-all shadow-[0_0_15px_rgba(212,175,55,0.1)]">
-                    {showForm ? "Abort Operation" : "Deploy New Campaign"}
+                    {showForm ? "Cancel" : "Create New Campaign"}
                 </Button>
             </div>
 
@@ -502,7 +502,7 @@ export default function AdminProducts() {
             {showForm && (
                 <Card className="glass-panel border-primary/30 shadow-[0_0_30px_rgba(212,175,55,0.05)]">
                     <CardHeader className="border-b border-border/5 pb-4 mb-4">
-                        <CardTitle className="text-xl font-sans font-bold text-foreground tracking-widest uppercase">{editingId ? "Modify Operation Parameter" : "Initialize Operation Dossier"}</CardTitle>
+                        <CardTitle className="text-xl font-sans font-bold text-foreground tracking-widest uppercase">{editingId ? "Edit Campaign Details" : "Create New Campaign"}</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="grid gap-4 md:grid-cols-2">

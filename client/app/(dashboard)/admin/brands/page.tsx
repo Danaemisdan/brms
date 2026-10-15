@@ -247,14 +247,14 @@ export default function AdminBrands() {
                     <p className="text-foreground/40 mt-2 font-sans tracking-wide text-sm">Orchestrate and onboard official brand partners.</p>
                 </div>
                 <Button onClick={() => setShowForm(!showForm)} className="bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20 font-sans tracking-widest uppercase text-xs h-12 px-6 rounded-sm transition-all shadow-[0_0_15px_rgba(212,175,55,0.1)]">
-                    {showForm ? "Cancel Operation" : "Authorize New Vendor"}
+                    {showForm ? "Cancel" : "Add New Brand"}
                 </Button>
             </div>
 
             {showForm && (
                 <Card className="glass-panel border-primary/30 shadow-[0_0_30px_rgba(212,175,55,0.05)]">
                     <CardHeader className="border-b border-border/5 pb-4 mb-4">
-                        <CardTitle className="text-xl font-sans font-bold text-foreground tracking-widest uppercase">New Vendor Dossier</CardTitle>
+                        <CardTitle className="text-xl font-sans font-bold text-foreground tracking-widest uppercase">New Brand Partner</CardTitle>
                     </CardHeader>
                     <CardContent>
                         {error && !editingBrand && (
@@ -352,7 +352,7 @@ export default function AdminBrands() {
                     <div className="relative mb-8">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/40" />
                         <Input
-                            placeholder="Search dossier by name, liaison, email, or direct line..."
+                            placeholder="Search brands by name, contact person, email, or phone..."
                             className="pl-12 h-14 glass-panel border-border/10 text-foreground placeholder:text-foreground/30 focus:border-primary/50 font-sans text-sm tracking-wide"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
@@ -361,10 +361,10 @@ export default function AdminBrands() {
                 )}
 
                 {isLoading ? (
-                    <div className="text-center py-12 text-primary/70 font-sans tracking-widest text-xs uppercase animate-pulse">Scanning records...</div>
+                    <div className="text-center py-12 text-primary/70 font-sans tracking-widest text-xs uppercase animate-pulse">Loading brands...</div>
                 ) : brands.length === 0 ? (
                     <Card className="p-12 text-center glass-panel border-border/5">
-                        <p className="text-foreground/40 font-sans tracking-wide">No vendor records established. Initialize "Authorize New Vendor" to proceed.</p>
+                        <p className="text-foreground/40 font-sans tracking-wide">No brand records found. Click "Add New Brand" to create one.</p>
                     </Card>
                 ) : (() => {
                     const filteredBrands = brands.filter(v => {
@@ -376,7 +376,7 @@ export default function AdminBrands() {
                     });
 
                     if (filteredBrands.length === 0) {
-                        return <Card className="p-12 text-center glass-panel border-border/5"><p className="text-foreground/40 font-sans tracking-wide">No dossiers match your criteria.</p></Card>;
+                        return <Card className="p-12 text-center glass-panel border-border/5"><p className="text-foreground/40 font-sans tracking-wide">No brands match your search criteria.</p></Card>;
                     }
 
                     return (
@@ -386,8 +386,8 @@ export default function AdminBrands() {
                                     editingBrand?.id === v.id ? (
                             <Card key={v.id} className="p-6 glass-panel border-primary/50 shadow-[0_0_30px_rgba(212,175,55,0.1)]">
                                 <div className="flex items-center justify-between mb-6 border-b border-border/5 pb-4">
-                                    <h3 className="font-sans font-bold text-xl text-primary uppercase tracking-widest">Update Dossier: {v.name}</h3>
-                                    <Button variant="ghost" size="sm" className="text-foreground/40 hover:text-foreground font-sans tracking-widest uppercase text-[10px]" onClick={() => { setEditingBrand(null); setError(""); }}>Abort</Button>
+                                    <h3 className="font-sans font-bold text-xl text-primary uppercase tracking-widest">Edit Brand: {v.name}</h3>
+                                    <Button variant="ghost" size="sm" className="text-foreground/40 hover:text-foreground font-sans tracking-widest uppercase text-[10px]" onClick={() => { setEditingBrand(null); setError(""); }}>Cancel</Button>
                                 </div>
                                 {error && editingBrand?.id === v.id && (
                                     <div className="mb-6 p-3 rounded bg-red-900/20 text-red-400 text-xs border border-red-500/50 font-sans tracking-wider uppercase text-center">{error}</div>

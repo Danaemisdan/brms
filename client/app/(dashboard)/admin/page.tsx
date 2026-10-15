@@ -1,12 +1,38 @@
 "use client";
 
 import { apiFetch } from "@/lib/apiFetch";
-
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
+import { 
+    AreaChart, 
+    Area, 
+    XAxis, 
+    YAxis, 
+    CartesianGrid, 
+    Tooltip, 
+    ResponsiveContainer 
+} from "recharts";
+import { 
+    Users, 
+    ShoppingBag, 
+    CheckCircle2, 
+    Clock, 
+    TrendingUp, 
+    Layers, 
+    ArrowUpRight, 
+    RefreshCw, 
+    AlertCircle, 
+    Wallet, 
+    MessageSquare, 
+    CheckSquare,
+    ExternalLink,
+    ChevronRight,
+    ShoppingBasket
+} from "lucide-react";
 
 const API_URL = "";
 
@@ -15,7 +41,7 @@ export default function AdminDashboard() {
         activeProducts: 0,
         ordersValidating: 0,
         pendingRefunds: 0,
-        totalCustomers: 0, // Using unique orders as a proxy for now
+        totalCustomers: 0,
         totalRefunded: 0,
         pendingProducts: 0,
         reviewQueuePending: 0,
@@ -24,12 +50,16 @@ export default function AdminDashboard() {
         whatsappQueueInProgress: 0
     });
 
-    // Using pending products for the pending vendors list for now
     const [pendingRequests, setPendingRequests] = useState<any[]>([]);
     const [recentOrders, setRecentOrders] = useState<any[]>([]);
     const [pendingRefundOrders, setPendingRefundOrders] = useState<any[]>([]);
-    const [analyticsData, setAnalyticsData] = useState<{signupTrend: any[], topProducts: any[]}>({ signupTrend: [], topProducts: [] });
+    const [analyticsData, setAnalyticsData] = useState<{ signupTrend: any[], topProducts: any[] }>({ 
+        signupTrend: [], 
+        topProducts: [] 
+    });
+    const [selectedMetric, setSelectedMetric] = useState<"orders" | "signups">("orders");
     const [isLoading, setIsLoading] = useState(true);
+    const [isSyncing, setIsSyncing] = useState(false);
 
     useEffect(() => {
         fetchDashboardData();
@@ -59,8 +89,8 @@ export default function AdminDashboard() {
                 const reviewQueue = queueStats.REVIEW_VERIFY || {};
                 const whatsappQueue = queueStats.WHATSAPP_BLAST || {};
 
-                const pendingRefundsCount = orders.filter((o: any) => o.refund?.status === "PENDING").length;
-                const totalRefundAmount = orders.filter((o: any) => o.refund?.status === "REFUNDED").reduce((sum: number, o: any) => sum + o.refund.amount, 0);
+                const pendingRefundsCount = orders.filter((o: any) => o.refund?.status === "PENDING" || o.status?.includes("Refund Processing")).length;
+                const totalRefundAmount = orders.filter((o: any) => o.refund?.status === "REFUNDED").reduce((sum: number, o: any) => sum + (o.refund?.amount || 0), 0);
                 const uniqueCustomers = new Set(orders.map((o: any) => o.user_id)).size;
                 const activeProducts = products.filter((p: any) => p.status?.toUpperCase() === "ACTIVE").length;
                 const draftProducts = products.filter((p: any) => p.status?.toUpperCase() === "REQUESTED" || p.status?.toUpperCase() === "DRAFT");
@@ -82,19 +112,18 @@ export default function AdminDashboard() {
 
                 setPendingRequests(draftProducts);
 
-                // Filter for "Today"
                 const today = new Date().toISOString().split('T')[0];
                 const isToday = (dateString: string) => dateString && dateString.split('T')[0] === today;
 
                 const recent = orders
-                    .filter((o: any) => o.status === "SUBMITTED" && (isToday(o.created_at) || isToday(o.order_date)))
-                    .slice(0, 5);
+                    .filter((o: any) => isToday(o.created_at) || isToday(o.order_date))
+                    .slice(0, 6);
 
                 const refunds = orders
-                    .filter((o: any) => o.refund?.status === "PENDING" && (isToday(o.created_at) || isToday(o.order_date) || isToday(o.refund?.created_at)))
-                    .slice(0, 5);
+                    .filter((o: any) => (o.refund?.status === "PENDING" || o.status?.includes("Refund Processing")))
+                    .slice(0, 6);
 
-                setRecentOrders(recent);
+                setRecentOrders(recent.length > 0 ? recent : orders.slice(0, 6));
                 setPendingRefundOrders(refunds);
                 setAnalyticsData({
                     signupTrend: analyticsResponse.signupTrend || [],
@@ -126,7 +155,7 @@ export default function AdminDashboard() {
                 });
 
                 if (res.ok) {
-                    toast.success(`Product #${id} approved and listed actively.`);
+                    toast.success("Product approved and published to campaign catalog.");
                     fetchDashboardData();
                 } else {
                     toast.error("Failed to approve product.");
@@ -141,7 +170,7 @@ export default function AdminDashboard() {
                 });
 
                 if (res.ok) {
-                    toast.success(`Product #${id} deleted.`);
+                    toast.success("Product listing rejected and removed.");
                     fetchDashboardData();
                 } else {
                     toast.error("Failed to delete product.");
@@ -150,13 +179,13 @@ export default function AdminDashboard() {
             }
         } catch (error) {
             console.error("Action failed:", error);
-            toast.error("An error occurred during the product action request.");
+            toast.error("An error occurred during product review.");
             setIsLoading(false);
         }
     };
 
     const handleForceSync = async () => {
-        setIsLoading(true);
+        setIsSyncing(true);
         try {
             const token = localStorage.getItem("token");
             const res = await apiFetch(`${API_URL}/api/admin/sync-sheets`, {
@@ -165,7 +194,7 @@ export default function AdminDashboard() {
             });
             
             if (res.ok) {
-                toast.success("Successfully synced with Google Sheets!");
+                toast.success("Successfully synchronized with Google Sheets!");
                 await fetchDashboardData();
             } else {
                 const data = await res.json().catch(() => ({}));
@@ -173,60 +202,148 @@ export default function AdminDashboard() {
             }
         } catch (error) {
             console.error("Sync failed:", error);
-            toast.error("Error connecting to server for sync.");
+            toast.error("Network error while syncing Google Sheets.");
         } finally {
-            setIsLoading(false);
+            setIsSyncing(false);
         }
     };
 
     const metrics = [
-        { label: "Orders Validating", value: stats.ordersValidating || 0 },
-        { label: "Active Products", value: stats.activeProducts },
-        { label: "Pending Products", value: stats.pendingProducts },
-        { label: "Total Customers", value: stats.totalCustomers },
-        { label: "Pending Refunds", value: stats.pendingRefunds },
-        { label: "Review Queue", value: `${stats.reviewQueuePending}P / ${stats.reviewQueueInProgress}IP` },
-        { label: "WhatsApp Queue", value: `${stats.whatsappQueuePending}P / ${stats.whatsappQueueInProgress}IP` },
-        { label: "Total Refunded", value: `₹${stats.totalRefunded}` },
+        { 
+            label: "Orders Validating", 
+            value: stats.ordersValidating || 0, 
+            subtitle: "Awaiting verification",
+            icon: Clock, 
+            href: "/admin/orders",
+            highlight: (stats.ordersValidating || 0) > 0,
+            color: "text-amber-400"
+        },
+        { 
+            label: "Active Campaigns", 
+            value: stats.activeProducts, 
+            subtitle: "Live in store",
+            icon: ShoppingBag, 
+            href: "/admin/products",
+            color: "text-emerald-400"
+        },
+        { 
+            label: "Pending Approvals", 
+            value: stats.pendingProducts, 
+            subtitle: "New vendor submissions",
+            icon: AlertCircle, 
+            href: "/admin/products",
+            color: "text-blue-400"
+        },
+        { 
+            label: "Total Customers", 
+            value: stats.totalCustomers, 
+            subtitle: "Active buyers",
+            icon: Users, 
+            href: "/admin/customers",
+            color: "text-indigo-400"
+        },
+        { 
+            label: "Pending Refunds", 
+            value: stats.pendingRefunds, 
+            subtitle: "Awaiting settlement",
+            icon: Wallet, 
+            href: "/admin/refunds",
+            color: "text-purple-400"
+        },
+        { 
+            label: "Review Queue", 
+            value: `${stats.reviewQueuePending}P / ${stats.reviewQueueInProgress}IP`, 
+            subtitle: "Pending / In-Progress",
+            icon: CheckSquare, 
+            href: "/admin/tasks",
+            color: "text-cyan-400"
+        },
+        { 
+            label: "WhatsApp Queue", 
+            value: `${stats.whatsappQueuePending}P / ${stats.whatsappQueueInProgress}IP`, 
+            subtitle: "Notification tasks",
+            icon: MessageSquare, 
+            href: "/admin/tasks",
+            color: "text-pink-400"
+        },
+        { 
+            label: "Total Refunded", 
+            value: `₹${stats.totalRefunded.toLocaleString()}`, 
+            subtitle: "Processed to date",
+            icon: TrendingUp, 
+            href: "/admin/refunds",
+            color: "text-amber-300"
+        },
     ];
 
+    const totalOrders30d = analyticsData.signupTrend.reduce((sum, item) => sum + (item.orders || 0), 0);
+    const totalSignups30d = analyticsData.signupTrend.reduce((sum, item) => sum + (item.signups || 0), 0);
+
     return (
-        <div className="space-y-10 relative z-10">
-            <div className="border-b border-border/5 pb-6 flex justify-between items-end">
+        <div className="space-y-10 relative z-10 pb-16">
+            {/* Header Section */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-6">
                 <div>
-                    <h1 className="text-4xl font-sans font-bold text-primary tracking-wider uppercase">Admin Portal</h1>
-                    <p className="text-sm font-sans tracking-widest text-foreground/40 mt-2 uppercase">Platform Overview & Command Center</p>
+                    <h1 className="text-3xl font-extrabold text-primary tracking-wider uppercase">
+                        Admin Portal
+                    </h1>
+                    <p className="text-sm font-sans tracking-wide text-foreground/50 mt-1">
+                        Platform Overview & Real-Time Analytics
+                    </p>
                 </div>
-                <Button 
-                    variant="outline" 
-                    onClick={handleForceSync} 
-                    disabled={isLoading}
-                    className="border-primary/50 text-primary hover:bg-primary/10 tracking-[0.2em] uppercase text-xs rounded-sm"
-                >
-                    {isLoading ? "Syncing..." : "Sync Sheets"}
-                </Button>
+                <div className="flex items-center gap-3">
+                    <Button 
+                        variant="outline" 
+                        onClick={handleForceSync} 
+                        disabled={isSyncing}
+                        className="border-primary/40 text-primary hover:bg-primary/10 tracking-wider uppercase text-xs rounded-lg h-10 px-4 flex items-center gap-2"
+                    >
+                        <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin" : ""}`} />
+                        {isSyncing ? "Syncing Sheets..." : "Sync Sheets"}
+                    </Button>
+                </div>
             </div>
 
+            {/* Skeleton Loading State */}
             {isLoading ? (
-                <p className="text-primary/70 py-8 font-sans tracking-widest text-xs uppercase animate-pulse">Loading intelligence...</p>
+                <div className="space-y-8 animate-pulse">
+                    <div className="h-16 bg-white/5 rounded-xl border border-white/5"></div>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        {[...Array(8)].map((_, i) => (
+                            <div key={i} className="h-28 bg-white/5 rounded-xl border border-white/5 p-4 flex flex-col justify-between">
+                                <div className="h-4 bg-white/10 rounded w-1/2"></div>
+                                <div className="h-7 bg-white/10 rounded w-3/4"></div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="grid gap-6 md:grid-cols-2">
+                        <div className="h-80 bg-white/5 rounded-xl border border-white/5"></div>
+                        <div className="h-80 bg-white/5 rounded-xl border border-white/5"></div>
+                    </div>
+                </div>
             ) : (
                 <>
-                    {/* Order Verification Center Banner */}
+                    {/* Order Verification Attention Banner */}
                     {(stats.ordersValidating || 0) > 0 && (
-                        <div className="bg-amber-500/10 border border-amber-500/30 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-lg">
-                            <div className="flex items-center gap-3">
-                                <span className="h-3 w-3 rounded-full bg-amber-500 animate-pulse shrink-0"></span>
+                        <div className="bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-transparent border border-amber-500/30 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+                            <div className="flex items-center gap-3.5">
+                                <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0">
+                                    <Clock className="w-5 h-5 text-amber-400 animate-pulse" />
+                                </div>
                                 <div>
-                                    <h3 className="font-bold text-amber-400 text-sm tracking-wide">
-                                        Order Verification Center: {stats.ordersValidating} Orders Awaiting Manual Review
+                                    <h3 className="font-bold text-amber-400 text-sm tracking-wide flex items-center gap-2">
+                                        Order Verification Required
+                                        <Badge variant="outline" className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px] font-mono">
+                                            {stats.ordersValidating} Pending
+                                        </Badge>
                                     </h3>
-                                    <p className="text-foreground/60 text-xs mt-0.5">
-                                        Validate slots and dispatch automated confirmation emails to customers.
+                                    <p className="text-foreground/70 text-xs mt-0.5">
+                                        Orders awaiting manual review. Verifying an order automatically dispatches the customer confirmation email.
                                     </p>
                                 </div>
                             </div>
                             <Button 
-                                className="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs tracking-wider uppercase h-9 px-4 rounded-lg shrink-0"
+                                className="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs tracking-wider uppercase h-10 px-5 rounded-lg shrink-0 shadow-md"
                                 onClick={() => window.location.href = '/admin/orders'}
                             >
                                 Review Orders
@@ -234,81 +351,249 @@ export default function AdminDashboard() {
                         </div>
                     )}
 
-                    {/* Metrics */}
-                    <div className="grid gap-6 md:grid-cols-3 lg:grid-cols-4">
-                        {metrics.map((m, i) => (
-                            <Card key={i} className="glass-panel hover:bg-white/5 transition-colors border-border/5 shadow-none">
-                                <CardHeader className="pb-2">
-                                    <CardTitle className="text-[10px] font-sans tracking-widest text-foreground/50 uppercase">{m.label}</CardTitle>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="text-3xl font-sans font-bold text-primary">{m.value}</div>
-                                </CardContent>
-                            </Card>
-                        ))}
+                    {/* Core Metric Cards */}
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                        {metrics.map((m, i) => {
+                            const IconComponent = m.icon;
+                            return (
+                                <Link key={i} href={m.href} className="group">
+                                    <Card className={`glass-panel border-white/5 hover:border-primary/40 transition-all duration-200 p-5 h-full flex flex-col justify-between ${m.highlight ? 'ring-1 ring-amber-500/30 bg-amber-500/5' : ''}`}>
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-[11px] font-sans font-semibold tracking-wider text-foreground/50 uppercase">
+                                                {m.label}
+                                            </span>
+                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                                <IconComponent className={`w-4 h-4 ${m.color}`} />
+                                            </div>
+                                        </div>
+                                        <div className="mt-3">
+                                            <div className="text-2xl font-bold font-sans text-primary tracking-tight">
+                                                {m.value}
+                                            </div>
+                                            <p className="text-[11px] text-foreground/40 mt-1 flex items-center gap-1">
+                                                {m.subtitle}
+                                                <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity ml-auto text-primary" />
+                                            </p>
+                                        </div>
+                                    </Card>
+                                </Link>
+                            );
+                        })}
                     </div>
 
-                    {/* Quick Analytics Charts */}
-                    {analyticsData.signupTrend.length > 0 && (
-                        <div className="grid gap-6 md:grid-cols-2 pt-6">
-                            <Card className="glass-panel border-border/5 shadow-none">
-                                <CardHeader>
-                                    <CardTitle className="text-sm font-sans tracking-widest text-foreground/70 uppercase">Customer Growth</CardTitle>
-                                    <CardDescription>30-day signup trend</CardDescription>
-                                </CardHeader>
-                                <CardContent className="h-[250px]">
+                    {/* Analytics & Performance Charts */}
+                    <div className="grid gap-6 md:grid-cols-2 pt-2">
+                        {/* 30-Day Growth & Order Volume Chart */}
+                        <Card className="glass-panel border-white/5">
+                            <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-base font-bold text-foreground tracking-wide flex items-center gap-2">
+                                        <TrendingUp className="w-4 h-4 text-primary" />
+                                        Platform Growth Trend
+                                    </CardTitle>
+                                    <CardDescription className="text-xs text-foreground/50 mt-0.5">
+                                        Last 30 days continuous activity
+                                    </CardDescription>
+                                </div>
+                                <div className="flex items-center gap-1 bg-black/40 border border-white/10 p-0.5 rounded-lg text-xs">
+                                    <button
+                                        onClick={() => setSelectedMetric("orders")}
+                                        className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                                            selectedMetric === "orders" 
+                                                ? "bg-primary text-black font-semibold shadow-sm" 
+                                                : "text-foreground/60 hover:text-foreground"
+                                        }`}
+                                    >
+                                        Orders ({totalOrders30d})
+                                    </button>
+                                    <button
+                                        onClick={() => setSelectedMetric("signups")}
+                                        className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                                            selectedMetric === "signups" 
+                                                ? "bg-primary text-black font-semibold shadow-sm" 
+                                                : "text-foreground/60 hover:text-foreground"
+                                        }`}
+                                    >
+                                        Signups ({totalSignups30d})
+                                    </button>
+                                </div>
+                            </CardHeader>
+                            <CardContent className="h-[280px] pt-2">
+                                {analyticsData.signupTrend.length === 0 ? (
+                                    <div className="h-full flex items-center justify-center text-xs text-foreground/40">
+                                        No trend records available for this period.
+                                    </div>
+                                ) : (
                                     <ResponsiveContainer width="100%" height="100%">
-                                        <LineChart data={analyticsData.signupTrend} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>
-                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" opacity={0.2} />
-                                            <XAxis dataKey="date" tickFormatter={(val) => new Date(val).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} stroke="#6B7280" fontSize={10} tickLine={false} axisLine={false} />
-                                            <YAxis stroke="#6B7280" fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
-                                            <Tooltip contentStyle={{ borderRadius: '4px', border: 'none', backgroundColor: '#1f2937', color: '#fff' }} itemStyle={{ color: '#fff' }} />
-                                            <Line type="monotone" dataKey="signups" stroke="#d4af37" strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
-                                        </LineChart>
+                                        <AreaChart data={analyticsData.signupTrend} margin={{ top: 10, right: 10, left: -25, bottom: 0 }}>
+                                            <defs>
+                                                <linearGradient id="primaryAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#d4af37" stopOpacity={0.4}/>
+                                                    <stop offset="95%" stopColor="#d4af37" stopOpacity={0.0}/>
+                                                </linearGradient>
+                                                <linearGradient id="blueAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
+                                                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0}/>
+                                                </linearGradient>
+                                            </defs>
+                                            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.06)" />
+                                            <XAxis 
+                                                dataKey="label" 
+                                                stroke="#6B7280" 
+                                                fontSize={10} 
+                                                tickLine={false} 
+                                                axisLine={false} 
+                                                interval={4}
+                                            />
+                                            <YAxis 
+                                                stroke="#6B7280" 
+                                                fontSize={10} 
+                                                tickLine={false} 
+                                                axisLine={false} 
+                                                allowDecimals={false} 
+                                            />
+                                            <Tooltip 
+                                                contentStyle={{ 
+                                                    borderRadius: '8px', 
+                                                    border: '1px solid rgba(255,255,255,0.1)', 
+                                                    backgroundColor: '#111827', 
+                                                    color: '#fff',
+                                                    fontSize: '12px'
+                                                }} 
+                                                labelStyle={{ color: '#9CA3AF', fontWeight: 'bold' }}
+                                                formatter={(value: any) => [value, selectedMetric === "orders" ? "Orders Submitted" : "Customer Signups"]}
+                                            />
+                                            <Area 
+                                                type="monotone" 
+                                                dataKey={selectedMetric === "orders" ? "orders" : "signups"} 
+                                                stroke={selectedMetric === "orders" ? "#d4af37" : "#3b82f6"} 
+                                                strokeWidth={2.5} 
+                                                fill={selectedMetric === "orders" ? "url(#primaryAreaGrad)" : "url(#blueAreaGrad)"}
+                                            />
+                                        </AreaChart>
                                     </ResponsiveContainer>
-                                </CardContent>
-                            </Card>
+                                )}
+                            </CardContent>
+                        </Card>
 
-                            <Card className="glass-panel border-border/5 shadow-none">
-                                <CardHeader>
-                                    <CardTitle className="text-sm font-sans tracking-widest text-foreground/70 uppercase">Top Campaigns</CardTitle>
-                                    <CardDescription>Volume leaders by unique orders</CardDescription>
-                                </CardHeader>
-                                <CardContent className="h-[250px]">
-                                    <ResponsiveContainer width="100%" height="100%">
-                                        <BarChart data={analyticsData.topProducts} layout="vertical" margin={{ top: 5, right: 20, left: -20, bottom: 0 }}>
-                                            <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" opacity={0.2} />
-                                            <XAxis type="number" stroke="#6B7280" fontSize={10} tickLine={false} axisLine={false} allowDecimals={false} />
-                                            <YAxis dataKey="name" type="category" stroke="#6B7280" fontSize={10} tickLine={false} axisLine={false} tickFormatter={(val) => val.length > 15 ? val.substring(0, 15) + '...' : val} />
-                                            <Tooltip cursor={{ fill: 'rgba(255,255,255,0.05)' }} contentStyle={{ borderRadius: '4px', border: 'none', backgroundColor: '#1f2937', color: '#fff' }} itemStyle={{ color: '#fff' }} />
-                                            <Bar dataKey="orders" fill="#d4af37" radius={[0, 4, 4, 0]} barSize={20} />
-                                        </BarChart>
-                                    </ResponsiveContainer>
-                                </CardContent>
-                            </Card>
+                        {/* Top Campaigns Performance Leaderboard */}
+                        <Card className="glass-panel border-white/5">
+                            <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-base font-bold text-foreground tracking-wide flex items-center gap-2">
+                                        <Layers className="w-4 h-4 text-primary" />
+                                        Top Performing Campaigns
+                                    </CardTitle>
+                                    <CardDescription className="text-xs text-foreground/50 mt-0.5">
+                                        Slot allocations & fulfillment velocity
+                                    </CardDescription>
+                                </div>
+                                <Link href="/admin/products" className="text-xs text-primary/80 hover:text-primary inline-flex items-center gap-1 font-medium">
+                                    View All <ChevronRight className="w-3.5 h-3.5" />
+                                </Link>
+                            </CardHeader>
+                            <CardContent className="space-y-3 pt-1">
+                                {analyticsData.topProducts.length === 0 ? (
+                                    <div className="h-[240px] flex flex-col items-center justify-center text-center text-foreground/40 text-xs">
+                                        <ShoppingBasket className="w-8 h-8 mb-2 opacity-30" />
+                                        No active campaigns found.
+                                    </div>
+                                ) : (
+                                    analyticsData.topProducts.slice(0, 5).map((p, idx) => {
+                                        const filledPercent = p.total_slots > 0 
+                                            ? Math.min(100, Math.round((p.filled_slots / p.total_slots) * 100))
+                                            : 0;
+                                        return (
+                                            <div 
+                                                key={p.id || idx}
+                                                className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5 flex items-center gap-3.5"
+                                            >
+                                                {/* Thumbnail */}
+                                                <div className="w-11 h-11 rounded-lg bg-black/40 border border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
+                                                    {p.image ? (
+                                                        // eslint-disable-next-line @next/next/no-img-element
+                                                        <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        <ShoppingBag className="w-5 h-5 text-foreground/30" />
+                                                    )}
+                                                </div>
+
+                                                {/* Details */}
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="flex items-center justify-between gap-2">
+                                                        <h4 className="text-xs font-semibold text-foreground truncate" title={p.name}>
+                                                            {p.name}
+                                                        </h4>
+                                                        <span className="text-[11px] font-mono font-bold text-primary shrink-0">
+                                                            {p.orders} Orders
+                                                        </span>
+                                                    </div>
+
+                                                    <div className="flex items-center justify-between text-[10px] text-foreground/50 mt-1">
+                                                        <span>
+                                                            {p.brand} • <strong className="text-foreground/80">{p.platform}</strong>
+                                                        </span>
+                                                        <span>
+                                                            {p.filled_slots}/{p.total_slots} Slots ({filledPercent}%)
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Slot Progress Bar */}
+                                                    <div className="w-full bg-white/10 h-1.5 rounded-full mt-1.5 overflow-hidden">
+                                                        <div 
+                                                            className="bg-primary h-full rounded-full transition-all duration-500" 
+                                                            style={{ width: `${Math.max(5, filledPercent)}%` }}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                )}
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    {/* Pending Product Approvals */}
+                    <div className="space-y-4 pt-6">
+                        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                            <h2 className="text-lg font-bold text-foreground tracking-wide flex items-center gap-2">
+                                <AlertCircle className="w-4 h-4 text-amber-400" />
+                                Pending Product Approvals ({pendingRequests.length})
+                            </h2>
+                            <Link href="/admin/products" className="text-xs text-primary/80 hover:text-primary">
+                                Manage Products →
+                            </Link>
                         </div>
-                    )}
 
-                    {/* Pending Vendor Requests */}
-                    <div className="space-y-6 pt-6">
-                        <h2 className="text-xl font-sans font-bold text-foreground tracking-widest uppercase border-b border-border/5 pb-4">Pending Authorization</h2>
                         {pendingRequests.length === 0 ? (
-                            <p className="text-sm font-sans tracking-wide text-foreground/40">No pending products require authorization.</p>
+                            <Card className="p-8 text-center glass-panel border-white/5">
+                                <p className="text-xs font-sans tracking-wide text-foreground/40">
+                                    No pending products awaiting approval. All vendor listings are up to date.
+                                </p>
+                            </Card>
                         ) : (
                             pendingRequests.map((req) => (
-                                <Card key={req.id} className="p-6 glass-panel border-primary/20 flex flex-col md:flex-row md:items-center md:justify-between gap-6 shadow-[0_0_20px_rgba(212,175,55,0.05)]">
-                                    <div>
-                                        <h3 className="font-sans font-bold text-xl text-primary tracking-wide">{req.product_name}</h3>
-                                        <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase mt-2">
-                                            By <span className="text-foreground font-medium">{req.brand}</span> • {req.platform} • {req.total_slots} Slots • ₹{req.refund_amount}/Review
+                                <Card key={req.id} className="p-5 glass-panel border-primary/20 flex flex-col md:flex-row md:items-center md:justify-between gap-4 rounded-xl shadow-md">
+                                    <div className="space-y-1">
+                                        <h3 className="font-sans font-bold text-base text-primary tracking-wide">{req.product_name}</h3>
+                                        <p className="text-xs text-foreground/60">
+                                            By <span className="text-foreground font-medium">{req.brand}</span> • Platform: <strong className="text-white">{req.platform}</strong> • {req.total_slots} Total Slots • ₹{req.refund_amount}/Review
                                         </p>
                                     </div>
-                                    <div className="flex gap-4">
-                                        <Button variant="outline" className="border-red-500/50 text-red-400 hover:bg-red-900/20 hover:text-red-300 font-sans tracking-widest uppercase text-[10px] h-10 px-6 rounded-sm" onClick={() => handleAction(req.id, "decline")}>
+                                    <div className="flex gap-3 shrink-0">
+                                        <Button 
+                                            variant="outline" 
+                                            className="border-red-500/40 text-red-400 hover:bg-red-500/10 font-sans tracking-wider uppercase text-xs h-9 px-4 rounded-lg" 
+                                            onClick={() => handleAction(req.id, "decline")}
+                                        >
                                             Reject
                                         </Button>
-                                        <Button className="bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20 font-sans tracking-widest uppercase text-[10px] h-10 px-6 rounded-sm transition-all" onClick={() => handleAction(req.id, "approve")}>
-                                            Authorize
+                                        <Button 
+                                            className="bg-primary text-black font-semibold hover:bg-primary/90 font-sans tracking-wider uppercase text-xs h-9 px-5 rounded-lg shadow-sm" 
+                                            onClick={() => handleAction(req.id, "approve")}
+                                        >
+                                            Approve Product
                                         </Button>
                                     </div>
                                 </Card>
@@ -316,26 +601,42 @@ export default function AdminDashboard() {
                         )}
                     </div>
 
-                    {/* Action Required: Pending Refunds */}
-                    <div className="space-y-6 pt-8">
-                        <h2 className="text-xl font-sans font-bold text-foreground tracking-widest uppercase border-b border-border/5 pb-4">
-                            Refunds Escrow ({stats.pendingRefunds})
-                        </h2>
+                    {/* Pending Refunds Action Queue */}
+                    <div className="space-y-4 pt-4">
+                        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                            <h2 className="text-lg font-bold text-foreground tracking-wide flex items-center gap-2">
+                                <Wallet className="w-4 h-4 text-purple-400" />
+                                Pending Refunds Queue ({stats.pendingRefunds})
+                            </h2>
+                            <Link href="/admin/refunds" className="text-xs text-primary/80 hover:text-primary">
+                                Open Refunds Queue →
+                            </Link>
+                        </div>
+
                         {pendingRefundOrders.length === 0 ? (
-                            <p className="text-sm font-sans tracking-wide text-foreground/40">No escrow operations pending.</p>
+                            <Card className="p-8 text-center glass-panel border-white/5">
+                                <p className="text-xs font-sans tracking-wide text-foreground/40">
+                                    No pending refunds requiring action at this time.
+                                </p>
+                            </Card>
                         ) : (
-                            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                                 {pendingRefundOrders.map((req) => (
-                                    <Card key={req.id} className="p-5 glass-panel border-yellow-500/30 bg-yellow-900/5 hover:bg-yellow-900/10 transition-colors">
-                                        <CardHeader className="p-0 pb-4">
-                                            <CardTitle className="text-lg font-sans font-bold text-yellow-500">Escrow: ₹{req.product?.refund_amount}</CardTitle>
+                                    <Card key={req.id} className="p-5 glass-panel border-purple-500/20 bg-purple-500/5 hover:border-purple-500/40 transition-colors rounded-xl">
+                                        <CardHeader className="p-0 pb-3">
+                                            <CardTitle className="text-base font-bold text-purple-300">
+                                                Refund Amount: ₹{req.product?.refund_amount || req.amount}
+                                            </CardTitle>
                                         </CardHeader>
-                                        <CardContent className="p-0 space-y-3">
-                                            <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase">Product: <span className="text-foreground ml-1">{req.product?.product_name}</span></p>
-                                            <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase">Order ID: <span className="text-foreground ml-1">{req.order_id}</span></p>
-                                            <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase">Customer: <span className="text-foreground ml-1">{req.user?.mobile}</span></p>
-                                            <Button className="w-full mt-4 bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 hover:bg-yellow-500/20 font-sans tracking-widest uppercase text-[10px] h-10 rounded-sm" onClick={() => window.location.href = '/admin/refunds'}>
-                                                Process Escrow
+                                        <CardContent className="p-0 space-y-2 text-xs">
+                                            <p className="text-foreground/60 truncate">Product: <span className="text-foreground ml-1 font-medium">{req.product?.product_name}</span></p>
+                                            <p className="text-foreground/60 font-mono">Order ID: <span className="text-foreground ml-1">{req.order_id}</span></p>
+                                            <p className="text-foreground/60">Customer: <span className="text-foreground ml-1 font-medium">{req.user?.mobile || req.user?.name}</span></p>
+                                            <Button 
+                                                className="w-full mt-3 bg-purple-600 hover:bg-purple-500 text-white font-sans tracking-wider uppercase text-xs h-9 rounded-lg" 
+                                                onClick={() => window.location.href = '/admin/refunds'}
+                                            >
+                                                Process Refund
                                             </Button>
                                         </CardContent>
                                     </Card>
@@ -344,24 +645,46 @@ export default function AdminDashboard() {
                         )}
                     </div>
 
-                    {/* Recent Order Submissions */}
-                    <div className="space-y-6 pt-8 pb-12">
-                        <h2 className="text-xl font-sans font-bold text-foreground tracking-widest uppercase border-b border-border/5 pb-4">Recent Campaign Activity</h2>
+                    {/* Recent Order Activity */}
+                    <div className="space-y-4 pt-4 pb-8">
+                        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                            <h2 className="text-lg font-bold text-foreground tracking-wide flex items-center gap-2">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                                Recent Order Activity
+                            </h2>
+                            <Link href="/admin/orders" className="text-xs text-primary/80 hover:text-primary">
+                                View All Orders →
+                            </Link>
+                        </div>
+
                         {recentOrders.length === 0 ? (
-                            <p className="text-sm font-sans tracking-wide text-foreground/40">No recent activity detected.</p>
+                            <Card className="p-8 text-center glass-panel border-white/5">
+                                <p className="text-xs font-sans tracking-wide text-foreground/40">
+                                    No orders submitted yet today.
+                                </p>
+                            </Card>
                         ) : (
-                            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                                 {recentOrders.map((req) => (
-                                    <Card key={req.id} className="p-5 glass-panel border-primary/20 hover:border-primary/40 transition-all">
-                                        <CardHeader className="p-0 pb-4">
-                                            <CardTitle className="text-sm font-sans tracking-widest text-foreground/70 uppercase">Order: <span className="text-primary">{req.order_id}</span></CardTitle>
+                                    <Card key={req.id} className="p-5 glass-panel border-white/10 hover:border-primary/40 transition-all rounded-xl">
+                                        <CardHeader className="p-0 pb-3 flex flex-row items-center justify-between">
+                                            <CardTitle className="text-xs font-mono font-bold text-foreground/70">
+                                                Order <span className="text-primary">{req.order_id}</span>
+                                            </CardTitle>
+                                            <Badge variant="outline" className="text-[10px] bg-white/5 border-white/10 text-foreground/70">
+                                                {req.status}
+                                            </Badge>
                                         </CardHeader>
-                                        <CardContent className="p-0 space-y-3">
-                                            <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase">Product: <span className="text-foreground ml-1">{req.product?.product_name}</span></p>
-                                            <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase">Customer: <span className="text-foreground ml-1">{req.user?.mobile}</span></p>
-                                            <p className="text-xs font-sans tracking-widest text-foreground/50 uppercase">Amount: <span className="text-primary ml-1">₹{req.amount}</span></p>
-                                            <Button className="w-full mt-4 bg-white/5 text-foreground/70 border border-border/10 hover:bg-white/10 hover:text-foreground font-sans tracking-widest uppercase text-[10px] h-10 rounded-sm" onClick={() => window.location.href = '/admin/orders'}>
-                                                View Dossier
+                                        <CardContent className="p-0 space-y-2 text-xs">
+                                            <p className="text-foreground/60 truncate">Product: <span className="text-foreground ml-1 font-medium">{req.product?.product_name}</span></p>
+                                            <p className="text-foreground/60">Customer: <span className="text-foreground ml-1">{req.user?.name || req.user?.mobile}</span></p>
+                                            <p className="text-foreground/60">Amount: <span className="text-emerald-400 font-mono font-bold ml-1">₹{req.amount}</span></p>
+                                            <Button 
+                                                variant="outline"
+                                                className="w-full mt-3 bg-white/5 text-foreground hover:bg-primary hover:text-black font-sans tracking-wider uppercase text-xs h-9 rounded-lg transition-colors" 
+                                                onClick={() => window.location.href = '/admin/orders'}
+                                            >
+                                                Review Order
                                             </Button>
                                         </CardContent>
                                     </Card>

@@ -226,7 +226,7 @@ export default function AdminOrders() {
                 <div>
                     <div className="flex items-center gap-3">
                         <h1 className="text-3xl lg:text-4xl font-sans font-extrabold text-primary tracking-wider uppercase">
-                            Order Intelligence
+                            Order Operations
                         </h1>
                         <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary text-xs font-mono font-semibold rounded-full">
                             Live Sync
@@ -243,7 +243,7 @@ export default function AdminOrders() {
                         onClick={() => window.open(`${API_URL}/api/orders/export?token=brms_export_secret_123`, "_blank")}
                     >
                         <Download className="w-4 h-4" />
-                        Export Dossier
+                        Export Orders (CSV)
                     </Button>
                 </div>
             </div>

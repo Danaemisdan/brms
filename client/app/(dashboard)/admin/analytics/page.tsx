@@ -106,10 +106,10 @@ export default function AdminAnalytics() {
                             <LineChart data={signupTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
                                 <XAxis
-                                    dataKey="date"
-                                    tickFormatter={(val) => new Date(val).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                                    dataKey="label"
                                     stroke="#6B7280"
-                                    fontSize={12}
+                                    fontSize={11}
+                                    interval={3}
                                 />
                                 <YAxis stroke="#6B7280" fontSize={12} allowDecimals={false} />
                                 <Tooltip
@@ -118,10 +118,19 @@ export default function AdminAnalytics() {
                                 <Line
                                     type="monotone"
                                     dataKey="signups"
+                                    name="Signups"
                                     stroke="#3B82F6"
                                     strokeWidth={3}
-                                    dot={{ r: 4, strokeWidth: 2 }}
-                                    activeDot={{ r: 6 }}
+                                    dot={{ r: 3, strokeWidth: 2 }}
+                                    activeDot={{ r: 5 }}
+                                />
+                                <Line
+                                    type="monotone"
+                                    dataKey="orders"
+                                    name="Orders"
+                                    stroke="#10B981"
+                                    strokeWidth={2}
+                                    dot={false}
                                 />
                             </LineChart>
                         </ResponsiveContainer>
@@ -140,18 +149,17 @@ export default function AdminAnalytics() {
                                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" />
                                 <XAxis type="number" stroke="#6B7280" fontSize={12} allowDecimals={false} />
                                 <YAxis
-                                    dataKey="name"
+                                    dataKey="shortName"
                                     type="category"
-                                    width={120}
+                                    width={140}
                                     stroke="#6B7280"
                                     fontSize={11}
-                                    tickFormatter={(val) => val.length > 20 ? val.substring(0, 18) + '...' : val}
                                 />
                                 <Tooltip
                                     cursor={{ fill: '#F3F4F6' }}
                                     contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                                 />
-                                <Bar dataKey="orders" fill="#10B981" radius={[0, 4, 4, 0]} barSize={32} />
+                                <Bar dataKey="orders" fill="#10B981" radius={[0, 4, 4, 0]} barSize={28} />
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>
