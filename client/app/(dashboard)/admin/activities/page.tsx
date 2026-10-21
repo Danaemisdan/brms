@@ -119,13 +119,13 @@ export default function AdminActivitiesPage() {
                     <Button 
                         variant="outline" 
                         onClick={fetchActivities}
-                        className="border-white/10 text-foreground hover:bg-white/5 text-xs h-10 px-3 rounded-lg"
+                        className="border-border text-foreground hover:bg-muted text-xs h-10 px-3 rounded-lg"
                     >
                         <RefreshCw className="w-3.5 h-3.5 mr-1.5" /> Refresh
                     </Button>
                     <Button 
                         onClick={() => setIsCreating(!isCreating)} 
-                        className="bg-primary hover:bg-primary/90 text-black font-bold uppercase tracking-wider text-xs h-10 px-4 rounded-lg shadow-sm"
+                        className="bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-medium text-xs tracking-wider uppercase h-10 px-4 rounded-xl shadow-xs transition-all"
                     >
                         <Plus className="mr-1.5 h-4 w-4" /> {isCreating ? 'Cancel' : 'New Activity'}
                     </Button>
@@ -134,13 +134,13 @@ export default function AdminActivitiesPage() {
 
             {/* Create Activity Form */}
             {isCreating && (
-                <Card className="glass-panel border-primary/30 rounded-2xl p-6 shadow-xl">
+                <Card className="border border-border bg-card/60 rounded-2xl p-6 shadow-xs">
                     <CardHeader className="p-0 pb-4">
-                        <CardTitle className="text-lg font-bold text-primary flex items-center gap-2">
-                            <Sparkles className="w-4 h-4" />
+                        <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-primary" />
                             Create New Creator Activity Campaign
                         </CardTitle>
-                        <CardDescription className="text-xs text-foreground/50">
+                        <CardDescription className="text-xs text-muted-foreground">
                             Verified creators will be able to view and apply for this activity through their Creator Dashboard.
                         </CardDescription>
                     </CardHeader>
@@ -148,7 +148,7 @@ export default function AdminActivitiesPage() {
                         <form onSubmit={handleCreate} className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
+                                    <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                         Campaign Title <span className="text-red-500">*</span>
                                     </Label>
                                     <Input 
@@ -156,11 +156,11 @@ export default function AdminActivitiesPage() {
                                         onChange={e => setFormData({...formData, title: e.target.value})} 
                                         required 
                                         placeholder="e.g. Summer Skincare Reel Campaign" 
-                                        className="h-11 bg-white/5 border-white/10 text-xs rounded-xl"
+                                        className="h-11 bg-background border-border text-foreground text-xs rounded-xl focus:border-zinc-400"
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <Label className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
+                                    <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                         Creator Payout Reward (₹) <span className="text-red-500">*</span>
                                     </Label>
                                     <Input 
@@ -169,13 +169,13 @@ export default function AdminActivitiesPage() {
                                         onChange={e => setFormData({...formData, reward_amount: e.target.value})} 
                                         required 
                                         placeholder="1500" 
-                                        className="h-11 bg-white/5 border-white/10 text-xs rounded-xl"
+                                        className="h-11 bg-background border-border text-foreground text-xs rounded-xl focus:border-zinc-400"
                                     />
                                 </div>
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
+                                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                     Description & Overview <span className="text-red-500">*</span>
                                 </Label>
                                 <Textarea 
@@ -183,12 +183,12 @@ export default function AdminActivitiesPage() {
                                     onChange={e => setFormData({...formData, description: e.target.value})} 
                                     required 
                                     placeholder="Provide context about the brand, product, and campaign objective..." 
-                                    className="bg-white/5 border-white/10 text-xs rounded-xl min-h-[70px]"
+                                    className="bg-background border-border text-foreground text-xs rounded-xl min-h-[70px] focus:border-zinc-400"
                                 />
                             </div>
 
                             <div className="space-y-2">
-                                <Label className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
+                                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                     Activity Deliverables & Guidelines <span className="text-red-500">*</span>
                                 </Label>
                                 <Textarea 
@@ -196,7 +196,7 @@ export default function AdminActivitiesPage() {
                                     onChange={e => setFormData({...formData, requirements: e.target.value})} 
                                     required 
                                     placeholder="1 Instagram Reel (minimum 30s), mandatory tags @samplelelo, keywords, review guidelines..." 
-                                    className="bg-white/5 border-white/10 text-xs rounded-xl min-h-[70px]"
+                                    className="bg-background border-border text-foreground text-xs rounded-xl min-h-[70px] focus:border-zinc-400"
                                 />
                             </div>
 
@@ -204,14 +204,14 @@ export default function AdminActivitiesPage() {
                                 <Button 
                                     type="button" 
                                     variant="outline" 
-                                    className="border-white/10 text-xs h-10 px-4 rounded-xl" 
+                                    className="border-border text-foreground hover:bg-muted text-xs h-10 px-4 rounded-xl" 
                                     onClick={() => setIsCreating(false)}
                                 >
                                     Cancel
                                 </Button>
                                 <Button 
                                     type="submit" 
-                                    className="bg-primary hover:bg-primary/90 text-black font-bold uppercase tracking-wider text-xs h-10 px-6 rounded-xl"
+                                    className="bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-medium text-xs tracking-wider uppercase h-10 px-6 rounded-xl shadow-xs transition-all"
                                 >
                                     Publish Campaign
                                 </Button>
@@ -222,26 +222,26 @@ export default function AdminActivitiesPage() {
             )}
 
             {/* Activities Table */}
-            <Card className="glass-panel border-white/5 rounded-2xl overflow-hidden shadow-xl">
-                <CardHeader className="pb-3 border-b border-white/5">
+            <Card className="border border-border bg-card/60 rounded-2xl overflow-hidden shadow-xs">
+                <CardHeader className="pb-3 border-b border-border">
                     <Input 
                         type="text" 
                         placeholder="Search activities by title or keyword..." 
-                        className="h-10 max-w-sm bg-white/5 border-white/10 text-xs text-foreground placeholder:text-foreground/40 rounded-xl"
+                        className="h-10 max-w-sm bg-background border-border text-xs text-foreground placeholder:text-muted-foreground rounded-xl focus:border-zinc-400"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </CardHeader>
                 <CardContent className="p-0">
                     {isLoading ? (
-                        <div className="p-16 text-center text-xs text-foreground/50 animate-pulse">Loading activity records...</div>
+                        <div className="p-16 text-center text-xs text-muted-foreground animate-pulse">Loading activity records...</div>
                     ) : filteredActivities.length === 0 ? (
-                        <div className="p-16 text-center text-xs text-foreground/50">No activities found. Click "New Activity" to create one.</div>
+                        <div className="p-16 text-center text-xs text-muted-foreground">No activities found. Click "New Activity" to create one.</div>
                     ) : (
                         <div className="overflow-x-auto">
                             <Table>
-                                <TableHeader className="bg-white/5">
-                                    <TableRow className="border-white/5 hover:bg-transparent">
+                                <TableHeader className="bg-muted/50">
+                                    <TableRow className="border-border hover:bg-transparent">
                                         <TableHead className="text-xs font-semibold text-foreground/70">Campaign Details</TableHead>
                                         <TableHead className="text-xs font-semibold text-foreground/70">Reward</TableHead>
                                         <TableHead className="text-xs font-semibold text-foreground/70">Status</TableHead>
@@ -250,25 +250,25 @@ export default function AdminActivitiesPage() {
                                 </TableHeader>
                                 <TableBody>
                                     {filteredActivities.map(activity => (
-                                        <TableRow key={activity.id} className="align-top border-white/5 hover:bg-white/5">
+                                        <TableRow key={activity.id} className="align-top border-border hover:bg-muted/40">
                                             <TableCell className="max-w-[280px]">
                                                 <div className="font-bold text-sm text-foreground">{activity.title}</div>
-                                                <div className="text-xs text-foreground/60 mt-1 line-clamp-2">{activity.description}</div>
-                                                <div className="text-[11px] text-foreground/50 mt-2 bg-black/40 p-2 rounded-lg border border-white/5">
-                                                    <strong className="text-primary">Deliverables:</strong> {activity.requirements}
+                                                <div className="text-xs text-muted-foreground mt-1 line-clamp-2">{activity.description}</div>
+                                                <div className="text-[11px] text-muted-foreground mt-2 bg-muted/50 p-2 rounded-lg border border-border/60">
+                                                    <strong className="text-foreground">Deliverables:</strong> {activity.requirements}
                                                 </div>
                                             </TableCell>
                                             <TableCell className="font-mono font-bold text-emerald-400">
                                                 ₹{activity.reward_amount}
                                             </TableCell>
                                             <TableCell>
-                                                <Badge variant="outline" className="text-[10px] bg-white/5 border-white/10 text-foreground/80">
+                                                <Badge variant="outline" className="text-[10px] bg-muted/60 border-border text-foreground">
                                                     {activity.status}
                                                 </Badge>
                                             </TableCell>
                                             <TableCell>
                                                 {activity.applications.length === 0 ? (
-                                                    <span className="text-xs text-foreground/40 italic">No applications received yet</span>
+                                                    <span className="text-xs text-muted-foreground italic">No applications received yet</span>
                                                 ) : (
                                                     <div className="space-y-3">
                                                         {activity.applications.map((app: any) => {
@@ -276,7 +276,7 @@ export default function AdminActivitiesPage() {
                                                             const prof = creator?.creator_profile;
 
                                                             return (
-                                                                <div key={app.id} className="p-3.5 bg-black/40 rounded-xl border border-white/10 flex flex-col md:flex-row gap-3 justify-between items-start md:items-center">
+                                                                <div key={app.id} className="p-3.5 bg-muted/40 rounded-xl border border-border flex flex-col md:flex-row gap-3 justify-between items-start md:items-center">
                                                                     <div className="space-y-1">
                                                                         <div className="flex items-center gap-2">
                                                                             <span className="font-bold text-xs text-foreground">
@@ -397,13 +397,13 @@ export default function AdminActivitiesPage() {
 
             {/* Request Correction Modal */}
             <Dialog open={!!correctionAppId} onOpenChange={(open) => !open && setCorrectionAppId(null)}>
-                <DialogContent className="max-w-md bg-neutral-900 border-white/10 p-6 rounded-2xl text-foreground">
+                <DialogContent className="max-w-md bg-card border border-border p-6 rounded-2xl text-card-foreground">
                     <DialogHeader>
-                        <DialogTitle className="text-amber-400 font-bold text-lg flex items-center gap-2">
-                            <AlertTriangle className="w-5 h-5 text-amber-400" />
+                        <DialogTitle className="text-amber-500 font-bold text-lg flex items-center gap-2">
+                            <AlertTriangle className="w-5 h-5 text-amber-500" />
                             Request Reel Correction
                         </DialogTitle>
-                        <DialogDescription className="text-xs text-foreground/50">
+                        <DialogDescription className="text-xs text-muted-foreground">
                             Specify what changes the creator needs to make. This note will be sent directly to their Creator Dashboard.
                         </DialogDescription>
                     </DialogHeader>
@@ -413,19 +413,19 @@ export default function AdminActivitiesPage() {
                             value={correctionRemark}
                             onChange={e => setCorrectionRemark(e.target.value)}
                             placeholder="e.g. Please add mandatory brand tag @samplelelo in caption and resubmit Reel link"
-                            className="bg-black/60 border-white/15 text-xs text-foreground rounded-xl min-h-[80px]"
+                            className="bg-background border-border text-xs text-foreground rounded-xl min-h-[80px]"
                         />
 
                         <div className="flex gap-3">
                             <Button 
                                 variant="outline" 
-                                className="flex-1 border-white/10 text-xs h-10 rounded-xl"
+                                className="flex-1 border-border text-xs h-10 rounded-xl"
                                 onClick={() => setCorrectionAppId(null)}
                             >
                                 Cancel
                             </Button>
                             <Button 
-                                className="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs h-10 rounded-xl"
+                                className="flex-1 bg-amber-500 hover:bg-amber-400 text-white font-bold text-xs h-10 rounded-xl"
                                 disabled={!correctionRemark.trim()}
                                 onClick={() => correctionAppId && handleStatusUpdate(correctionAppId, 'CORRECTION_REQUIRED', correctionRemark)}
                             >

@@ -512,7 +512,7 @@ export default function AdminOrders() {
                     </button>
                     <button 
                         onClick={() => setStatusFilter("Order Validating")}
-                        className={`px-3 py-1 rounded-xl text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === 'Order Validating' ? 'bg-amber-500 text-black font-semibold shadow-xs' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20'}`}
+                        className={`px-3 py-1 rounded-xl text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === 'Order Validating' ? 'bg-amber-500 text-white font-semibold shadow-xs' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20'}`}
                     >
                         Validating ({validatingCount})
                     </button>
@@ -540,7 +540,7 @@ export default function AdminOrders() {
             {/* Orders Feed */}
             <div className="space-y-4">
                 {isLoading ? (
-                    <Card className="p-16 text-center glass-panel border-white/5">
+                    <Card className="p-16 text-center border border-border bg-card/60 rounded-2xl">
                         <Clock className="w-8 h-8 text-primary/60 mx-auto animate-spin mb-3" />
                         <p className="text-primary/70 font-sans tracking-widest text-xs uppercase">Loading order records...</p>
                     </Card>
@@ -567,12 +567,12 @@ export default function AdminOrders() {
 
                     if (filteredOrders.length === 0) {
                         return (
-                            <Card className="p-16 text-center glass-panel border-white/5">
-                                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3 text-foreground/40">
+                            <Card className="p-16 text-center border border-border bg-card/60 rounded-2xl">
+                                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mx-auto mb-3 text-muted-foreground">
                                     <Search className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-base font-semibold text-foreground/80">No orders found</h3>
-                                <p className="text-foreground/40 font-sans text-xs mt-1">Try adjusting your search criteria or status filter.</p>
+                                <h3 className="text-base font-semibold text-foreground">No orders found</h3>
+                                <p className="text-muted-foreground font-sans text-xs mt-1">Try adjusting your search criteria or status filter.</p>
                             </Card>
                         );
                     }
@@ -739,23 +739,23 @@ export default function AdminOrders() {
 
             {/* SPEED REVIEW QUEUE (DATING MODE) FULLSCREEN DIALOG */}
             <Dialog open={isDatingQueueOpen} onOpenChange={setIsDatingQueueOpen}>
-                <DialogContent className="max-w-5xl w-[95vw] max-h-[92vh] flex flex-col bg-neutral-950/98 border border-white/10 p-0 rounded-2xl shadow-2xl overflow-hidden text-foreground">
+                <DialogContent className="max-w-5xl w-[95vw] max-h-[92vh] flex flex-col bg-card border border-border p-0 rounded-2xl shadow-2xl overflow-hidden text-card-foreground">
                     {/* Header */}
-                    <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-black/40">
+                    <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-muted/40">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400">
-                                <Zap className="w-4 h-4 fill-amber-400" />
+                            <div className="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-500 dark:text-amber-400">
+                                <Zap className="w-4 h-4 fill-amber-500 dark:fill-amber-400" />
                             </div>
                             <div>
-                                <DialogTitle className="text-sm font-sans font-extrabold text-primary tracking-wider uppercase flex items-center gap-2">
+                                <DialogTitle className="text-sm font-sans font-extrabold text-foreground tracking-wider uppercase flex items-center gap-2">
                                     Speed Review Queue (Dating Mode)
                                     {validatingOrders.length > 0 && (
-                                        <Badge variant="outline" className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px] font-mono">
+                                        <Badge variant="outline" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 text-[10px] font-mono">
                                             Card {datingIndex + 1} of {validatingOrders.length}
                                         </Badge>
                                     )}
                                 </DialogTitle>
-                                <p className="text-[11px] text-foreground/50">
+                                <p className="text-[11px] text-muted-foreground">
                                     1-Click Slot Validation & Instant Customer Confirmation Email Engine
                                 </p>
                             </div>
@@ -764,10 +764,10 @@ export default function AdminOrders() {
                         {validatingOrders.length > 0 && (
                             <div className="flex items-center gap-3">
                                 <div className="hidden sm:flex flex-col items-end gap-1">
-                                    <span className="text-[10px] font-mono text-foreground/50">
+                                    <span className="text-[10px] font-mono text-muted-foreground">
                                         {Math.round(((datingIndex + 1) / validatingOrders.length) * 100)}% Reviewed
                                     </span>
-                                    <div className="w-32 bg-white/10 rounded-full h-1.5 overflow-hidden">
+                                    <div className="w-32 bg-muted rounded-full h-1.5 overflow-hidden">
                                         <div 
                                             className="bg-amber-500 h-full transition-all duration-300"
                                             style={{ width: `${((datingIndex + 1) / validatingOrders.length) * 100}%` }}
@@ -781,15 +781,15 @@ export default function AdminOrders() {
                     {/* Modal Body */}
                     {validatingOrders.length === 0 ? (
                         <div className="p-16 flex flex-col items-center justify-center text-center space-y-4 my-auto">
-                            <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+                            <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-500 dark:text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
                                 <CheckCircle2 className="w-8 h-8" />
                             </div>
-                            <h3 className="text-2xl font-bold font-sans text-primary">All Validating Orders Reviewed!</h3>
-                            <p className="text-foreground/60 text-sm max-w-md">
+                            <h3 className="text-2xl font-bold font-sans text-foreground">All Validating Orders Reviewed!</h3>
+                            <p className="text-muted-foreground text-sm max-w-md">
                                 The verification queue is all caught up. All incoming orders have been validated, slot reservations accounted for, and customer confirmation emails dispatched.
                             </p>
                             <Button 
-                                className="bg-primary/20 hover:bg-primary/30 text-primary border border-primary/40 font-semibold text-xs tracking-wider uppercase h-10 px-6 rounded-lg mt-2"
+                                className="bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-semibold text-xs tracking-wider uppercase h-10 px-6 rounded-lg mt-2"
                                 onClick={() => setIsDatingQueueOpen(false)}
                             >
                                 Return to Order Table
@@ -814,7 +814,7 @@ export default function AdminOrders() {
                                 <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-y-auto max-h-[60vh]">
                                     {/* Left Column: Proof Viewer */}
                                     <div className="space-y-3 flex flex-col">
-                                        <div className="relative group bg-black/60 rounded-xl border border-white/10 flex items-center justify-center p-3 min-h-[320px] max-h-[440px] overflow-hidden">
+                                        <div className="relative group bg-muted/40 rounded-xl border border-border flex items-center justify-center p-3 min-h-[320px] max-h-[440px] overflow-hidden">
                                             {activeImageUrl && activeImageUrl !== "https://dummyimage.com/600x400/000/fff&text=Order+Screenshot" ? (
                                                 /* eslint-disable-next-line @next/next/no-img-element */
                                                 <img 
@@ -824,7 +824,7 @@ export default function AdminOrders() {
                                                     onClick={() => setSelectedImage(activeImageUrl)}
                                                 />
                                             ) : (
-                                                <div className="text-foreground/40 text-xs flex flex-col items-center gap-2 py-12">
+                                                <div className="text-muted-foreground text-xs flex flex-col items-center gap-2 py-12">
                                                     <AlertTriangle className="w-8 h-8 text-amber-500/60" />
                                                     <span>No high-resolution screenshot attached</span>
                                                 </div>
@@ -833,7 +833,7 @@ export default function AdminOrders() {
                                             {activeImageUrl && activeImageUrl !== "https://dummyimage.com/600x400/000/fff&text=Order+Screenshot" && (
                                                 <button 
                                                     onClick={() => setSelectedImage(activeImageUrl)}
-                                                    className="absolute top-3 right-3 bg-black/80 hover:bg-black text-white/80 hover:text-white p-2 rounded-lg border border-white/10 transition-colors shadow-lg"
+                                                    className="absolute top-3 right-3 bg-zinc-900/80 hover:bg-zinc-900 text-white p-2 rounded-lg border border-white/10 transition-colors shadow-lg"
                                                     title="View Full Resolution"
                                                 >
                                                     <Maximize2 className="w-4 h-4" />
@@ -845,14 +845,22 @@ export default function AdminOrders() {
                                         <div className="flex items-center gap-2">
                                             <button 
                                                 onClick={() => setDatingActiveProof("screenshot")}
-                                                className={`text-xs px-3 py-1 rounded-md border font-sans transition-all ${datingActiveProof === 'screenshot' ? 'bg-primary/20 text-primary border-primary/40 font-semibold' : 'bg-white/5 text-foreground/50 border-white/5 hover:bg-white/10'}`}
+                                                className={`text-xs px-3 py-1 rounded-md border font-sans transition-all ${
+                                                    datingActiveProof === 'screenshot' 
+                                                        ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 border-transparent font-semibold shadow-xs' 
+                                                        : 'bg-muted/50 text-muted-foreground border-border hover:bg-muted'
+                                                }`}
                                             >
                                                 Order Proof
                                             </button>
                                             {currentOrder?.delivery_screenshot_url && (
                                                 <button 
                                                     onClick={() => setDatingActiveProof("delivery")}
-                                                    className={`text-xs px-3 py-1 rounded-md border font-sans transition-all ${datingActiveProof === 'delivery' ? 'bg-primary/20 text-primary border-primary/40 font-semibold' : 'bg-white/5 text-foreground/50 border-white/5 hover:bg-white/10'}`}
+                                                    className={`text-xs px-3 py-1 rounded-md border font-sans transition-all ${
+                                                        datingActiveProof === 'delivery' 
+                                                            ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 border-transparent font-semibold shadow-xs' 
+                                                            : 'bg-muted/50 text-muted-foreground border-border hover:bg-muted'
+                                                    }`}
                                                 >
                                                     Delivery Proof
                                                 </button>
@@ -860,7 +868,11 @@ export default function AdminOrders() {
                                             {currentOrder?.return_window_screenshot_url && (
                                                 <button 
                                                     onClick={() => setDatingActiveProof("return")}
-                                                    className={`text-xs px-3 py-1 rounded-md border font-sans transition-all ${datingActiveProof === 'return' ? 'bg-primary/20 text-primary border-primary/40 font-semibold' : 'bg-white/5 text-foreground/50 border-white/5 hover:bg-white/10'}`}
+                                                    className={`text-xs px-3 py-1 rounded-md border font-sans transition-all ${
+                                                        datingActiveProof === 'return' 
+                                                            ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 border-transparent font-semibold shadow-xs' 
+                                                            : 'bg-muted/50 text-muted-foreground border-border hover:bg-muted'
+                                                    }`}
                                                 >
                                                     Return Window Proof
                                                 </button>
@@ -878,39 +890,39 @@ export default function AdminOrders() {
                                                     </Badge>
                                                 )}
                                                 {currentOrder?.product?.brand && (
-                                                    <span className="text-xs text-foreground/60 font-semibold uppercase tracking-wider">
+                                                    <span className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
                                                         {currentOrder.product.brand}
                                                     </span>
                                                 )}
-                                                <span className="text-[11px] font-mono text-foreground/40 ml-auto">
+                                                <span className="text-[11px] font-mono text-muted-foreground ml-auto">
                                                     Submitted: {new Date(currentOrder?.created_at).toLocaleDateString()}
                                                 </span>
                                             </div>
-                                            <h2 className="text-lg font-bold font-sans text-primary leading-snug">
+                                            <h2 className="text-lg font-bold font-sans text-foreground leading-snug">
                                                 {currentOrder?.product?.product_name || "Unknown Product"}
                                             </h2>
                                         </div>
 
                                         {/* Order ID & Refund Amount Highlights */}
-                                        <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-white/5 border border-white/10">
+                                        <div className="grid grid-cols-2 gap-3 p-3.5 rounded-xl bg-muted/40 border border-border">
                                             <div>
-                                                <span className="text-[10px] font-mono text-foreground/50 uppercase tracking-wider block">Order ID</span>
+                                                <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider block">Order ID</span>
                                                 <div className="flex items-center gap-1.5 mt-0.5">
-                                                    <span className="font-mono text-xs font-bold text-white tracking-wide truncate">
+                                                    <span className="font-mono text-xs font-bold text-foreground tracking-wide truncate">
                                                         {currentOrder?.order_id}
                                                     </span>
                                                     <button 
                                                         onClick={() => copyToClipboard(currentOrder?.order_id, currentOrder?.id)}
-                                                        className="text-foreground/40 hover:text-primary transition-colors p-1"
+                                                        className="text-muted-foreground hover:text-foreground transition-colors p-1"
                                                         title="Copy Order ID"
                                                     >
-                                                        {copiedOrderId === currentOrder?.id ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                                                        {copiedOrderId === currentOrder?.id ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
                                                     </button>
                                                 </div>
                                             </div>
                                             <div>
-                                                <span className="text-[10px] font-mono text-foreground/50 uppercase tracking-wider block">Refund Amount</span>
-                                                <span className="font-mono text-base font-extrabold text-emerald-400 block mt-0.5">
+                                                <span className="text-[10px] font-mono text-muted-foreground uppercase tracking-wider block">Refund Amount</span>
+                                                <span className="font-mono text-base font-extrabold text-emerald-600 dark:text-emerald-400 block mt-0.5">
                                                     ₹{currentOrder?.product?.refund_amount || currentOrder?.amount}
                                                 </span>
                                             </div>
@@ -920,62 +932,62 @@ export default function AdminOrders() {
                                         <div className={`p-4 rounded-xl border transition-all ${isSlotsExhausted ? 'bg-red-500/10 border-red-500/30' : 'bg-emerald-500/5 border-emerald-500/20'}`}>
                                             <div className="flex items-center justify-between text-xs mb-1.5">
                                                 <span className="font-semibold uppercase tracking-wider text-[11px] flex items-center gap-1.5">
-                                                    <ShieldCheck className={`w-3.5 h-3.5 ${isSlotsExhausted ? 'text-red-400' : 'text-emerald-400'}`} />
+                                                    <ShieldCheck className={`w-3.5 h-3.5 ${isSlotsExhausted ? 'text-red-500' : 'text-emerald-500'}`} />
                                                     Campaign Slots Engine
                                                 </span>
-                                                <span className={`font-mono font-bold text-xs ${isSlotsExhausted ? 'text-red-400' : 'text-emerald-400'}`}>
+                                                <span className={`font-mono font-bold text-xs ${isSlotsExhausted ? 'text-red-500' : 'text-emerald-600 dark:text-emerald-400'}`}>
                                                     {isSlotsExhausted ? "SLOTS EXHAUSTED" : `${remainingSlots} Slots Available`}
                                                 </span>
                                             </div>
-                                            <div className="w-full bg-white/10 rounded-full h-2 overflow-hidden mb-2">
+                                            <div className="w-full bg-muted rounded-full h-2 overflow-hidden mb-2">
                                                 <div 
                                                     className={`h-full transition-all duration-300 ${isSlotsExhausted ? 'bg-red-500' : 'bg-emerald-500'}`}
                                                     style={{ width: `${totalSlots > 0 ? Math.min(100, (filledSlots / totalSlots) * 100) : 0}%` }}
                                                 />
                                             </div>
-                                            <div className="flex justify-between text-[11px] font-mono text-foreground/60">
+                                            <div className="flex justify-between text-[11px] font-mono text-muted-foreground">
                                                 <span>Total: {totalSlots}</span>
                                                 <span>Filled: {filledSlots}</span>
-                                                <span className={isSlotsExhausted ? "text-red-400 font-bold" : "text-emerald-400 font-bold"}>
+                                                <span className={isSlotsExhausted ? "text-red-500 font-bold" : "text-emerald-600 dark:text-emerald-400 font-bold"}>
                                                     Remaining: {remainingSlots}
                                                 </span>
                                             </div>
                                             {isSlotsExhausted && (
-                                                <div className="mt-2 text-[11px] text-amber-300 bg-amber-500/10 px-2.5 py-1.5 rounded-lg border border-amber-500/30 flex items-center gap-1.5">
-                                                    <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                                                <div className="mt-2 text-[11px] text-amber-600 dark:text-amber-300 bg-amber-500/10 px-2.5 py-1.5 rounded-lg border border-amber-500/30 flex items-center gap-1.5">
+                                                    <AlertCircle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                                                     <span>Slot limit reached. Click "No More Slots" or approving will automatically route to Refund Entry workflow.</span>
                                                 </div>
                                             )}
                                         </div>
 
                                         {/* Customer Details Box */}
-                                        <div className="space-y-2 p-3.5 rounded-xl bg-white/5 border border-white/10 text-xs">
+                                        <div className="space-y-2 p-3.5 rounded-xl bg-muted/40 border border-border text-xs">
                                             <div className="flex justify-between items-center">
-                                                <span className="text-zinc-400">Customer Name:</span>
-                                                <span className="font-semibold text-white">{currentOrder?.user?.name || "Guest"}</span>
+                                                <span className="text-muted-foreground">Customer Name:</span>
+                                                <span className="font-semibold text-foreground">{currentOrder?.user?.name || "Guest"}</span>
                                             </div>
                                             <div className="flex justify-between items-center">
-                                                <span className="text-zinc-400">Mobile:</span>
-                                                <span className="font-mono font-medium text-white">{currentOrder?.user?.mobile}</span>
+                                                <span className="text-muted-foreground">Mobile:</span>
+                                                <span className="font-mono font-medium text-foreground">{currentOrder?.user?.mobile}</span>
                                             </div>
                                             {currentOrder?.user?.email && (
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-zinc-400">Email Notification:</span>
-                                                    <a href={`mailto:${currentOrder.user.email}`} className="text-zinc-200 hover:text-white flex items-center gap-1 font-mono text-[11px] underline">
-                                                        <Mail className="w-3 h-3 text-zinc-400" /> {currentOrder.user.email}
+                                                    <span className="text-muted-foreground">Email Notification:</span>
+                                                    <a href={`mailto:${currentOrder.user.email}`} className="text-foreground hover:underline flex items-center gap-1 font-mono text-[11px]">
+                                                        <Mail className="w-3 h-3 text-muted-foreground" /> {currentOrder.user.email}
                                                     </a>
                                                 </div>
                                             )}
                                             {currentOrder?.profile_name && (
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-zinc-400">E-Commerce Profile:</span>
-                                                    <span className="text-white font-mono">{currentOrder.profile_name}</span>
+                                                    <span className="text-muted-foreground">E-Commerce Profile:</span>
+                                                    <span className="text-foreground font-mono">{currentOrder.profile_name}</span>
                                                 </div>
                                             )}
                                         </div>
 
                                         {currentOrder?.remarks && currentOrder.remarks !== currentOrder.status && (
-                                            <div className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-lg">
+                                            <div className="text-xs text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-lg">
                                                 <strong>Existing Remark:</strong> {currentOrder.remarks}
                                             </div>
                                         )}
@@ -984,14 +996,14 @@ export default function AdminOrders() {
 
                                 {/* Bottom Action Area */}
                                 {isRejectingInDating ? (
-                                    <div className="p-4 bg-neutral-900 border-t border-white/10 space-y-3">
+                                    <div className="p-4 bg-muted/50 border-t border-border space-y-3">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+                                            <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
                                                 <AlertTriangle className="w-4 h-4" /> Specify Rejection Reason (Visible to Customer)
                                             </span>
                                             <button 
                                                 onClick={() => setIsRejectingInDating(false)} 
-                                                className="text-zinc-400 hover:text-white text-xs"
+                                                className="text-muted-foreground hover:text-foreground text-xs"
                                             >
                                                 Cancel [Esc]
                                             </button>
@@ -1001,7 +1013,7 @@ export default function AdminOrders() {
                                                 <Badge 
                                                     key={idx} 
                                                     variant="outline" 
-                                                    className="cursor-pointer hover:bg-white/10 hover:text-white text-[11px] py-1 px-2.5 border-zinc-700 text-zinc-300"
+                                                    className="cursor-pointer hover:bg-muted text-[11px] py-1 px-2.5 border-border text-muted-foreground hover:text-foreground"
                                                     onClick={() => setDatingRejectReason(preset)}
                                                 >
                                                     {preset}
@@ -1014,7 +1026,7 @@ export default function AdminOrders() {
                                                 placeholder="Type rejection remark visible to customer... (Press Enter to submit)"
                                                 value={datingRejectReason}
                                                 onChange={(e) => setDatingRejectReason(e.target.value)}
-                                                className="bg-white/5 border-white/15 text-white h-11 text-xs rounded-xl flex-1"
+                                                className="bg-background border-border text-foreground h-11 text-xs rounded-xl flex-1 focus:border-zinc-400"
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter' && datingRejectReason.trim()) {
                                                         e.preventDefault();
@@ -1023,7 +1035,7 @@ export default function AdminOrders() {
                                                 }}
                                             />
                                             <Button 
-                                                className="bg-zinc-900 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-semibold text-xs h-11 px-5 rounded-xl uppercase tracking-wider"
+                                                className="bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-semibold text-xs h-11 px-5 rounded-xl uppercase tracking-wider"
                                                 disabled={!datingRejectReason.trim() || isUpdating === currentOrder.id}
                                                 onClick={() => handleDatingReject(currentOrder.id)}
                                             >
@@ -1032,13 +1044,13 @@ export default function AdminOrders() {
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="p-4 bg-neutral-900/90 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                    <div className="p-4 bg-muted/40 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
                                         <Button 
                                             variant="outline"
                                             size="sm"
                                             disabled={datingIndex === 0}
                                             onClick={() => setDatingIndex(prev => Math.max(0, prev - 1))}
-                                            className="border-white/10 text-foreground/70 hover:text-white h-11 px-4 rounded-xl flex items-center gap-1.5 text-xs font-mono w-full sm:w-auto justify-center"
+                                            className="border-border text-foreground hover:bg-muted h-11 px-4 rounded-xl flex items-center gap-1.5 text-xs font-mono w-full sm:w-auto justify-center"
                                         >
                                             <ChevronLeft className="w-4 h-4" /> Previous
                                         </Button>
@@ -1048,14 +1060,14 @@ export default function AdminOrders() {
                                             <Button 
                                                 disabled={isUpdating === currentOrder.id}
                                                 onClick={() => handleDatingApprove(currentOrder.id)}
-                                                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs tracking-wide h-12 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.25)] flex flex-col items-center justify-center transition-all group"
+                                                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs tracking-wide h-12 rounded-xl shadow-xs flex flex-col items-center justify-center transition-all group"
                                             >
                                                 <div className="flex items-center gap-1.5 font-bold">
                                                     <CheckCircle2 className="w-4 h-4" />
                                                     <span>Approve & Confirm</span>
                                                     <kbd className="text-[10px] font-mono bg-emerald-700/60 px-1.5 py-0.5 rounded ml-1">A</kbd>
                                                 </div>
-                                                <span className="text-[10px] text-emerald-100/70 font-normal">Verifies slot & sends email</span>
+                                                <span className="text-[10px] text-emerald-100/80 font-normal">Verifies slot & sends email</span>
                                             </Button>
 
                                             {/* NO MORE SLOTS */}
@@ -1063,14 +1075,14 @@ export default function AdminOrders() {
                                                 variant="outline"
                                                 disabled={isUpdating === currentOrder.id}
                                                 onClick={() => handleDatingNoSlots(currentOrder.id)}
-                                                className="border-amber-500/40 text-amber-400 hover:bg-amber-500/10 font-semibold text-xs tracking-wide h-12 px-4 rounded-xl flex flex-col items-center justify-center transition-all"
+                                                className="border-amber-500/40 text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 font-semibold text-xs tracking-wide h-12 px-4 rounded-xl flex flex-col items-center justify-center transition-all"
                                             >
                                                 <div className="flex items-center gap-1.5 font-bold">
-                                                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                                                    <AlertTriangle className="w-3.5 h-3.5 text-amber-500 dark:text-amber-400" />
                                                     <span>No More Slots</span>
                                                     <kbd className="text-[10px] font-mono bg-amber-500/20 px-1.5 py-0.5 rounded ml-1">S</kbd>
                                                 </div>
-                                                <span className="text-[10px] text-amber-400/60 font-normal">Routes to refund</span>
+                                                <span className="text-[10px] text-amber-600/70 dark:text-amber-400/60 font-normal">Routes to refund</span>
                                             </Button>
 
                                             {/* REJECT */}
@@ -1081,14 +1093,14 @@ export default function AdminOrders() {
                                                     setDatingRejectReason("Wrong review written or screenshots do not match");
                                                     setIsRejectingInDating(true);
                                                 }}
-                                                className="border-zinc-700 text-zinc-300 hover:text-rose-400 hover:bg-rose-500/10 font-semibold text-xs tracking-wide h-12 px-4 rounded-xl flex flex-col items-center justify-center transition-all"
+                                                className="border-border text-foreground hover:text-rose-500 hover:bg-rose-500/10 font-semibold text-xs tracking-wide h-12 px-4 rounded-xl flex flex-col items-center justify-center transition-all"
                                             >
                                                 <div className="flex items-center gap-1.5 font-bold">
-                                                    <XCircle className="w-3.5 h-3.5 text-zinc-400" />
+                                                    <XCircle className="w-3.5 h-3.5 text-muted-foreground" />
                                                     <span>Reject</span>
-                                                    <kbd className="text-[10px] font-mono bg-zinc-800 px-1.5 py-0.5 rounded ml-1">R</kbd>
+                                                    <kbd className="text-[10px] font-mono bg-muted px-1.5 py-0.5 rounded ml-1">R</kbd>
                                                 </div>
-                                                <span className="text-[10px] text-zinc-400 font-normal">Type custom reason</span>
+                                                <span className="text-[10px] text-muted-foreground font-normal">Type custom reason</span>
                                             </Button>
                                         </div>
 
@@ -1097,7 +1109,7 @@ export default function AdminOrders() {
                                             size="sm"
                                             disabled={datingIndex >= validatingOrders.length - 1}
                                             onClick={() => setDatingIndex(prev => Math.min(prev + 1, validatingOrders.length - 1))}
-                                            className="border-white/10 text-foreground/70 hover:text-white h-11 px-4 rounded-xl flex items-center gap-1.5 text-xs font-mono w-full sm:w-auto justify-center"
+                                            className="border-border text-foreground hover:bg-muted h-11 px-4 rounded-xl flex items-center gap-1.5 text-xs font-mono w-full sm:w-auto justify-center"
                                         >
                                             Next <ChevronRight className="w-4 h-4" />
                                         </Button>
@@ -1105,16 +1117,16 @@ export default function AdminOrders() {
                                 )}
 
                                 {/* Footer Shortcut Legend */}
-                                <div className="bg-black/80 px-4 py-2 border-t border-white/5 flex flex-wrap items-center justify-center gap-3 text-[11px] font-mono text-foreground/50">
-                                    <span><kbd className="bg-white/10 px-1.5 py-0.5 rounded text-white font-bold">A</kbd> Approve & Send Email</span>
+                                <div className="bg-muted/60 px-4 py-2 border-t border-border flex flex-wrap items-center justify-center gap-3 text-[11px] font-mono text-muted-foreground">
+                                    <span><kbd className="bg-background border border-border px-1.5 py-0.5 rounded text-foreground font-bold">A</kbd> Approve & Send Email</span>
                                     <span>•</span>
-                                    <span><kbd className="bg-white/10 px-1.5 py-0.5 rounded text-white font-bold">S</kbd> No Slots</span>
+                                    <span><kbd className="bg-background border border-border px-1.5 py-0.5 rounded text-foreground font-bold">S</kbd> No Slots</span>
                                     <span>•</span>
-                                    <span><kbd className="bg-white/10 px-1.5 py-0.5 rounded text-white font-bold">R</kbd> Reject with Reason</span>
+                                    <span><kbd className="bg-background border border-border px-1.5 py-0.5 rounded text-foreground font-bold">R</kbd> Reject with Reason</span>
                                     <span>•</span>
-                                    <span><kbd className="bg-white/10 px-1.5 py-0.5 rounded text-white font-bold">←</kbd> <kbd className="bg-white/10 px-1.5 py-0.5 rounded text-white font-bold">→</kbd> Navigate</span>
+                                    <span><kbd className="bg-background border border-border px-1.5 py-0.5 rounded text-foreground font-bold">←</kbd> <kbd className="bg-background border border-border px-1.5 py-0.5 rounded text-foreground font-bold">→</kbd> Navigate</span>
                                     <span>•</span>
-                                    <span><kbd className="bg-white/10 px-1.5 py-0.5 rounded text-white font-bold">Esc</kbd> Close</span>
+                                    <span><kbd className="bg-background border border-border px-1.5 py-0.5 rounded text-foreground font-bold">Esc</kbd> Close</span>
                                 </div>
                             </div>
                         );
@@ -1124,15 +1136,15 @@ export default function AdminOrders() {
 
             {/* Proof Image Lightbox Dialog */}
             <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
-                <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col items-center justify-center bg-black/95 border-border/10 p-6 rounded-2xl">
+                <DialogContent className="max-w-4xl max-h-[90vh] flex flex-col items-center justify-center bg-zinc-950 border border-zinc-800 p-6 rounded-2xl text-white">
                     <DialogHeader className="w-full mb-3 flex flex-row items-center justify-between">
-                        <DialogTitle className="text-white/90 font-mono text-sm flex items-center gap-2">
-                            <ShieldCheck className="w-4 h-4 text-primary" />
+                        <DialogTitle className="text-white font-mono text-sm flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4 text-emerald-400" />
                             Submitted Order Proof Screenshot
                         </DialogTitle>
                     </DialogHeader>
                     {selectedImage && (
-                        <div className="relative w-full h-full flex items-center justify-center overflow-auto rounded-xl bg-black/40 p-2">
+                        <div className="relative w-full h-full flex items-center justify-center overflow-auto rounded-xl bg-zinc-900/60 p-2">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img 
                                 src={selectedImage} 
@@ -1146,13 +1158,13 @@ export default function AdminOrders() {
 
             {/* Rejection / Wrong Written Dialog */}
             <Dialog open={!!rejectOrderId} onOpenChange={(open) => !open && setRejectOrderId(null)}>
-                <DialogContent className="max-w-md bg-neutral-900 border-white/10 p-6 rounded-2xl">
+                <DialogContent className="max-w-md bg-card border border-border p-6 rounded-2xl text-card-foreground">
                     <DialogHeader>
-                        <DialogTitle className="text-primary font-sans font-bold tracking-wider text-xl mb-1 flex items-center gap-2">
+                        <DialogTitle className="text-foreground font-sans font-bold tracking-wider text-xl mb-1 flex items-center gap-2">
                             <AlertTriangle className="w-5 h-5 text-red-500" />
                             Specify Rejection Remark
                         </DialogTitle>
-                        <CardDescription className="text-foreground/50 text-xs">
+                        <CardDescription className="text-muted-foreground text-xs">
                             This remark will be immediately visible to the customer and recorded on their order card.
                         </CardDescription>
                     </DialogHeader>
@@ -1164,7 +1176,7 @@ export default function AdminOrders() {
                                         <Badge 
                                             key={idx} 
                                             variant="outline" 
-                                            className="cursor-pointer hover:bg-red-500/20 hover:text-red-300 hover:border-red-500/40 text-[10px] font-normal transition-colors py-0.5 px-2 border-white/10"
+                                            className="cursor-pointer hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 text-[10px] font-normal transition-colors py-0.5 px-2 border-border text-muted-foreground"
                                             onClick={() => setRejectReason(reason)}
                                         >
                                             {reason}
@@ -1177,13 +1189,13 @@ export default function AdminOrders() {
                                 placeholder="e.g. Wrong review text submitted, please check required keywords" 
                                 value={rejectReason}
                                 onChange={(e) => setRejectReason(e.target.value)}
-                                className="bg-white/5 border-white/15 text-foreground h-11 text-sm rounded-lg"
+                                className="bg-background border border-border text-foreground h-11 text-sm rounded-lg focus:border-zinc-400"
                             />
                         </div>
                         <div className="flex gap-2">
                             <Button 
                                 variant="outline" 
-                                className="flex-1 border-white/10" 
+                                className="flex-1 border-border text-foreground hover:bg-muted" 
                                 onClick={() => setRejectOrderId(null)}
                             >
                                 Cancel

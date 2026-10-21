@@ -300,20 +300,20 @@ export default function CreatorDashboardPage() {
                     </p>
                 </div>
 
-                <Card className="glass-panel border-white/10 rounded-2xl shadow-xl">
-                    <CardHeader className="border-b border-white/5 pb-4">
+                <Card className="border border-border bg-card/60 rounded-2xl shadow-xs">
+                    <CardHeader className="border-b border-border/60 pb-4">
                         <CardTitle className="text-lg font-bold text-foreground tracking-wide flex items-center gap-2">
                             <Sparkles className="w-5 h-5 text-primary" />
                             Creator Profile Submission
                         </CardTitle>
-                        <CardDescription className="text-xs text-foreground/50">
+                        <CardDescription className="text-xs text-muted-foreground">
                             Tell us about your audience, social media reach, and content specializations.
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="pt-6">
                         <form onSubmit={handleProfileSubmit} className="space-y-6">
                             {/* Profile Links */}
-                            <div className="space-y-3 bg-white/5 p-4 rounded-xl border border-white/5">
+                            <div className="space-y-3 bg-muted/40 p-4 rounded-xl border border-border">
                                 <div className="flex items-center justify-between">
                                     <Label className="text-xs font-bold uppercase tracking-wider text-primary">
                                         Social Profile URLs / Handles <span className="text-red-500">*</span>
@@ -339,7 +339,7 @@ export default function CreatorDashboardPage() {
                                             }} 
                                             required 
                                             placeholder="e.g. https://instagram.com/yourhandle or https://youtube.com/@channel" 
-                                            className="h-11 bg-white/5 border-white/10 text-sm text-foreground focus:border-primary/50"
+                                            className="h-11 bg-background border-border text-sm text-foreground focus:border-zinc-400"
                                         />
                                         {formData.profile_urls.length > 1 && (
                                             <Button 
@@ -370,7 +370,7 @@ export default function CreatorDashboardPage() {
                                             className={`flex items-center space-x-2.5 p-3 rounded-xl border transition-all cursor-pointer ${
                                                 formData.platforms.includes(p) 
                                                     ? 'bg-primary/10 border-primary/40 text-primary' 
-                                                    : 'bg-white/5 border-white/10 text-foreground/70 hover:bg-white/10'
+                                                    : 'bg-muted/40 border-border text-foreground/70 hover:bg-muted/70'
                                             }`}
                                             onClick={() => handleCheckboxChange('platforms', p)}
                                         >
@@ -397,7 +397,7 @@ export default function CreatorDashboardPage() {
                                             className={`flex items-center justify-between p-3.5 rounded-xl border transition-all cursor-pointer ${
                                                 formData.follower_range === r.value 
                                                     ? 'bg-primary/10 border-primary/40 text-primary' 
-                                                    : 'bg-white/5 border-white/10 text-foreground/70 hover:bg-white/10'
+                                                    : 'bg-muted/40 border-border text-foreground/70 hover:bg-muted/70'
                                             }`}
                                             onClick={() => setFormData({...formData, follower_range: r.value})}
                                         >
@@ -410,7 +410,7 @@ export default function CreatorDashboardPage() {
                                                 />
                                                 <span className="text-xs font-medium">{r.label}</span>
                                             </div>
-                                            <Badge variant="outline" className="text-[10px] bg-white/5 border-white/10">
+                                            <Badge variant="outline" className="text-[10px] bg-muted/50 border-border text-muted-foreground">
                                                 {r.tier}
                                             </Badge>
                                         </div>
@@ -425,7 +425,7 @@ export default function CreatorDashboardPage() {
                                         Primary Content Category <span className="text-red-500">*</span>
                                     </Label>
                                     <select
-                                        className="h-11 w-full rounded-xl border border-white/10 bg-black/60 px-3 text-foreground text-xs font-sans outline-none focus:border-primary/50"
+                                        className="h-11 w-full rounded-xl border border-border bg-card px-3 text-foreground text-xs font-sans outline-none focus:border-zinc-400"
                                         value={formData.content_category}
                                         onChange={e => setFormData({...formData, content_category: e.target.value})}
                                         required
@@ -445,7 +445,7 @@ export default function CreatorDashboardPage() {
                                         placeholder="e.g. 15000"
                                         value={formData.follower_count}
                                         onChange={e => setFormData({...formData, follower_count: e.target.value})}
-                                        className="h-11 bg-white/5 border-white/10 text-xs text-foreground focus:border-primary/50"
+                                        className="h-11 bg-card border-border text-xs text-foreground focus:border-zinc-400"
                                     />
                                 </div>
                             </div>
@@ -465,7 +465,7 @@ export default function CreatorDashboardPage() {
                                                 className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
                                                     formData.content_types.includes(c) 
                                                         ? 'bg-primary/20 border-primary text-primary font-semibold' 
-                                                        : 'bg-white/5 border-white/10 text-foreground/60'
+                                                        : 'bg-muted/40 border-border text-muted-foreground hover:bg-muted/70'
                                                 }`}
                                             >
                                                 {c}
@@ -486,7 +486,7 @@ export default function CreatorDashboardPage() {
                                                 className={`text-xs px-3 py-1.5 rounded-lg border transition-all ${
                                                     formData.collaboration_types.includes(c) 
                                                         ? 'bg-primary/20 border-primary text-primary font-semibold' 
-                                                        : 'bg-white/5 border-white/10 text-foreground/60'
+                                                        : 'bg-muted/40 border-border text-muted-foreground hover:bg-muted/70'
                                                 }`}
                                             >
                                                 {c}
@@ -507,7 +507,7 @@ export default function CreatorDashboardPage() {
 
                             <Button 
                                 type="submit" 
-                                className="w-full h-12 bg-primary hover:bg-primary/90 text-black font-bold uppercase tracking-wider text-xs rounded-xl shadow-lg"
+                                className="w-full h-12 bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-bold uppercase tracking-wider text-xs rounded-xl shadow-lg"
                                 disabled={isSaving}
                             >
                                 {isSaving ? "Submitting Details..." : "Submit Profile for Verification"}
@@ -542,21 +542,21 @@ export default function CreatorDashboardPage() {
                     </div>
 
                     {/* Profile Summary Card */}
-                    <div className="bg-black/40 border border-white/10 rounded-xl p-5 text-left text-xs space-y-3 max-w-lg mx-auto">
-                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                            <span className="text-foreground/50 uppercase tracking-wider text-[10px]">Category:</span>
+                    <div className="bg-card border border-border rounded-xl p-5 text-left text-xs space-y-3 max-w-lg mx-auto shadow-xs">
+                        <div className="flex justify-between items-center border-b border-border/60 pb-2">
+                            <span className="text-muted-foreground uppercase tracking-wider text-[10px]">Category:</span>
                             <span className="font-semibold text-primary">{profile.content_category || "Unassigned"}</span>
                         </div>
-                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                            <span className="text-foreground/50 uppercase tracking-wider text-[10px]">Follower Base:</span>
+                        <div className="flex justify-between items-center border-b border-border/60 pb-2">
+                            <span className="text-muted-foreground uppercase tracking-wider text-[10px]">Follower Base:</span>
                             <span className="font-mono font-medium text-foreground">{profile.follower_count ? profile.follower_count.toLocaleString() : profile.follower_range}</span>
                         </div>
-                        <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                            <span className="text-foreground/50 uppercase tracking-wider text-[10px]">Platforms:</span>
+                        <div className="flex justify-between items-center border-b border-border/60 pb-2">
+                            <span className="text-muted-foreground uppercase tracking-wider text-[10px]">Platforms:</span>
                             <span className="text-foreground">{profile.platforms?.join(", ")}</span>
                         </div>
                         <div>
-                            <span className="text-foreground/50 uppercase tracking-wider text-[10px] block mb-1">Submitted Links:</span>
+                            <span className="text-muted-foreground uppercase tracking-wider text-[10px] block mb-1">Submitted Links:</span>
                             <div className="space-y-1">
                                 {profile.profile_urls?.map((url: string, i: number) => (
                                     <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="text-primary hover:underline flex items-center gap-1 text-[11px] truncate">
@@ -570,7 +570,7 @@ export default function CreatorDashboardPage() {
                     <div className="pt-2 flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
                         <Button 
                             variant="outline" 
-                            className="border-white/10 text-foreground hover:bg-white/5 text-xs h-10 rounded-xl"
+                            className="border-border text-foreground hover:bg-muted text-xs h-10 rounded-xl"
                             onClick={() => fetchDashboard()}
                         >
                             <RefreshCw className="w-3.5 h-3.5 mr-2" /> Check Verification Status
@@ -618,21 +618,21 @@ export default function CreatorDashboardPage() {
     return (
         <div className="space-y-8 relative z-10 pb-16">
             {/* Header with Verification & Tier Badges */}
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-white/5 pb-6">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border/60 pb-6">
                 <div>
                     <div className="flex items-center gap-3 flex-wrap">
-                        <h1 className="text-3xl font-extrabold text-primary tracking-wider uppercase">
+                        <h1 className="text-3xl font-extrabold text-foreground tracking-wider uppercase">
                             Creator Dashboard
                         </h1>
-                        <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/40 text-xs px-2.5 py-0.5 flex items-center gap-1 font-medium">
+                        <Badge className="bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/40 text-xs px-2.5 py-0.5 flex items-center gap-1 font-medium">
                             <ShieldCheck className="w-3.5 h-3.5" /> Verified Creator
                         </Badge>
-                        <Badge variant="outline" className="text-xs bg-white/5 border-white/10 text-foreground/80 font-mono">
+                        <Badge variant="outline" className="text-xs bg-muted/50 border-border text-foreground font-mono">
                             {profile.category_tier || "Micro Creator"}
                         </Badge>
                     </div>
-                    <p className="text-foreground/60 mt-1 text-xs font-sans tracking-wide">
-                        Welcome back, <strong className="text-white">{profile.user?.name || "Creator"}</strong> • Category: <span className="text-primary">{profile.content_category || "General"}</span>
+                    <p className="text-muted-foreground mt-1 text-xs font-sans tracking-wide">
+                        Welcome back, <strong className="text-foreground">{profile.user?.name || "Creator"}</strong> • Category: <span className="text-primary font-medium">{profile.content_category || "General"}</span>
                     </p>
                 </div>
 
@@ -685,18 +685,18 @@ export default function CreatorDashboardPage() {
                 </Card>
 
                 {/* Total Lifetime Earnings */}
-                <Card className="glass-panel border-white/10 p-5 rounded-2xl flex flex-col justify-between">
+                <Card className="border border-border bg-card/60 p-5 rounded-2xl flex flex-col justify-between shadow-xs">
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-semibold text-foreground/60 uppercase tracking-wider">
+                        <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
                             Approved Earnings
                         </span>
-                        <DollarSign className="w-4 h-4 text-primary" />
+                        <DollarSign className="w-4 h-4 text-emerald-500" />
                     </div>
                     <div className="mt-3">
-                        <div className="text-3xl font-extrabold font-mono text-primary">
+                        <div className="text-3xl font-extrabold font-mono text-foreground">
                             ₹{totalEarned.toLocaleString()}
                         </div>
-                        <p className="text-[11px] text-foreground/50 mt-1">
+                        <p className="text-[11px] text-muted-foreground mt-1">
                             {approvedActivities.length} Approved Reels
                         </p>
                     </div>
@@ -704,20 +704,20 @@ export default function CreatorDashboardPage() {
 
                 {/* Shortlisted In-Progress */}
                 <Card 
-                    className="glass-panel border-blue-500/20 p-5 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-blue-500/40 transition-all"
+                    className="border border-blue-500/20 bg-blue-500/5 p-5 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-blue-500/40 transition-all shadow-xs"
                     onClick={() => setActiveTab("shortlisted")}
                 >
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-semibold text-blue-400 uppercase tracking-wider">
+                        <span className="text-[11px] font-semibold text-blue-500 dark:text-blue-400 uppercase tracking-wider">
                             Shortlisted Activities
                         </span>
-                        <Video className="w-4 h-4 text-blue-400" />
+                        <Video className="w-4 h-4 text-blue-500 dark:text-blue-400" />
                     </div>
                     <div className="mt-3">
-                        <div className="text-3xl font-extrabold font-mono text-blue-300">
+                        <div className="text-3xl font-extrabold font-mono text-blue-600 dark:text-blue-300">
                             {shortlistedActivities.length}
                         </div>
-                        <p className="text-[11px] text-foreground/50 mt-1">
+                        <p className="text-[11px] text-muted-foreground mt-1">
                             Reel submissions required
                         </p>
                     </div>
@@ -725,11 +725,11 @@ export default function CreatorDashboardPage() {
 
                 {/* Open Activities */}
                 <Card 
-                    className="glass-panel border-white/10 p-5 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-primary/40 transition-all"
+                    className="border border-border bg-card/60 p-5 rounded-2xl flex flex-col justify-between cursor-pointer hover:border-zinc-400/50 transition-all shadow-xs"
                     onClick={() => setActiveTab("available")}
                 >
                     <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-semibold text-foreground/60 uppercase tracking-wider">
+                        <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
                             Available Campaigns
                         </span>
                         <Sparkles className="w-4 h-4 text-primary" />
@@ -738,7 +738,7 @@ export default function CreatorDashboardPage() {
                         <div className="text-3xl font-extrabold font-mono text-foreground">
                             {availableActivities.length}
                         </div>
-                        <p className="text-[11px] text-foreground/50 mt-1">
+                        <p className="text-[11px] text-muted-foreground mt-1">
                             Open for application
                         </p>
                     </div>
@@ -746,13 +746,13 @@ export default function CreatorDashboardPage() {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex items-center gap-2 border-b border-white/10 pb-1 overflow-x-auto text-xs">
+            <div className="flex items-center gap-2 border-b border-border pb-1 overflow-x-auto text-xs">
                 <button
                     onClick={() => setActiveTab("available")}
                     className={`px-4 py-2 rounded-xl font-medium transition-all whitespace-nowrap ${
                         activeTab === "available" 
-                            ? "bg-primary text-black font-bold shadow-md" 
-                            : "text-foreground/60 hover:text-foreground hover:bg-white/5"
+                            ? "bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 font-bold shadow-md" 
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                 >
                     Available Activities ({availableActivities.length})
@@ -762,7 +762,7 @@ export default function CreatorDashboardPage() {
                     className={`px-4 py-2 rounded-xl font-medium transition-all whitespace-nowrap flex items-center gap-1.5 ${
                         activeTab === "shortlisted" 
                             ? "bg-blue-600 text-white font-bold shadow-md" 
-                            : "text-foreground/60 hover:text-foreground hover:bg-white/5"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                 >
                     Shortlisted & Submit Reel ({shortlistedActivities.length})
@@ -774,8 +774,8 @@ export default function CreatorDashboardPage() {
                     onClick={() => setActiveTab("submitted")}
                     className={`px-4 py-2 rounded-xl font-medium transition-all whitespace-nowrap ${
                         activeTab === "submitted" 
-                            ? "bg-amber-500 text-black font-bold shadow-md" 
-                            : "text-foreground/60 hover:text-foreground hover:bg-white/5"
+                            ? "bg-amber-500 text-white font-bold shadow-md" 
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                 >
                     Reels Under Review ({submittedActivities.length})
@@ -785,7 +785,7 @@ export default function CreatorDashboardPage() {
                     className={`px-4 py-2 rounded-xl font-medium transition-all whitespace-nowrap ${
                         activeTab === "approved" 
                             ? "bg-emerald-600 text-white font-bold shadow-md" 
-                            : "text-foreground/60 hover:text-foreground hover:bg-white/5"
+                            : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                 >
                     Approved & Paid ({approvedActivities.length})
@@ -798,23 +798,23 @@ export default function CreatorDashboardPage() {
             {activeTab === "available" && (
                 <div className="space-y-4">
                     {availableActivities.length === 0 ? (
-                        <Card className="p-12 text-center glass-panel border-white/10 rounded-2xl">
-                            <Video className="w-10 h-10 text-foreground/30 mx-auto mb-3" />
+                        <Card className="p-12 text-center border border-border bg-card/60 rounded-2xl shadow-xs">
+                            <Video className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
                             <h3 className="text-base font-bold text-foreground">No new activities available right now</h3>
-                            <p className="text-xs text-foreground/50 mt-1 max-w-md mx-auto">
+                            <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
                                 Check back regularly or review your shortlisted activities. New campaigns are published regularly by our brand partners.
                             </p>
                         </Card>
                     ) : (
                         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {availableActivities.map(activity => (
-                                <Card key={activity.id} className="glass-panel border-white/10 hover:border-primary/40 transition-all rounded-2xl overflow-hidden flex flex-col justify-between shadow-lg">
+                                <Card key={activity.id} className="border border-border bg-card/60 hover:border-zinc-400/50 transition-all rounded-2xl overflow-hidden flex flex-col justify-between shadow-xs">
                                     <div className="p-5 space-y-3">
                                         <div className="flex items-center justify-between gap-2">
                                             <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20 text-[10px] font-mono uppercase tracking-wider">
                                                 Creator Collab
                                             </Badge>
-                                            <span className="text-emerald-400 font-mono font-extrabold text-sm">
+                                            <span className="text-emerald-600 dark:text-emerald-400 font-mono font-extrabold text-sm">
                                                 ₹{activity.reward_amount} Reward
                                             </span>
                                         </div>
@@ -823,15 +823,15 @@ export default function CreatorDashboardPage() {
                                             {activity.title}
                                         </h3>
 
-                                        <p className="text-xs text-foreground/60 line-clamp-3 leading-relaxed">
+                                        <p className="text-xs text-muted-foreground line-clamp-3 leading-relaxed">
                                             {activity.description}
                                         </p>
 
-                                        <div className="bg-white/5 p-3 rounded-xl border border-white/5 text-xs space-y-1">
+                                        <div className="bg-muted/40 p-3 rounded-xl border border-border text-xs space-y-1">
                                             <span className="font-semibold text-foreground/80 block uppercase tracking-wider text-[10px]">
                                                 Requirements:
                                             </span>
-                                            <p className="text-foreground/60 text-[11px] leading-relaxed line-clamp-3">
+                                            <p className="text-muted-foreground text-[11px] leading-relaxed line-clamp-3">
                                                 {activity.requirements}
                                             </p>
                                         </div>
@@ -839,12 +839,12 @@ export default function CreatorDashboardPage() {
 
                                     <div className="p-5 pt-0">
                                         <Button 
-                                            className="w-full bg-primary hover:bg-primary/90 text-black font-bold uppercase tracking-wider text-xs h-10 rounded-xl"
+                                            className="w-full bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-bold uppercase tracking-wider text-xs h-10 rounded-xl"
                                             onClick={() => handleApply(activity.id)}
                                         >
                                             Apply for Activity
                                         </Button>
-                                        <p className="text-[10px] text-foreground/40 text-center mt-1.5">
+                                        <p className="text-[10px] text-muted-foreground text-center mt-1.5">
                                             Applying does not guarantee selection.
                                         </p>
                                     </div>
@@ -861,10 +861,10 @@ export default function CreatorDashboardPage() {
             {activeTab === "shortlisted" && (
                 <div className="space-y-4">
                     {shortlistedActivities.length === 0 ? (
-                        <Card className="p-12 text-center glass-panel border-white/10 rounded-2xl">
-                            <Clock className="w-10 h-10 text-foreground/30 mx-auto mb-3" />
+                        <Card className="p-12 text-center border border-border bg-card/60 rounded-2xl shadow-xs">
+                            <Clock className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
                             <h3 className="text-base font-bold text-foreground">No shortlisted activities at this time</h3>
-                            <p className="text-xs text-foreground/50 mt-1 max-w-md mx-auto">
+                            <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
                                 Once the Sample Lelo Team reviews your applications and shortlists your profile, activities will appear here for Reel submission.
                             </p>
                         </Card>
@@ -892,7 +892,7 @@ export default function CreatorDashboardPage() {
                                             <strong className="inline-flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5 text-blue-400" /> Congratulations!</strong> You have been shortlisted for this activity. Please complete the required activity and submit your Reel link through the Creator Dashboard below.
                                         </div>
 
-                                        <div className="bg-black/30 p-3.5 rounded-xl border border-white/5 text-xs space-y-1">
+                                        <div className="bg-muted/40 p-3.5 rounded-xl border border-border text-xs space-y-1">
                                             <span className="text-foreground/50 font-semibold uppercase text-[10px] tracking-wider block">
                                                 Campaign Deliverables:
                                             </span>
@@ -914,7 +914,7 @@ export default function CreatorDashboardPage() {
                                                         setSelectedAppId(myApp.id);
                                                         setReelLink(e.target.value);
                                                     }}
-                                                    className="h-11 bg-black/60 border-white/15 text-xs text-foreground focus:border-primary/50"
+                                                    className="h-11 bg-card border-border text-xs text-foreground focus:border-zinc-400"
                                                     required
                                                 />
                                                 <Button 
@@ -943,10 +943,10 @@ export default function CreatorDashboardPage() {
             {activeTab === "submitted" && (
                 <div className="space-y-4">
                     {submittedActivities.length === 0 ? (
-                        <Card className="p-12 text-center glass-panel border-white/10 rounded-2xl">
-                            <Video className="w-10 h-10 text-foreground/30 mx-auto mb-3" />
+                        <Card className="p-12 text-center border border-border bg-card/60 rounded-2xl shadow-xs">
+                            <Video className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
                             <h3 className="text-base font-bold text-foreground">No Reels currently pending review</h3>
-                            <p className="text-xs text-foreground/50 mt-1 max-w-md mx-auto">
+                            <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
                                 Once you submit a Reel link for a shortlisted campaign, our review team validates the deliverables before releasing payment.
                             </p>
                         </Card>
@@ -955,33 +955,33 @@ export default function CreatorDashboardPage() {
                             {submittedActivities.map(activity => {
                                 const myApp = activity.applications[0];
                                 return (
-                                    <Card key={activity.id} className="glass-panel border-amber-500/20 bg-amber-500/5 rounded-2xl p-6 space-y-3 shadow-md">
+                                    <Card key={activity.id} className="border border-amber-500/20 bg-amber-500/5 rounded-2xl p-6 space-y-3 shadow-xs">
                                         <div className="flex items-start justify-between gap-3">
                                             <div>
-                                                <Badge className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px] uppercase tracking-wider mb-1">
+                                                <Badge className="bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/40 text-[10px] uppercase tracking-wider mb-1">
                                                     Reel Under Review
                                                 </Badge>
                                                 <h3 className="font-bold text-base text-foreground">{activity.title}</h3>
                                             </div>
-                                            <span className="text-emerald-400 font-mono font-bold text-sm">
+                                            <span className="text-emerald-600 dark:text-emerald-400 font-mono font-bold text-sm">
                                                 ₹{activity.reward_amount}
                                             </span>
                                         </div>
 
-                                        <p className="text-xs text-foreground/70">
+                                        <p className="text-xs text-muted-foreground">
                                             Submitted Reel Link:
                                         </p>
                                         <a 
                                             href={myApp.reel_link} 
                                             target="_blank" 
                                             rel="noopener noreferrer" 
-                                            className="text-xs text-primary hover:underline flex items-center gap-1.5 font-mono break-all bg-black/40 p-2.5 rounded-lg border border-white/5"
+                                            className="text-xs text-primary hover:underline flex items-center gap-1.5 font-mono break-all bg-muted/40 p-2.5 rounded-lg border border-border"
                                         >
                                             <ExternalLink className="w-3.5 h-3.5 shrink-0" /> {myApp.reel_link}
                                         </a>
 
-                                        <div className="bg-white/5 p-3 rounded-xl border border-white/5 text-[11px] text-foreground/60 flex items-center gap-2">
-                                            <Clock className="w-4 h-4 text-amber-400 shrink-0" />
+                                        <div className="bg-muted/40 p-3 rounded-xl border border-border text-[11px] text-muted-foreground flex items-center gap-2">
+                                            <Clock className="w-4 h-4 text-amber-500 shrink-0" />
                                             <span>
                                                 The Sample Lelo Team is reviewing your Reel against guidelines. Approved Reel payments will be processed within 15 days of approval.
                                             </span>
@@ -1000,10 +1000,10 @@ export default function CreatorDashboardPage() {
             {activeTab === "approved" && (
                 <div className="space-y-4">
                     {approvedActivities.length === 0 ? (
-                        <Card className="p-12 text-center glass-panel border-white/10 rounded-2xl">
-                            <CheckCircle2 className="w-10 h-10 text-foreground/30 mx-auto mb-3" />
+                        <Card className="p-12 text-center border border-border bg-card/60 rounded-2xl shadow-xs">
+                            <CheckCircle2 className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
                             <h3 className="text-base font-bold text-foreground">No approved campaigns yet</h3>
-                            <p className="text-xs text-foreground/50 mt-1 max-w-md mx-auto">
+                            <p className="text-xs text-muted-foreground mt-1 max-w-md mx-auto">
                                 Complete your shortlisted activities to earn rewards credited straight into your Creator Wallet!
                             </p>
                         </Card>
@@ -1044,33 +1044,33 @@ export default function CreatorDashboardPage() {
             {/* WALLET REDEMPTION MODAL                                       */}
             {/* ============================================================= */}
             <Dialog open={isRedeemOpen} onOpenChange={setIsRedeemOpen}>
-                <DialogContent className="max-w-md bg-neutral-900 border-white/10 p-6 rounded-2xl text-foreground">
+                <DialogContent className="max-w-md bg-card border border-border p-6 rounded-2xl text-card-foreground">
                     <DialogHeader>
-                        <DialogTitle className="text-primary font-bold text-xl flex items-center gap-2">
-                            <Wallet className="w-5 h-5 text-emerald-400" />
+                        <DialogTitle className="text-foreground font-bold text-xl flex items-center gap-2">
+                            <Wallet className="w-5 h-5 text-emerald-500" />
                             Redeem Creator Wallet
                         </DialogTitle>
-                        <DialogDescription className="text-foreground/50 text-xs">
+                        <DialogDescription className="text-muted-foreground text-xs">
                             Transfer your earnings directly to your bank account via UPI.
                         </DialogDescription>
                     </DialogHeader>
 
                     <form onSubmit={handleRedeemWallet} className="space-y-4 pt-3">
-                        <div className="bg-white/5 p-3.5 rounded-xl border border-white/5 flex justify-between items-center">
-                            <span className="text-xs text-foreground/60">Available Balance:</span>
-                            <span className="text-lg font-mono font-bold text-emerald-400">
+                        <div className="bg-muted/50 p-3.5 rounded-xl border border-border flex justify-between items-center">
+                            <span className="text-xs text-muted-foreground">Available Balance:</span>
+                            <span className="text-lg font-mono font-bold text-emerald-600 dark:text-emerald-400">
                                 ₹{walletBalance.toFixed(2)}
                             </span>
                         </div>
 
                         <div className="space-y-2">
                             <div className="flex justify-between items-center">
-                                <Label className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
+                                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                     Redeem Amount (₹)
                                 </Label>
                                 <button 
                                     type="button" 
-                                    className="text-[11px] text-primary hover:underline"
+                                    className="text-[11px] text-primary hover:underline font-medium"
                                     onClick={() => setRedeemAmount(walletBalance.toString())}
                                 >
                                     Redeem Max
@@ -1084,23 +1084,23 @@ export default function CreatorDashboardPage() {
                                 placeholder="Enter amount to withdraw" 
                                 value={redeemAmount}
                                 onChange={e => setRedeemAmount(e.target.value)}
-                                className="h-11 bg-black/60 border-white/15 text-foreground text-sm rounded-xl focus:border-primary/50"
+                                className="h-11 bg-card border-border text-foreground text-sm rounded-xl focus:border-zinc-400"
                                 required
                             />
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-xs font-semibold uppercase tracking-wider text-foreground/70">
+                            <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                 Virtual Payment Address (UPI ID)
                             </Label>
                             <Input 
                                 placeholder="e.g. yourname@okhdfcbank" 
                                 value={upiId}
                                 onChange={e => setUpiId(e.target.value)}
-                                className="h-11 bg-black/60 border-white/15 text-foreground text-sm rounded-xl focus:border-primary/50"
+                                className="h-11 bg-card border-border text-foreground text-sm rounded-xl focus:border-zinc-400"
                                 required
                             />
-                            <p className="text-[10px] text-foreground/40">
+                            <p className="text-[10px] text-muted-foreground">
                                 Payout will be transferred directly to this UPI address.
                             </p>
                         </div>
@@ -1109,7 +1109,7 @@ export default function CreatorDashboardPage() {
                             <Button 
                                 type="button" 
                                 variant="outline" 
-                                className="flex-1 border-white/10 text-xs h-11 rounded-xl"
+                                className="flex-1 border-border text-foreground hover:bg-muted text-xs h-11 rounded-xl"
                                 onClick={() => setIsRedeemOpen(false)}
                             >
                                 Cancel
@@ -1129,8 +1129,8 @@ export default function CreatorDashboardPage() {
             {/* ============================================================= */}
             {/* IMPORTANT COMPLIANCE & TERMS NOTICE                           */}
             {/* ============================================================= */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-xs text-foreground/60 space-y-2">
-                <div className="flex items-center gap-2 text-foreground/90 font-bold text-xs uppercase tracking-wider">
+            <div className="bg-muted/40 border border-border rounded-2xl p-5 text-xs text-muted-foreground space-y-2">
+                <div className="flex items-center gap-2 text-foreground font-bold text-xs uppercase tracking-wider">
                     <Info className="w-4 h-4 text-primary" />
                     Important Creator Guidelines & Terms
                 </div>

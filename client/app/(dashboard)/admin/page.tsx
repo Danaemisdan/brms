@@ -385,34 +385,34 @@ export default function AdminDashboard() {
                     {/* Analytics & Performance Charts */}
                     <div className="grid gap-6 md:grid-cols-2 pt-2">
                         {/* 30-Day Growth & Order Volume Chart */}
-                        <Card className="glass-panel border-white/5">
+                        <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
                             <CardHeader className="pb-3 flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-base font-bold text-foreground tracking-wide flex items-center gap-2">
-                                        <TrendingUp className="w-4 h-4 text-primary" />
+                                    <CardTitle className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
+                                        <TrendingUp className="w-4 h-4 text-emerald-500" />
                                         Platform Growth Trend
                                     </CardTitle>
-                                    <CardDescription className="text-xs text-foreground/50 mt-0.5">
+                                    <CardDescription className="text-xs text-muted-foreground mt-0.5">
                                         Last 30 days continuous activity
                                     </CardDescription>
                                 </div>
-                                <div className="flex items-center gap-1 bg-black/40 border border-white/10 p-0.5 rounded-lg text-xs">
+                                <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 p-1 rounded-xl border border-zinc-200/80 dark:border-zinc-700/80 text-xs">
                                     <button
                                         onClick={() => setSelectedMetric("orders")}
-                                        className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                                        className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
                                             selectedMetric === "orders" 
-                                                ? "bg-primary text-black font-semibold shadow-sm" 
-                                                : "text-foreground/60 hover:text-foreground"
+                                                ? "bg-white text-zinc-950 dark:bg-zinc-950 dark:text-white font-semibold shadow-xs" 
+                                                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white"
                                         }`}
                                     >
                                         Orders ({totalOrders30d})
                                     </button>
                                     <button
                                         onClick={() => setSelectedMetric("signups")}
-                                        className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                                        className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
                                             selectedMetric === "signups" 
-                                                ? "bg-primary text-black font-semibold shadow-sm" 
-                                                : "text-foreground/60 hover:text-foreground"
+                                                ? "bg-white text-zinc-950 dark:bg-zinc-950 dark:text-white font-semibold shadow-xs" 
+                                                : "text-zinc-600 dark:text-zinc-400 hover:text-zinc-950 dark:hover:text-white"
                                         }`}
                                     >
                                         Signups ({totalSignups30d})
@@ -478,24 +478,24 @@ export default function AdminDashboard() {
                         </Card>
 
                         {/* Top Campaigns Performance Leaderboard */}
-                        <Card className="glass-panel border-white/5">
+                        <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
                             <CardHeader className="pb-3 flex flex-row items-center justify-between">
                                 <div>
-                                    <CardTitle className="text-base font-bold text-foreground tracking-wide flex items-center gap-2">
-                                        <Layers className="w-4 h-4 text-primary" />
+                                    <CardTitle className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
+                                        <Layers className="w-4 h-4 text-purple-500" />
                                         Top Performing Campaigns
                                     </CardTitle>
-                                    <CardDescription className="text-xs text-foreground/50 mt-0.5">
+                                    <CardDescription className="text-xs text-muted-foreground mt-0.5">
                                         Slot allocations & fulfillment velocity
                                     </CardDescription>
                                 </div>
-                                <Link href="/admin/products" className="text-xs text-primary/80 hover:text-primary inline-flex items-center gap-1 font-medium">
+                                <Link href="/admin/products" className="text-xs text-muted-foreground hover:text-foreground inline-flex items-center gap-1 font-medium">
                                     View All <ChevronRight className="w-3.5 h-3.5" />
                                 </Link>
                             </CardHeader>
                             <CardContent className="space-y-3 pt-1">
                                 {analyticsData.topProducts.length === 0 ? (
-                                    <div className="h-[240px] flex flex-col items-center justify-center text-center text-foreground/40 text-xs">
+                                    <div className="h-[240px] flex flex-col items-center justify-center text-center text-muted-foreground text-xs">
                                         <ShoppingBasket className="w-8 h-8 mb-2 opacity-30" />
                                         No active campaigns found.
                                     </div>
@@ -507,15 +507,15 @@ export default function AdminDashboard() {
                                         return (
                                             <div 
                                                 key={p.id || idx}
-                                                className="p-2.5 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5 flex items-center gap-3.5"
+                                                className="p-2.5 rounded-xl bg-muted/40 hover:bg-muted/70 transition-colors border border-border/60 flex items-center gap-3.5"
                                             >
                                                 {/* Thumbnail */}
-                                                <div className="w-11 h-11 rounded-lg bg-black/40 border border-white/10 overflow-hidden shrink-0 flex items-center justify-center">
+                                                <div className="w-11 h-11 rounded-xl bg-muted border border-border overflow-hidden shrink-0 flex items-center justify-center">
                                                     {p.image ? (
                                                         // eslint-disable-next-line @next/next/no-img-element
                                                         <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
                                                     ) : (
-                                                        <ShoppingBag className="w-5 h-5 text-foreground/30" />
+                                                        <ShoppingBag className="w-5 h-5 text-muted-foreground/40" />
                                                     )}
                                                 </div>
 
@@ -525,12 +525,12 @@ export default function AdminDashboard() {
                                                         <h4 className="text-xs font-semibold text-foreground truncate" title={p.name}>
                                                             {p.name}
                                                         </h4>
-                                                        <span className="text-[11px] font-mono font-bold text-primary shrink-0">
+                                                        <span className="text-[11px] font-mono font-bold text-foreground shrink-0">
                                                             {p.orders} Orders
                                                         </span>
                                                     </div>
 
-                                                    <div className="flex items-center justify-between text-[10px] text-foreground/50 mt-1">
+                                                    <div className="flex items-center justify-between text-[10px] text-muted-foreground mt-1">
                                                         <span>
                                                             {p.brand} • <strong className="text-foreground/80">{p.platform}</strong>
                                                         </span>
@@ -540,7 +540,7 @@ export default function AdminDashboard() {
                                                     </div>
 
                                                     {/* Slot Progress Bar */}
-                                                    <div className="w-full bg-white/10 h-1.5 rounded-full mt-1.5 overflow-hidden">
+                                                    <div className="w-full bg-muted dark:bg-zinc-800 h-1.5 rounded-full mt-1.5 overflow-hidden">
                                                         <div 
                                                             className="bg-primary h-full rounded-full transition-all duration-500" 
                                                             style={{ width: `${Math.max(5, filledPercent)}%` }}
@@ -557,19 +557,19 @@ export default function AdminDashboard() {
 
                     {/* Pending Product Approvals */}
                     <div className="space-y-4 pt-6">
-                        <div className="flex items-center justify-between border-b border-white/5 pb-3">
+                        <div className="flex items-center justify-between border-b border-border/60 pb-3">
                             <h2 className="text-lg font-bold text-foreground tracking-wide flex items-center gap-2">
-                                <AlertCircle className="w-4 h-4 text-amber-400" />
+                                <AlertCircle className="w-4 h-4 text-amber-500" />
                                 Pending Product Approvals ({pendingRequests.length})
                             </h2>
-                            <Link href="/admin/products" className="text-xs text-primary/80 hover:text-primary">
+                            <Link href="/admin/products" className="text-xs text-muted-foreground hover:text-foreground">
                                 Manage Products →
                             </Link>
                         </div>
 
                         {pendingRequests.length === 0 ? (
-                            <Card className="p-8 text-center glass-panel border-white/5">
-                                <p className="text-xs font-sans tracking-wide text-foreground/40">
+                            <Card className="p-8 text-center border border-border bg-card/60 rounded-2xl">
+                                <p className="text-xs font-sans tracking-wide text-muted-foreground">
                                     No pending products awaiting approval. All vendor listings are up to date.
                                 </p>
                             </Card>
@@ -660,30 +660,30 @@ export default function AdminDashboard() {
                         </div>
 
                         {recentOrders.length === 0 ? (
-                            <Card className="p-8 text-center glass-panel border-white/5">
-                                <p className="text-xs font-sans tracking-wide text-foreground/40">
+                            <Card className="p-8 text-center border border-border bg-card/60 rounded-2xl">
+                                <p className="text-xs font-sans tracking-wide text-muted-foreground">
                                     No orders submitted yet today.
                                 </p>
                             </Card>
                         ) : (
                             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                                 {recentOrders.map((req) => (
-                                    <Card key={req.id} className="p-5 glass-panel border-white/10 hover:border-primary/40 transition-all rounded-xl">
+                                    <Card key={req.id} className="p-5 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 hover:border-zinc-400/50 transition-all rounded-2xl shadow-xs">
                                         <CardHeader className="p-0 pb-3 flex flex-row items-center justify-between">
-                                            <CardTitle className="text-xs font-mono font-bold text-foreground/70">
-                                                Order <span className="text-primary">{req.order_id}</span>
+                                            <CardTitle className="text-xs font-mono font-bold text-foreground">
+                                                Order <span>{req.order_id}</span>
                                             </CardTitle>
-                                            <Badge variant="outline" className="text-[10px] bg-white/5 border-white/10 text-foreground/70">
+                                            <Badge variant="outline" className="text-[10px] bg-muted/60 border-border text-foreground">
                                                 {req.status}
                                             </Badge>
                                         </CardHeader>
                                         <CardContent className="p-0 space-y-2 text-xs">
-                                            <p className="text-foreground/60 truncate">Product: <span className="text-foreground ml-1 font-medium">{req.product?.product_name}</span></p>
-                                            <p className="text-foreground/60">Customer: <span className="text-foreground ml-1">{req.user?.name || req.user?.mobile}</span></p>
-                                            <p className="text-foreground/60">Amount: <span className="text-emerald-400 font-mono font-bold ml-1">₹{req.amount}</span></p>
+                                            <p className="text-muted-foreground truncate">Product: <span className="text-foreground ml-1 font-medium">{req.product?.product_name}</span></p>
+                                            <p className="text-muted-foreground">Customer: <span className="text-foreground ml-1">{req.user?.name || req.user?.mobile}</span></p>
+                                            <p className="text-muted-foreground">Amount: <span className="text-emerald-600 dark:text-emerald-400 font-mono font-bold ml-1">₹{req.amount}</span></p>
                                             <Button 
                                                 variant="outline"
-                                                className="w-full mt-3 bg-white/5 text-foreground hover:bg-primary hover:text-black font-sans tracking-wider uppercase text-xs h-9 rounded-lg transition-colors" 
+                                                className="w-full mt-3 border-border hover:bg-muted text-foreground font-medium text-xs h-9 rounded-xl transition-colors" 
                                                 onClick={() => window.location.href = '/admin/orders'}
                                             >
                                                 Review Order

@@ -117,30 +117,30 @@ export default function AdminCreatorsPage() {
 
             {/* Quick Metrics */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <Card className="glass-panel border-white/5 p-4 rounded-xl">
-                    <span className="text-[11px] font-semibold text-foreground/50 uppercase tracking-wider">Total Creators</span>
-                    <div className="text-2xl font-bold font-mono text-primary mt-1">{creators.length}</div>
+                <Card className="border border-border bg-card/60 p-4 rounded-xl shadow-xs">
+                    <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Total Creators</span>
+                    <div className="text-2xl font-bold font-mono text-foreground mt-1">{creators.length}</div>
                 </Card>
-                <Card className="glass-panel border-amber-500/20 bg-amber-500/5 p-4 rounded-xl">
-                    <span className="text-[11px] font-semibold text-amber-400 uppercase tracking-wider">Pending Verification</span>
-                    <div className="text-2xl font-bold font-mono text-amber-300 mt-1">{pendingCount}</div>
+                <Card className="border border-amber-500/20 bg-amber-500/5 p-4 rounded-xl shadow-xs">
+                    <span className="text-[11px] font-semibold text-amber-500 dark:text-amber-400 uppercase tracking-wider">Pending Verification</span>
+                    <div className="text-2xl font-bold font-mono text-amber-500 dark:text-amber-300 mt-1">{pendingCount}</div>
                 </Card>
-                <Card className="glass-panel border-emerald-500/20 bg-emerald-500/5 p-4 rounded-xl">
-                    <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider">Verified Creators</span>
-                    <div className="text-2xl font-bold font-mono text-emerald-300 mt-1">{verifiedCount}</div>
+                <Card className="border border-emerald-500/20 bg-emerald-500/5 p-4 rounded-xl shadow-xs">
+                    <span className="text-[11px] font-semibold text-emerald-500 dark:text-emerald-400 uppercase tracking-wider">Verified Creators</span>
+                    <div className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-300 mt-1">{verifiedCount}</div>
                 </Card>
             </div>
 
             {/* Search and Filters */}
-            <Card className="glass-panel border-white/5 rounded-2xl p-4">
+            <Card className="border border-border bg-card/60 rounded-2xl p-4 shadow-xs">
                 <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
                     <div className="relative w-full md:max-w-md">
-                        <Search className="w-4 h-4 text-foreground/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                        <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2" />
                         <Input 
                             placeholder="Search creator by name, mobile, email, or category..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="pl-10 h-10 bg-white/5 border-white/10 text-xs text-foreground placeholder:text-foreground/40 rounded-xl"
+                            className="pl-10 h-10 bg-background border-border text-xs text-foreground placeholder:text-muted-foreground rounded-xl focus:border-zinc-400"
                         />
                     </div>
                     <div className="flex gap-2 w-full md:w-auto">
@@ -156,7 +156,7 @@ export default function AdminCreatorsPage() {
                             variant={filterStatus === "PENDING" ? "default" : "outline"} 
                             onClick={() => setFilterStatus("PENDING")} 
                             size="sm"
-                            className="text-xs h-9 px-3 rounded-lg text-amber-400 border-amber-500/30"
+                            className="text-xs h-9 px-3 rounded-lg text-amber-500 dark:text-amber-400 border-amber-500/30"
                         >
                             Pending Review ({pendingCount})
                         </Button>
@@ -164,7 +164,7 @@ export default function AdminCreatorsPage() {
                             variant={filterStatus === "VERIFIED" ? "default" : "outline"} 
                             onClick={() => setFilterStatus("VERIFIED")} 
                             size="sm"
-                            className="text-xs h-9 px-3 rounded-lg text-emerald-400 border-emerald-500/30"
+                            className="text-xs h-9 px-3 rounded-lg text-emerald-600 dark:text-emerald-400 border-emerald-500/30"
                         >
                             Verified ({verifiedCount})
                         </Button>
@@ -173,16 +173,16 @@ export default function AdminCreatorsPage() {
             </Card>
 
             {/* Creators Table */}
-            <Card className="glass-panel border-white/5 rounded-2xl overflow-hidden shadow-xl">
+            <Card className="border border-border bg-card/60 rounded-2xl overflow-hidden shadow-xs">
                 {isLoading ? (
-                    <div className="p-16 text-center text-xs text-foreground/50 animate-pulse">Loading creator records...</div>
+                    <div className="p-16 text-center text-xs text-muted-foreground animate-pulse">Loading creator records...</div>
                 ) : filteredCreators.length === 0 ? (
-                    <div className="p-16 text-center text-xs text-foreground/50">No creator profiles match your filters.</div>
+                    <div className="p-16 text-center text-xs text-muted-foreground">No creator profiles match your filters.</div>
                 ) : (
                     <div className="overflow-x-auto">
                         <Table>
-                            <TableHeader className="bg-white/5">
-                                <TableRow className="border-white/5 hover:bg-transparent">
+                            <TableHeader className="bg-muted/50">
+                                <TableRow className="border-border hover:bg-transparent">
                                     <TableHead className="text-xs font-semibold text-foreground/70">Creator Profile</TableHead>
                                     <TableHead className="text-xs font-semibold text-foreground/70">Category & Audience</TableHead>
                                     <TableHead className="text-xs font-semibold text-foreground/70">Social Links</TableHead>
@@ -198,7 +198,7 @@ export default function AdminCreatorsPage() {
                                     const creatorTier = selectedTiers[creator.id] || prof?.category_tier || "Micro Creator (5K - 25K)";
 
                                     return (
-                                        <TableRow key={creator.id} className="border-white/5 hover:bg-white/5">
+                                        <TableRow key={creator.id} className="border-border hover:bg-muted/40">
                                             <TableCell>
                                                 <div className="font-bold text-sm text-foreground">{creator.name}</div>
                                                 <div className="text-xs text-foreground/60">{creator.mobile}</div>
@@ -248,7 +248,7 @@ export default function AdminCreatorsPage() {
 
                                             <TableCell>
                                                 <select
-                                                    className="h-9 rounded-lg border border-white/10 bg-black/60 px-2.5 text-foreground text-xs font-sans outline-none focus:border-primary/50"
+                                                    className="h-9 rounded-lg border border-border bg-card px-2.5 text-foreground text-xs font-sans outline-none focus:border-zinc-400"
                                                     value={creatorTier}
                                                     disabled={isVerified}
                                                     onChange={e => setSelectedTiers({ ...selectedTiers, [creator.id]: e.target.value })}
