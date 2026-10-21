@@ -343,10 +343,11 @@ export default function AdminDashboard() {
                                 </div>
                             </div>
                             <Button 
-                                className="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs tracking-wider uppercase h-10 px-5 rounded-lg shrink-0 shadow-md"
-                                onClick={() => window.location.href = '/admin/orders'}
+                                className="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs tracking-wider uppercase h-10 px-5 rounded-lg shrink-0 shadow-md flex items-center gap-2"
+                                onClick={() => window.location.href = '/admin/orders?mode=dating'}
                             >
-                                Review Orders
+                                <Sparkles className="w-4 h-4" />
+                                ⚡ Speed Review Queue
                             </Button>
                         </div>
                     )}
@@ -633,10 +634,11 @@ export default function AdminDashboard() {
                                             <p className="text-foreground/60 font-mono">Order ID: <span className="text-foreground ml-1">{req.order_id}</span></p>
                                             <p className="text-foreground/60">Customer: <span className="text-foreground ml-1 font-medium">{req.user?.mobile || req.user?.name}</span></p>
                                             <Button 
-                                                className="w-full mt-3 bg-purple-600 hover:bg-purple-500 text-white font-sans tracking-wider uppercase text-xs h-9 rounded-lg" 
-                                                onClick={() => window.location.href = '/admin/refunds'}
+                                                className="w-full mt-3 bg-purple-600 hover:bg-purple-500 text-white font-sans tracking-wider uppercase text-xs h-9 rounded-lg flex items-center justify-center gap-1.5" 
+                                                onClick={() => window.location.href = '/admin/refunds?mode=dating'}
                                             >
-                                                Process Refund
+                                                <Zap className="w-3.5 h-3.5" />
+                                                ⚡ Speed Payout Deck
                                             </Button>
                                         </CardContent>
                                     </Card>

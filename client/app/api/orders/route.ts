@@ -17,7 +17,28 @@ export async function GET(req: NextRequest) {
             },
             orderBy: { created_at: 'desc' }
         });
-        return NextResponse.json({ orders }, { status: 200 });
+
+        const formattedOrders = orders.map(o => {
+            let decryptedBank = null;
+            if (o.user?.encrypted_bank_data) {
+                try {
+                    const { decryptBankData } = require('@/lib/encryption');
+                    decryptedBank = decryptBankData(o.user.encrypted_bank_data);
+                } catch (_) {
+                    decryptedBank = null;
+                }
+            }
+
+            return {
+                ...o,
+                user: {
+                    ...o.user,
+                    bank_details: decryptedBank
+                }
+            };
+        });
+
+        return NextResponse.json({ orders: formattedOrders }, { status: 200 });
     } catch (error) {
         console.error("Error fetching all orders:", error);
         return NextResponse.json({ error: "Failed to fetch orders." }, { status: 500 });
