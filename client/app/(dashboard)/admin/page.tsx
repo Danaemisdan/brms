@@ -282,13 +282,13 @@ export default function AdminDashboard() {
     return (
         <div className="space-y-10 relative z-10 pb-16">
             {/* Header Section */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/5 pb-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border/60 pb-6">
                 <div>
-                    <h1 className="text-3xl font-extrabold text-primary tracking-wider uppercase">
+                    <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
                         Admin Portal
                     </h1>
-                    <p className="text-sm font-sans tracking-wide text-foreground/50 mt-1">
-                        Platform Overview & Real-Time Analytics
+                    <p className="text-xs sm:text-sm font-sans tracking-wide text-muted-foreground mt-1">
+                        Platform Overview & Real-Time Operations Analytics
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
@@ -296,7 +296,7 @@ export default function AdminDashboard() {
                         variant="outline" 
                         onClick={handleForceSync} 
                         disabled={isSyncing}
-                        className="border-primary/40 text-primary hover:bg-primary/10 tracking-wider uppercase text-xs rounded-lg h-10 px-4 flex items-center gap-2"
+                        className="border-border text-foreground hover:bg-accent/80 tracking-wide text-xs rounded-xl h-10 px-4 flex items-center gap-2 shadow-xs"
                     >
                         <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin" : ""}`} />
                         {isSyncing ? "Syncing Sheets..." : "Sync Sheets"}
@@ -307,47 +307,47 @@ export default function AdminDashboard() {
             {/* Skeleton Loading State */}
             {isLoading ? (
                 <div className="space-y-8 animate-pulse">
-                    <div className="h-16 bg-white/5 rounded-xl border border-white/5"></div>
+                    <div className="h-16 bg-card/60 rounded-2xl border border-border"></div>
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         {[...Array(8)].map((_, i) => (
-                            <div key={i} className="h-28 bg-white/5 rounded-xl border border-white/5 p-4 flex flex-col justify-between">
-                                <div className="h-4 bg-white/10 rounded w-1/2"></div>
-                                <div className="h-7 bg-white/10 rounded w-3/4"></div>
+                            <div key={i} className="h-28 bg-card/60 rounded-2xl border border-border p-4 flex flex-col justify-between">
+                                <div className="h-4 bg-muted rounded w-1/2"></div>
+                                <div className="h-7 bg-muted rounded w-3/4"></div>
                             </div>
                         ))}
                     </div>
                     <div className="grid gap-6 md:grid-cols-2">
-                        <div className="h-80 bg-white/5 rounded-xl border border-white/5"></div>
-                        <div className="h-80 bg-white/5 rounded-xl border border-white/5"></div>
+                        <div className="h-80 bg-card/60 rounded-2xl border border-border"></div>
+                        <div className="h-80 bg-card/60 rounded-2xl border border-border"></div>
                     </div>
                 </div>
             ) : (
                 <>
                     {/* Order Verification Attention Banner */}
                     {(stats.ordersValidating || 0) > 0 && (
-                        <div className="bg-gradient-to-r from-amber-500/15 via-amber-500/10 to-transparent border border-amber-500/30 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+                        <div className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-amber-500/30 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
                             <div className="flex items-center gap-3.5">
-                                <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center shrink-0">
-                                    <Clock className="w-5 h-5 text-amber-400 animate-pulse" />
+                                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
+                                    <Clock className="w-5 h-5 text-amber-500 animate-pulse" />
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-amber-400 text-sm tracking-wide flex items-center gap-2">
+                                    <h3 className="font-bold text-foreground text-sm tracking-tight flex items-center gap-2">
                                         Order Verification Required
-                                        <Badge variant="outline" className="bg-amber-500/20 text-amber-300 border-amber-500/40 text-[10px] font-mono">
+                                        <Badge variant="outline" className="bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20 text-[10px] font-mono">
                                             {stats.ordersValidating} Pending
                                         </Badge>
                                     </h3>
-                                    <p className="text-foreground/70 text-xs mt-0.5">
+                                    <p className="text-muted-foreground text-xs mt-0.5">
                                         Orders awaiting manual review. Verifying an order automatically dispatches the customer confirmation email.
                                     </p>
                                 </div>
                             </div>
                             <Button 
-                                className="bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs tracking-wider uppercase h-10 px-5 rounded-lg shrink-0 shadow-md flex items-center gap-2"
+                                className="bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-medium text-xs tracking-wider uppercase h-10 px-5 rounded-xl shrink-0 shadow-xs flex items-center gap-2"
                                 onClick={() => window.location.href = '/admin/orders?mode=dating'}
                             >
-                                <Sparkles className="w-4 h-4" />
-                                ⚡ Speed Review Queue
+                                <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                                Speed Review Queue
                             </Button>
                         </div>
                     )}
@@ -358,22 +358,22 @@ export default function AdminDashboard() {
                             const IconComponent = m.icon;
                             return (
                                 <Link key={i} href={m.href} className="group">
-                                    <Card className={`glass-panel border-white/5 hover:border-primary/40 transition-all duration-200 p-5 h-full flex flex-col justify-between ${m.highlight ? 'ring-1 ring-amber-500/30 bg-amber-500/5' : ''}`}>
+                                    <Card className={`glass-panel border-border/80 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-200 p-5 h-full flex flex-col justify-between ${m.highlight ? 'ring-1 ring-amber-500/20 bg-amber-500/5' : ''}`}>
                                         <div className="flex items-center justify-between">
-                                            <span className="text-[11px] font-sans font-semibold tracking-wider text-foreground/50 uppercase">
+                                            <span className="text-[11px] font-sans font-semibold tracking-wider text-muted-foreground uppercase">
                                                 {m.label}
                                             </span>
-                                            <div className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <div className="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:scale-105 transition-transform">
                                                 <IconComponent className={`w-4 h-4 ${m.color}`} />
                                             </div>
                                         </div>
                                         <div className="mt-3">
-                                            <div className="text-2xl font-bold font-sans text-primary tracking-tight">
+                                            <div className="text-2xl font-bold font-sans text-foreground tracking-tight">
                                                 {m.value}
                                             </div>
-                                            <p className="text-[11px] text-foreground/40 mt-1 flex items-center gap-1">
+                                            <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
                                                 {m.subtitle}
-                                                <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity ml-auto text-primary" />
+                                                <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity ml-auto text-foreground/60" />
                                             </p>
                                         </div>
                                     </Card>
@@ -575,23 +575,23 @@ export default function AdminDashboard() {
                             </Card>
                         ) : (
                             pendingRequests.map((req) => (
-                                <Card key={req.id} className="p-5 glass-panel border-primary/20 flex flex-col md:flex-row md:items-center md:justify-between gap-4 rounded-xl shadow-md">
+                                <Card key={req.id} className="p-5 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 flex flex-col md:flex-row md:items-center md:justify-between gap-4 rounded-2xl shadow-xs">
                                     <div className="space-y-1">
-                                        <h3 className="font-sans font-bold text-base text-primary tracking-wide">{req.product_name}</h3>
-                                        <p className="text-xs text-foreground/60">
-                                            By <span className="text-foreground font-medium">{req.brand}</span> • Platform: <strong className="text-white">{req.platform}</strong> • {req.total_slots} Total Slots • ₹{req.refund_amount}/Review
+                                        <h3 className="font-sans font-bold text-base text-foreground tracking-tight">{req.product_name}</h3>
+                                        <p className="text-xs text-muted-foreground">
+                                            By <span className="text-foreground font-medium">{req.brand}</span> • Platform: <strong className="text-foreground">{req.platform}</strong> • {req.total_slots} Total Slots • ₹{req.refund_amount}/Review
                                         </p>
                                     </div>
-                                    <div className="flex gap-3 shrink-0">
+                                    <div className="flex gap-2.5 shrink-0">
                                         <Button 
                                             variant="outline" 
-                                            className="border-red-500/40 text-red-400 hover:bg-red-500/10 font-sans tracking-wider uppercase text-xs h-9 px-4 rounded-lg" 
+                                            className="border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:text-rose-600 hover:border-rose-500/30 hover:bg-rose-500/10 font-medium text-xs h-9 px-4 rounded-xl" 
                                             onClick={() => handleAction(req.id, "decline")}
                                         >
                                             Reject
                                         </Button>
                                         <Button 
-                                            className="bg-primary text-black font-semibold hover:bg-primary/90 font-sans tracking-wider uppercase text-xs h-9 px-5 rounded-lg shadow-sm" 
+                                            className="bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-medium text-xs h-9 px-5 rounded-xl shadow-xs" 
                                             onClick={() => handleAction(req.id, "approve")}
                                         >
                                             Approve Product
@@ -604,41 +604,41 @@ export default function AdminDashboard() {
 
                     {/* Pending Refunds Action Queue */}
                     <div className="space-y-4 pt-4">
-                        <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                            <h2 className="text-lg font-bold text-foreground tracking-wide flex items-center gap-2">
+                        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                            <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
                                 <Wallet className="w-4 h-4 text-purple-400" />
                                 Pending Refunds Queue ({stats.pendingRefunds})
                             </h2>
-                            <Link href="/admin/refunds" className="text-xs text-primary/80 hover:text-primary">
+                            <Link href="/admin/refunds" className="text-xs text-muted-foreground hover:text-foreground">
                                 Open Refunds Queue →
                             </Link>
                         </div>
 
                         {pendingRefundOrders.length === 0 ? (
-                            <Card className="p-8 text-center glass-panel border-white/5">
-                                <p className="text-xs font-sans tracking-wide text-foreground/40">
+                            <Card className="p-8 text-center glass-panel border-border">
+                                <p className="text-xs font-sans tracking-wide text-muted-foreground">
                                     No pending refunds requiring action at this time.
                                 </p>
                             </Card>
                         ) : (
                             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                                 {pendingRefundOrders.map((req) => (
-                                    <Card key={req.id} className="p-5 glass-panel border-purple-500/20 bg-purple-500/5 hover:border-purple-500/40 transition-colors rounded-xl">
+                                    <Card key={req.id} className="p-5 glass-panel border-border/80 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all rounded-2xl">
                                         <CardHeader className="p-0 pb-3">
-                                            <CardTitle className="text-base font-bold text-purple-300">
+                                            <CardTitle className="text-base font-bold text-foreground">
                                                 Refund Amount: ₹{req.product?.refund_amount || req.amount}
                                             </CardTitle>
                                         </CardHeader>
                                         <CardContent className="p-0 space-y-2 text-xs">
-                                            <p className="text-foreground/60 truncate">Product: <span className="text-foreground ml-1 font-medium">{req.product?.product_name}</span></p>
-                                            <p className="text-foreground/60 font-mono">Order ID: <span className="text-foreground ml-1">{req.order_id}</span></p>
-                                            <p className="text-foreground/60">Customer: <span className="text-foreground ml-1 font-medium">{req.user?.mobile || req.user?.name}</span></p>
+                                            <p className="text-muted-foreground truncate">Product: <span className="text-foreground ml-1 font-medium">{req.product?.product_name}</span></p>
+                                            <p className="text-muted-foreground font-mono">Order ID: <span className="text-foreground ml-1">{req.order_id}</span></p>
+                                            <p className="text-muted-foreground">Customer: <span className="text-foreground ml-1 font-medium">{req.user?.mobile || req.user?.name}</span></p>
                                             <Button 
-                                                className="w-full mt-3 bg-purple-600 hover:bg-purple-500 text-white font-sans tracking-wider uppercase text-xs h-9 rounded-lg flex items-center justify-center gap-1.5" 
+                                                className="w-full mt-3 bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-medium text-xs tracking-wider uppercase h-9 rounded-xl flex items-center justify-center gap-1.5 shadow-xs" 
                                                 onClick={() => window.location.href = '/admin/refunds?mode=dating'}
                                             >
-                                                <Zap className="w-3.5 h-3.5" />
-                                                ⚡ Speed Payout Deck
+                                                <Zap className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400" />
+                                                Speed Payout Deck
                                             </Button>
                                         </CardContent>
                                     </Card>
@@ -649,12 +649,12 @@ export default function AdminDashboard() {
 
                     {/* Recent Order Activity */}
                     <div className="space-y-4 pt-4 pb-8">
-                        <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                            <h2 className="text-lg font-bold text-foreground tracking-wide flex items-center gap-2">
-                                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                            <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                                 Recent Order Activity
                             </h2>
-                            <Link href="/admin/orders" className="text-xs text-primary/80 hover:text-primary">
+                            <Link href="/admin/orders" className="text-xs text-muted-foreground hover:text-foreground">
                                 View All Orders →
                             </Link>
                         </div>

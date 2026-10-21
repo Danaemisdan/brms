@@ -345,7 +345,7 @@ export default function CreatorDashboardPage() {
                                             <Button 
                                                 type="button" 
                                                 variant="outline" 
-                                                className="border-red-500/30 text-red-400 hover:bg-red-500/10 px-3 h-11"
+                                                className="border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:text-rose-600 hover:border-rose-500/30 hover:bg-rose-500/10 px-3 h-11 rounded-xl"
                                                 onClick={() => {
                                                     const newUrls = formData.profile_urls.filter((_, i) => i !== idx);
                                                     setFormData({...formData, profile_urls: newUrls});
@@ -889,7 +889,7 @@ export default function CreatorDashboardPage() {
 
                                         {/* Shortlisting Congratulatory Callout */}
                                         <div className="bg-blue-500/10 border border-blue-500/20 p-3.5 rounded-xl text-xs text-blue-200 leading-relaxed">
-                                            <strong>🎉 Congratulations!</strong> You have been shortlisted for this activity. Please complete the required activity and submit your Reel link through the Creator Dashboard below.
+                                            <strong className="inline-flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5 text-blue-400" /> Congratulations!</strong> You have been shortlisted for this activity. Please complete the required activity and submit your Reel link through the Creator Dashboard below.
                                         </div>
 
                                         <div className="bg-black/30 p-3.5 rounded-xl border border-white/5 text-xs space-y-1">

@@ -25,7 +25,9 @@ import {
     Info, 
     UploadCloud,
     HelpCircle,
-    RefreshCw
+    RefreshCw,
+    Check,
+    ArrowRight
 } from "lucide-react";
 
 const API_URL = "";
@@ -504,16 +506,18 @@ function CustomerSubmissionsContent() {
             </div>
 
             {/* Lifecycle Guide Alert */}
-            <div className="bg-gray-50 rounded-xl p-4 border border-gray-200/80 text-xs text-gray-600 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-                <div className="flex items-center gap-2">
-                    <span className="bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0">!</span>
+            <div className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl rounded-2xl p-4 border border-zinc-200/80 dark:border-zinc-800/80 text-xs text-muted-foreground flex flex-col md:flex-row items-start md:items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-center gap-2.5">
+                    <div className="w-5 h-5 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 flex items-center justify-center text-[10px] font-bold text-foreground shrink-0">
+                        <Info className="w-3 h-3 text-foreground/80" />
+                    </div>
                     <span>
-                        <strong>Order Lifecycle Guide:</strong> Orders start at <strong>Order Validating</strong> ➔ Verified & Confirmed by Admin with email confirmation ➔ Upload Review & Return Window SS ➔ Approved for Refund & Wallet Credit.
+                        <strong className="text-foreground">Order Lifecycle Guide:</strong> Orders start at <strong>Order Validating</strong> <ArrowRight className="w-3 h-3 inline mx-0.5 text-muted-foreground" /> Verified & Confirmed by Admin with email confirmation <ArrowRight className="w-3 h-3 inline mx-0.5 text-muted-foreground" /> Upload Review & Return Window SS <ArrowRight className="w-3 h-3 inline mx-0.5 text-muted-foreground" /> Approved for Refund & Wallet Credit.
                     </span>
                 </div>
                 <button 
                     onClick={() => { fetchMyOrders(); fetchUserProfile(); }} 
-                    className="inline-flex items-center gap-1 text-gray-700 hover:text-black font-semibold text-xs shrink-0"
+                    className="inline-flex items-center gap-1.5 text-foreground hover:text-foreground/80 font-medium text-xs shrink-0"
                 >
                     <RefreshCw className="w-3 h-3" /> Refresh Status
                 </button>
@@ -685,8 +689,8 @@ function CustomerSubmissionsContent() {
                                             )}
 
                                             {isApproved && (
-                                                <Badge variant="outline" className="bg-teal-50 text-teal-800 border-teal-200 py-1 px-3 font-semibold">
-                                                    ✓ Approved for Settlement
+                                                <Badge variant="outline" className="bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20 py-1 px-3 font-semibold flex items-center gap-1">
+                                                    <Check className="w-3 h-3" /> Approved for Settlement
                                                 </Badge>
                                             )}
 

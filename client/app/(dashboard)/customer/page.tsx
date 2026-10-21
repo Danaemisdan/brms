@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { ImageUpload } from "@/components/ui/image-upload";
-import { Share2, ShoppingBag } from "lucide-react";
+import { Share2, ShoppingBag, AlertCircle } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
 
@@ -72,9 +72,9 @@ function CustomerDashboardContent() {
                 const el = document.getElementById(`product-${highlightProductId}`);
                 if (el) {
                     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    el.classList.add("ring-4", "ring-red-500", "ring-offset-2", "scale-[1.02]", "transition-all", "duration-500");
+                    el.classList.add("ring-2", "ring-foreground", "ring-offset-2", "scale-[1.02]", "transition-all", "duration-500");
                     setTimeout(() => {
-                        el.classList.remove("ring-4", "ring-red-500", "ring-offset-2", "scale-[1.02]");
+                        el.classList.remove("ring-2", "ring-foreground", "ring-offset-2", "scale-[1.02]");
                     }, 3000);
                 }
             }, 500); // small delay to ensure DOM is ready
@@ -216,8 +216,8 @@ function CustomerDashboardContent() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
             >
-                <h1 className="text-4xl font-extrabold tracking-tight bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent">Live Deals</h1>
-                <p className="text-lg text-muted-foreground max-w-2xl mt-1">
+                <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-foreground">Live Freebie Campaigns</h1>
+                <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mt-1">
                     Claim these premium products for free after cashback. Hurry, slots fill up fast!
                 </p>
             </motion.div>
@@ -226,13 +226,13 @@ function CustomerDashboardContent() {
                 <motion.div 
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className="text-center p-16 bg-white/60 backdrop-blur-md rounded-3xl border border-white/40 shadow-xl flex flex-col items-center justify-center min-h-[400px]"
+                    className="text-center p-16 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl rounded-3xl border border-zinc-200/80 dark:border-zinc-800/80 shadow-xs flex flex-col items-center justify-center min-h-[400px]"
                 >
-                    <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-                        <ShoppingBag className="w-10 h-10 text-gray-400" />
+                    <div className="w-16 h-16 bg-muted/60 rounded-2xl flex items-center justify-center mb-4">
+                        <ShoppingBag className="w-8 h-8 text-muted-foreground" />
                     </div>
-                    <p className="text-2xl font-semibold text-slate-800">No active campaigns right now</p>
-                    <p className="text-muted-foreground mt-2">Check back soon for new premium freebies.</p>
+                    <p className="text-xl font-bold text-foreground">No active campaigns right now</p>
+                    <p className="text-muted-foreground text-sm mt-1">Check back soon for new premium freebies.</p>
                 </motion.div>
             ) : (
                 <motion.div 
@@ -247,83 +247,83 @@ function CustomerDashboardContent() {
                             <motion.div variants={itemVariants} key={product.id}>
                                 <Card 
                                     id={`product-${product.id}`} 
-                                    className="overflow-hidden flex flex-col relative rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-slate-100/60 bg-white/80 backdrop-blur-xl transition-all duration-300 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] group"
+                                    className="overflow-hidden flex flex-col relative rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-zinc-200/80 dark:border-zinc-800/80 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-lg group"
                                 >
                                     {/* Top Right Cashback Badge */}
-                                    <div className="absolute top-4 right-0 z-20 bg-gradient-to-r from-red-600 to-red-500 text-white font-extrabold text-xs px-4 py-1.5 rounded-l-full shadow-lg shadow-red-500/30 transform group-hover:scale-105 transition-transform origin-right">
+                                    <div className="absolute top-4 right-0 z-20 bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 font-bold text-xs px-3.5 py-1.5 rounded-l-full shadow-sm transform group-hover:scale-105 transition-transform origin-right border-y border-l border-zinc-800 dark:border-zinc-200">
                                         LESS ₹{product.refund_amount} CASHBACK
                                     </div>
                                     
                                     {/* Image Section */}
-                                    <div className="bg-gradient-to-br from-slate-50 to-slate-100 h-64 flex items-center justify-center relative p-4 overflow-hidden">
+                                    <div className="bg-muted/30 h-64 flex items-center justify-center relative p-4 overflow-hidden border-b border-border/40">
                                         <div className="absolute inset-0 bg-black/5 z-10 group-hover:bg-transparent transition-colors duration-500" />
                                         {images.length > 0 ? (
                                             <div className="flex overflow-x-auto w-full h-full snap-x snap-mandatory hide-scrollbar relative z-0">
                                                 {images.map((img, idx) => (
                                                     <div key={idx} className="w-full h-full flex-shrink-0 snap-center flex items-center justify-center">
-                                                        <img src={img} alt={`${product.product_name} - ${idx + 1}`} className="max-h-full max-w-full object-contain mix-blend-multiply rounded-xl transition-transform duration-700 group-hover:scale-110" />
+                                                        <img src={img} alt={`${product.product_name} - ${idx + 1}`} className="max-h-full max-w-full object-contain rounded-xl transition-transform duration-700 group-hover:scale-105" />
                                                     </div>
                                                 ))}
                                             </div>
                                         ) : (
-                                            <div className="flex flex-col items-center justify-center text-slate-300">
+                                            <div className="flex flex-col items-center justify-center text-muted-foreground/60">
                                                 <ShoppingBag className="w-12 h-12 mb-2 opacity-50" />
                                                 <span className="font-medium text-sm">No Image</span>
                                             </div>
                                         )}
                                         {images.length > 1 && (
-                                            <div className="absolute bottom-3 right-3 z-20 bg-black/60 backdrop-blur-md text-white font-medium text-[10px] px-3 py-1 rounded-full pointer-events-none shadow-md">
-                                                {images.length} images (scroll ➡️)
+                                            <div className="absolute bottom-3 right-3 z-20 bg-zinc-950/70 backdrop-blur-md text-white font-medium text-[10px] px-3 py-1 rounded-full pointer-events-none shadow-sm">
+                                                {images.length} photos
                                             </div>
                                         )}
                                     </div>
 
-                                    <CardContent className="flex-1 p-6 space-y-5 bg-white/90 flex flex-col justify-between">
+                                    <CardContent className="flex-1 p-6 space-y-5 bg-card/60 flex flex-col justify-between">
                                         <div>
-                                            <Badge variant="outline" className="bg-red-50/50 text-red-600 border-red-200 hover:bg-red-50 font-bold tracking-wide mb-3 rounded-lg px-3 py-1 text-[10px]">
+                                            <Badge variant="outline" className="bg-zinc-100 text-zinc-800 dark:bg-zinc-800 dark:text-zinc-200 border-zinc-200 dark:border-zinc-700 font-semibold tracking-wide mb-3 rounded-lg px-2.5 py-0.5 text-[10px]">
                                                 {product.platform?.toUpperCase() || "DEAL"}
                                             </Badge>
                                             
-                                            <p className="text-[10px] font-black text-slate-400 tracking-[0.2em] uppercase mb-1">{product.brand}</p>
-                                            <h3 className="font-bold text-xl leading-tight line-clamp-2 text-slate-900 group-hover:text-red-600 transition-colors">{product.product_name}</h3>
+                                            <p className="text-[10px] font-bold text-muted-foreground tracking-[0.2em] uppercase mb-1">{product.brand}</p>
+                                            <h3 className="font-bold text-lg leading-tight line-clamp-2 text-foreground transition-colors">{product.product_name}</h3>
                                         </div>
                                         
                                         {/* Pricing Blocks */}
-                                        <div className="grid grid-cols-2 gap-4 mt-2">
-                                            <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex flex-col items-center justify-center transition-colors group-hover:bg-white group-hover:shadow-sm">
-                                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Selling Price</span>
-                                                <span className="font-black text-xl text-slate-300 line-through decoration-slate-300/50">₹{product.real_price || (Number(product.offer_price || 0) + Number(product.refund_amount || 0))}</span>
+                                        <div className="grid grid-cols-2 gap-3 mt-2">
+                                            <div className="bg-muted/40 p-3 rounded-2xl border border-border/60 flex flex-col items-center justify-center">
+                                                <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">Selling Price</span>
+                                                <span className="font-bold text-lg text-muted-foreground line-through">₹{product.real_price || (Number(product.offer_price || 0) + Number(product.refund_amount || 0))}</span>
                                             </div>
-                                            <div className="bg-red-50/80 p-3.5 rounded-2xl border border-red-100 flex flex-col items-center justify-center transition-colors group-hover:bg-red-100/50 group-hover:shadow-sm">
-                                                <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest mb-1">Final Cost</span>
-                                                <span className="font-black text-2xl text-red-600">₹{product.offer_price || (product.real_price ? product.real_price - product.refund_amount : 0)}</span>
+                                            <div className="bg-emerald-500/10 p-3 rounded-2xl border border-emerald-500/20 flex flex-col items-center justify-center">
+                                                <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1">Final Cost</span>
+                                                <span className="font-extrabold text-2xl text-emerald-600 dark:text-emerald-400">₹{product.offer_price || (product.real_price ? product.real_price - product.refund_amount : 0)}</span>
                                             </div>
                                         </div>
 
                                         {/* Terms */}
                                         <div className="flex items-center justify-start mt-2">
-                                            <button onClick={(e) => { e.preventDefault(); setTermsProduct(product); setIsTermsModalOpen(true); }} className="flex items-center gap-1.5 text-xs font-bold text-slate-400 hover:text-red-500 transition-colors uppercase tracking-wider cursor-pointer py-1">
+                                            <button onClick={(e) => { e.preventDefault(); setTermsProduct(product); setIsTermsModalOpen(true); }} className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors uppercase tracking-wider cursor-pointer py-1">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
                                                 Terms & Conditions
                                             </button>
                                         </div>
 
                                         {/* Action Buttons */}
-                                        <div className="flex gap-3 pt-2">
+                                        <div className="flex gap-2.5 pt-2">
                                             <a href={product.product_link} target="_blank" rel="noreferrer" className="flex-1">
-                                                <Button variant="outline" className="w-full h-12 rounded-xl border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 font-bold text-sm shadow-sm transition-all hover:shadow-md">
+                                                <Button variant="outline" className="w-full h-11 rounded-xl border-zinc-200 dark:border-zinc-800 text-foreground hover:bg-muted font-medium text-xs shadow-xs transition-all">
                                                     Buy Now
                                                 </Button>
                                             </a>
                                             <Button 
-                                                className="flex-1 h-12 rounded-xl bg-gradient-to-r from-red-600 to-red-500 hover:from-red-700 hover:to-red-600 text-white font-bold text-sm shadow-md hover:shadow-xl hover:shadow-red-500/20 transition-all hover:-translate-y-0.5" 
+                                                className="flex-1 h-11 rounded-xl bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-medium text-xs shadow-xs transition-all" 
                                                 onClick={() => openSubmitModal(product)}
                                             >
                                                 Submit Proof
                                             </Button>
                                             <Button 
                                                 variant="outline" 
-                                                className="h-12 w-12 rounded-xl border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900 shadow-sm transition-all" 
+                                                className="h-11 w-11 rounded-xl border-zinc-200 dark:border-zinc-800 text-muted-foreground hover:text-foreground hover:bg-muted shadow-xs transition-all" 
                                                 onClick={() => {
                                                     const url = `${window.location.origin}/customer?highlight_product=${product.id}`;
                                                     navigator.clipboard.writeText(url);
@@ -386,11 +386,13 @@ function CustomerDashboardContent() {
                                 />
                             </div>
                             <div>
-                                <Label>Order Screenshot <span className="text-red-500">*</span></Label>
-                                <p className="text-xs text-red-600 font-medium my-1.5 flex items-start gap-1 p-2 bg-red-50 rounded-md border border-red-100">
-                                    <span className="text-red-600 mt-0.5">⚠️</span>
-                                    Please upload a "Full Long Screenshot" that clearly shows the entire Total Order Value, Product Name, and Shipping Address. Small or cropped screenshots will be rejected by the AI.
-                                </p>
+                                <Label>Order Screenshot <span className="text-foreground/70 font-bold">*</span></Label>
+                                <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-700 dark:text-amber-300 flex items-start gap-2 my-2">
+                                    <AlertCircle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                                    <span>
+                                        Please upload a &quot;Full Long Screenshot&quot; that clearly shows the entire Total Order Value, Product Name, and Shipping Address. Small or cropped screenshots will be rejected by verification.
+                                    </span>
+                                </div>
                                 <div className="mt-2">
                                     <ImageUpload
                                         value={orderForm.screenshot}
@@ -399,9 +401,9 @@ function CustomerDashboardContent() {
                                 </div>
                             </div>
 
-                            {submitError && <p className="text-sm text-red-600 bg-red-50 p-2 rounded">{submitError}</p>}
+                            {submitError && <p className="text-sm text-rose-500 bg-rose-500/10 border border-rose-500/20 p-2.5 rounded-xl">{submitError}</p>}
 
-                            <Button type="submit" className="w-full mt-4" size="lg" disabled={isSubmitting}>
+                            <Button type="submit" className="w-full mt-4 h-11 bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-medium text-xs uppercase tracking-wider rounded-xl shadow-xs" size="lg" disabled={isSubmitting}>
                                 {isSubmitting ? "Submitting..." : "Submit Order Details"}
                             </Button>
                         </form>

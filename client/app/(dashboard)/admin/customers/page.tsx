@@ -137,30 +137,30 @@ export default function AdminCustomers() {
     };
 
     return (
-        <div className="space-y-10 relative z-10">
-            <div className="flex items-center justify-between border-b border-border/5 pb-6">
+        <div className="space-y-8 relative z-10 pb-16">
+            <div className="flex items-center justify-between border-b border-border/60 pb-6">
                 <div>
-                    <h1 className="text-4xl font-sans font-bold text-primary tracking-wider uppercase">Manage Customers</h1>
-                    <p className="text-foreground/40 mt-2 font-sans tracking-wide text-sm">Review, modify, or secure end-user accounts.</p>
+                    <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">Manage Customers</h1>
+                    <p className="text-muted-foreground mt-1.5 font-sans tracking-wide text-xs sm:text-sm">Review, modify, or secure end-user accounts.</p>
                 </div>
             </div>
 
-            <div className="space-y-6 pt-6">
-                <div className="relative mb-8">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground/40" />
+            <div className="space-y-6 pt-2">
+                <div className="relative mb-6">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                         placeholder="Search customers by name, email, or mobile..."
-                        className="pl-12 h-14 glass-panel border-border/10 text-foreground placeholder:text-foreground/30 focus:border-primary/50 font-sans text-sm tracking-wide"
+                        className="pl-10 h-11 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 text-foreground placeholder:text-muted-foreground focus:border-zinc-400 font-sans text-sm rounded-xl"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                 </div>
 
                 {isLoading ? (
-                    <div className="text-center py-12 text-primary/70 font-sans tracking-widest text-xs uppercase animate-pulse">Scanning records...</div>
+                    <div className="text-center py-12 text-muted-foreground font-sans tracking-widest text-xs uppercase animate-pulse">Scanning records...</div>
                 ) : customers.length === 0 ? (
-                    <Card className="p-12 text-center glass-panel border-border/5">
-                        <p className="text-foreground/40 font-sans tracking-wide">No customer records found.</p>
+                    <Card className="p-12 text-center bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
+                        <p className="text-muted-foreground font-sans text-sm">No customer records found.</p>
                     </Card>
                 ) : (() => {
                     const filteredCustomers = customers.filter(c => {
@@ -171,60 +171,61 @@ export default function AdminCustomers() {
                     });
 
                     if (filteredCustomers.length === 0) {
-                        return <Card className="p-12 text-center glass-panel border-border/5"><p className="text-foreground/40 font-sans tracking-wide">No customers match your criteria.</p></Card>;
+                        return <Card className="p-12 text-center bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs"><p className="text-muted-foreground font-sans text-sm">No customers match your criteria.</p></Card>;
                     }
 
                     return filteredCustomers.map((c) => (
                         editingCustomer?.id === c.id ? (
-                            <Card key={c.id} className="p-6 glass-panel border-primary/50 shadow-[0_0_30px_rgba(235,87,87,0.1)]">
-                                <div className="flex items-center justify-between mb-6 border-b border-border/5 pb-4">
-                                    <h3 className="font-sans font-bold text-xl text-primary uppercase tracking-widest">Update Customer: {c.name}</h3>
-                                    <Button variant="ghost" size="sm" className="text-foreground/40 hover:text-foreground font-sans tracking-widest uppercase text-[10px]" onClick={() => { setEditingCustomer(null); setError(""); }}>Abort</Button>
+                            <Card key={c.id} className="p-6 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-400/50 rounded-2xl shadow-xs">
+                                <div className="flex items-center justify-between mb-6 border-b border-border/40 pb-4">
+                                    <h3 className="font-sans font-bold text-lg text-foreground tracking-tight">Update Customer: {c.name}</h3>
+                                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground text-xs" onClick={() => { setEditingCustomer(null); setError(""); }}>Cancel</Button>
                                 </div>
                                 {error && editingCustomer?.id === c.id && (
-                                    <div className="mb-6 p-3 rounded bg-red-900/20 text-red-400 text-xs border border-red-500/50 font-sans tracking-wider uppercase text-center">{error}</div>
+                                    <div className="mb-6 p-3 rounded-xl bg-rose-500/10 text-rose-500 text-xs border border-rose-500/20 font-sans tracking-wide text-center">{error}</div>
                                 )}
-                                <form onSubmit={handleUpdate} className="grid gap-6 md:grid-cols-2">
-                                    <div className="space-y-3">
-                                        <Label htmlFor="name" className="text-foreground/60 uppercase tracking-widest text-[10px]">Full Name</Label>
-                                        <Input id="name" value={editFormData.name} onChange={handleEditChange} required className="h-12 bg-white/5 border-border/10 text-foreground focus:border-primary/50" />
+                                <form onSubmit={handleUpdate} className="grid gap-4 md:grid-cols-2">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="name" className="text-muted-foreground text-xs font-medium">Full Name</Label>
+                                        <Input id="name" value={editFormData.name} onChange={handleEditChange} required className="h-10 rounded-xl" />
                                     </div>
-                                    <div className="space-y-3">
-                                        <Label htmlFor="mobile" className="text-foreground/60 uppercase tracking-widest text-[10px]">Direct Line</Label>
-                                        <Input id="mobile" className="h-12 bg-white/5 border-border/10 text-foreground focus:border-primary/50" maxLength={10} value={editFormData.mobile} onChange={handleEditChange} required />
+                                    <div className="space-y-2">
+                                        <Label htmlFor="mobile" className="text-muted-foreground text-xs font-medium">Direct Line</Label>
+                                        <Input id="mobile" className="h-10 rounded-xl" maxLength={10} value={editFormData.mobile} onChange={handleEditChange} required />
                                     </div>
-                                    <div className="space-y-3">
-                                        <Label htmlFor="email" className="text-foreground/60 uppercase tracking-widest text-[10px]">Electronic Mail (Optional)</Label>
-                                        <Input id="email" type="email" value={editFormData.email} onChange={handleEditChange} className="h-12 bg-white/5 border-border/10 text-foreground focus:border-primary/50" />
+                                    <div className="space-y-2">
+                                        <Label htmlFor="email" className="text-muted-foreground text-xs font-medium">Electronic Mail (Optional)</Label>
+                                        <Input id="email" type="email" value={editFormData.email} onChange={handleEditChange} className="h-10 rounded-xl" />
                                     </div>
-                                    <div className="space-y-3">
-                                        <Label htmlFor="password" className="text-foreground/60 uppercase tracking-widest text-[10px]">Reset Passcode (Optional)</Label>
-                                        <Input id="password" type="password" placeholder="Leave blank to maintain current" value={editFormData.password} onChange={handleEditChange} minLength={6} className="h-12 bg-white/5 border-border/10 text-foreground focus:border-primary/50" />
-                                        {editFormData.password.length > 0 && <p className="text-xs text-primary/80 mt-1">Note: Resetting password will also force logout all devices.</p>}
+                                    <div className="space-y-2">
+                                        <Label htmlFor="password" className="text-muted-foreground text-xs font-medium">Reset Passcode (Optional)</Label>
+                                        <Input id="password" type="password" placeholder="Leave blank to maintain current" value={editFormData.password} onChange={handleEditChange} minLength={6} className="h-10 rounded-xl" />
+                                        {editFormData.password.length > 0 && <p className="text-xs text-muted-foreground mt-1">Note: Resetting password will also force logout all devices.</p>}
                                     </div>
-                                    <div className="md:col-span-2 flex justify-end mt-4">
-                                        <Button type="submit" disabled={isSubmitting || !editFormData.name || editFormData.mobile.length !== 10} className="w-full bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20 font-sans tracking-widest uppercase text-xs h-14 rounded-sm transition-all">
+                                    <div className="md:col-span-2 flex justify-end gap-3 mt-4 pt-4 border-t border-border/40">
+                                        <Button type="button" variant="outline" className="rounded-xl text-xs h-10 px-4" onClick={() => { setEditingCustomer(null); setError(""); }}>Cancel</Button>
+                                        <Button type="submit" disabled={isSubmitting || !editFormData.name || editFormData.mobile.length !== 10} className="bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-medium text-xs h-10 px-5 rounded-xl shadow-xs">
                                             {isSubmitting ? "Committing..." : "Commit Changes"}
                                         </Button>
                                     </div>
                                 </form>
                             </Card>
                         ) : (
-                            <Card key={c.id} className="p-6 glass-panel border-border/5 hover:border-primary/20 transition-colors flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                            <Card key={c.id} className="p-5 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs hover:border-zinc-400/40 transition-colors flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                                 <div>
-                                    <h3 className="font-sans font-bold text-xl text-foreground tracking-wide">{c.name}</h3>
-                                    <p className="text-xs font-sans tracking-widest text-foreground/40 uppercase mt-2">{c.email || "No email"} • {c.mobile} • Joined {new Date(c.created_at).toLocaleDateString()}</p>
-                                    <div className="mt-3 px-3 py-1.5 max-w-fit rounded-sm bg-primary/5 border border-primary/20 text-primary text-[10px] uppercase tracking-widest flex items-center gap-2">
-                                        <span>Submissions:</span>
-                                        <span className="font-mono font-bold tracking-wider">{c._count.orders}</span>
-                                        <span className="ml-3 pl-3 border-l border-primary/20">Tickets:</span>
-                                        <span className="font-mono font-bold tracking-wider">{c._count.tickets}</span>
+                                    <h3 className="font-sans font-bold text-lg text-foreground tracking-tight">{c.name}</h3>
+                                    <p className="text-xs font-sans tracking-wide text-muted-foreground mt-1">{c.email || "No email"} • {c.mobile} • Joined {new Date(c.created_at).toLocaleDateString()}</p>
+                                    <div className="mt-3 px-3 py-1 max-w-fit rounded-lg bg-muted/60 border border-border text-foreground text-xs flex items-center gap-2">
+                                        <span className="text-muted-foreground">Submissions:</span>
+                                        <span className="font-mono font-bold">{c._count.orders}</span>
+                                        <span className="ml-2 pl-2 border-l border-border text-muted-foreground">Tickets:</span>
+                                        <span className="font-mono font-bold">{c._count.tickets}</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <Button variant="outline" className="h-9 px-4 border-border/10 text-foreground/70 hover:text-foreground hover:bg-white/5 font-sans tracking-widest uppercase text-[9px] rounded-sm" onClick={() => handleEditClick(c)}>Modify / Reset</Button>
-                                    <Button variant="secondary" className="h-9 px-4 bg-red-900/10 text-red-400 hover:bg-red-900/30 border border-red-500/30 font-sans tracking-widest uppercase text-[9px] rounded-sm flex items-center gap-2" onClick={() => handleForceLogout(c.id)}>
-                                        <ShieldAlert className="w-3 h-3" />
+                                <div className="flex items-center gap-2.5">
+                                    <Button variant="outline" className="h-9 px-3.5 border-border text-foreground/80 hover:text-foreground font-medium text-xs rounded-xl" onClick={() => handleEditClick(c)}>Modify / Reset</Button>
+                                    <Button variant="outline" className="h-9 px-3.5 border-zinc-200 dark:border-zinc-800 text-muted-foreground hover:text-rose-600 hover:border-rose-500/30 hover:bg-rose-500/10 font-medium text-xs rounded-xl flex items-center gap-1.5" onClick={() => handleForceLogout(c.id)}>
+                                        <ShieldAlert className="w-3.5 h-3.5" />
                                         Force Logout
                                     </Button>
                                 </div>

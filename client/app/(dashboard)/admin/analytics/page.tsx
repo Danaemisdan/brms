@@ -37,83 +37,83 @@ export default function AdminAnalytics() {
         }
     };
 
-    if (isLoading) return <div className="p-8 text-center text-gray-500">Loading comprehensive analytics...</div>;
-    if (error) return <div className="p-8 text-center text-red-500">Error: {error}</div>;
+    if (isLoading) return <div className="p-8 text-center text-muted-foreground animate-pulse text-xs tracking-widest uppercase">Loading analytics intelligence...</div>;
+    if (error) return <div className="p-8 text-center text-rose-500">Error: {error}</div>;
     if (!data) return null;
 
     const { kpis, signupTrend, topProducts } = data;
 
     return (
-        <div className="space-y-8">
-            <div>
-                <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
-                <p className="text-gray-500">Platform performance, growth trends, and financial metrics.</p>
+        <div className="space-y-8 relative z-10 pb-16">
+            <div className="border-b border-border/60 pb-6">
+                <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">Analytics Dashboard</h1>
+                <p className="text-muted-foreground mt-1.5 font-sans tracking-wide text-xs sm:text-sm">Platform performance, growth trends, and financial metrics.</p>
             </div>
 
             {/* KPI Cards */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-                <Card className="bg-gradient-to-br from-blue-50 to-white shadow-sm border-blue-100">
+                <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-blue-800">Total Customers</CardTitle>
+                        <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Customers</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-gray-900">{kpis.totalUsers}</div>
+                        <div className="text-2xl font-bold font-mono text-foreground">{kpis.totalUsers}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-gradient-to-br from-purple-50 to-white shadow-sm border-purple-100">
+                <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-purple-800">Registered Brands</CardTitle>
+                        <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Registered Brands</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-gray-900">{kpis.totalBrands}</div>
+                        <div className="text-2xl font-bold font-mono text-foreground">{kpis.totalBrands}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-gradient-to-br from-emerald-50 to-white shadow-sm border-emerald-100">
+                <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-emerald-800">Active Campaigns</CardTitle>
+                        <CardTitle className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Active Campaigns</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-gray-900">{kpis.activeProducts}</div>
+                        <div className="text-2xl font-bold font-mono text-foreground">{kpis.activeProducts}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-gradient-to-br from-orange-50 to-white shadow-sm border-orange-100">
+                <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-orange-800">Total Submissions</CardTitle>
+                        <CardTitle className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Total Submissions</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold text-gray-900">{kpis.totalOrders}</div>
+                        <div className="text-2xl font-bold font-mono text-foreground">{kpis.totalOrders}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-gradient-to-br from-red-50 to-white shadow-sm border-red-100">
+                <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-red-800">Refunds Disbursed</CardTitle>
+                        <CardTitle className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Refunds Disbursed</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-3xl font-bold font-mono text-gray-900">₹{kpis.totalRefundedAmount.toLocaleString()}</div>
+                        <div className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400">₹{kpis.totalRefundedAmount.toLocaleString()}</div>
                     </CardContent>
                 </Card>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
                 {/* User Growth Trend */}
-                <Card className="shadow-sm">
+                <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
                     <CardHeader>
-                        <CardTitle>Customer Signups (Last 30 Days)</CardTitle>
-                        <CardDescription>Daily volume of new customer registrations</CardDescription>
+                        <CardTitle className="text-sm font-semibold text-foreground tracking-tight">Customer Signups (Last 30 Days)</CardTitle>
+                        <CardDescription className="text-xs text-muted-foreground">Daily volume of new customer registrations</CardDescription>
                     </CardHeader>
                     <CardContent className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={signupTrend} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="text-border/40" />
                                 <XAxis
                                     dataKey="label"
-                                    stroke="#6B7280"
-                                    fontSize={11}
+                                    stroke="currentColor"
+                                    className="text-muted-foreground text-[11px]"
                                     interval={3}
                                 />
-                                <YAxis stroke="#6B7280" fontSize={12} allowDecimals={false} />
+                                <YAxis stroke="currentColor" className="text-muted-foreground text-xs" allowDecimals={false} />
                                 <Tooltip
-                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                    contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--foreground)' }}
                                 />
                                 <Line
                                     type="monotone"
@@ -138,28 +138,28 @@ export default function AdminAnalytics() {
                 </Card>
 
                 {/* Top Campaigns */}
-                <Card className="shadow-sm">
+                <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
                     <CardHeader>
-                        <CardTitle>Top Volume Campaigns</CardTitle>
-                        <CardDescription>Highest performing products by total unique order submissions</CardDescription>
+                        <CardTitle className="text-sm font-semibold text-foreground tracking-tight">Top Volume Campaigns</CardTitle>
+                        <CardDescription className="text-xs text-muted-foreground">Highest performing products by total unique order submissions</CardDescription>
                     </CardHeader>
                     <CardContent className="h-[300px]">
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={topProducts} layout="vertical" margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" />
-                                <XAxis type="number" stroke="#6B7280" fontSize={12} allowDecimals={false} />
+                                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="currentColor" className="text-border/40" />
+                                <XAxis type="number" stroke="currentColor" className="text-muted-foreground text-xs" allowDecimals={false} />
                                 <YAxis
                                     dataKey="shortName"
                                     type="category"
                                     width={140}
-                                    stroke="#6B7280"
-                                    fontSize={11}
+                                    stroke="currentColor"
+                                    className="text-muted-foreground text-[11px]"
                                 />
                                 <Tooltip
-                                    cursor={{ fill: '#F3F4F6' }}
-                                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                                    cursor={{ fill: 'currentColor', opacity: 0.05 }}
+                                    contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--card)', color: 'var(--foreground)' }}
                                 />
-                                <Bar dataKey="orders" fill="#10B981" radius={[0, 4, 4, 0]} barSize={28} />
+                                <Bar dataKey="orders" fill="#10B981" radius={[0, 6, 6, 0]} barSize={24} />
                             </BarChart>
                         </ResponsiveContainer>
                     </CardContent>

@@ -284,7 +284,7 @@ export default function AdminCreatorsPage() {
                                                     <Button 
                                                         size="sm" 
                                                         variant="outline" 
-                                                        className="border-red-500/30 text-red-400 hover:bg-red-500/10 text-xs h-8 px-3 rounded-lg"
+                                                        className="border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:text-rose-600 hover:border-rose-500/30 hover:bg-rose-500/10 text-xs h-8 px-3 rounded-lg"
                                                         onClick={() => handleVerify(creator.id, false)}
                                                     >
                                                         Revoke

@@ -240,34 +240,34 @@ export default function AdminBrands() {
     };
 
     return (
-        <div className="space-y-10 relative z-10">
-            <div className="flex items-center justify-between border-b border-border/5 pb-6">
+        <div className="space-y-8 relative z-10 pb-16">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-6">
                 <div>
-                    <h1 className="text-4xl font-sans font-bold text-primary tracking-wider uppercase">Manage Vendors</h1>
-                    <p className="text-foreground/40 mt-2 font-sans tracking-wide text-sm">Orchestrate and onboard official brand partners.</p>
+                    <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">Manage Vendors</h1>
+                    <p className="text-muted-foreground mt-1.5 font-sans tracking-wide text-xs sm:text-sm">Orchestrate and onboard official brand partners.</p>
                 </div>
-                <Button onClick={() => setShowForm(!showForm)} className="bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20 font-sans tracking-widest uppercase text-xs h-12 px-6 rounded-sm transition-all shadow-[0_0_15px_rgba(212,175,55,0.1)]">
+                <Button onClick={() => setShowForm(!showForm)} className="bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-medium text-xs tracking-wider uppercase h-11 px-5 rounded-xl transition-all shadow-sm border border-zinc-800 dark:border-zinc-200">
                     {showForm ? "Cancel" : "Add New Brand"}
                 </Button>
             </div>
 
             {showForm && (
-                <Card className="glass-panel border-primary/30 shadow-[0_0_30px_rgba(212,175,55,0.05)]">
-                    <CardHeader className="border-b border-border/5 pb-4 mb-4">
-                        <CardTitle className="text-xl font-sans font-bold text-foreground tracking-widest uppercase">New Brand Partner</CardTitle>
+                <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
+                    <CardHeader className="border-b border-border/40 pb-4 mb-4">
+                        <CardTitle className="text-lg font-sans font-bold text-foreground tracking-tight">New Brand Partner</CardTitle>
                     </CardHeader>
                     <CardContent>
                         {error && !editingBrand && (
-                            <div className="mb-6 p-3 rounded bg-red-900/20 text-red-400 text-xs border border-red-500/50 font-sans tracking-wider uppercase text-center">{error}</div>
+                            <div className="mb-6 p-3 rounded-xl bg-rose-500/10 text-rose-500 text-xs border border-rose-500/20 font-sans tracking-wide text-center">{error}</div>
                         )}
-                        <form onSubmit={handleAdd} className="grid gap-6 md:grid-cols-2">
-                            <div className="space-y-3">
-                                <Label htmlFor="brand_name" className="text-foreground/60 uppercase tracking-widest text-[10px]">Brand / Entity Name</Label>
-                                <Input id="brand_name" placeholder="e.g., Tech Accessories Inc" value={formData.brand_name} onChange={handleChange} required className="h-12 bg-white/5 border-border/10 text-foreground placeholder:text-foreground/20 focus:border-primary/50 font-sans" />
+                        <form onSubmit={handleAdd} className="grid gap-4 md:grid-cols-2">
+                            <div className="space-y-2">
+                                <Label htmlFor="brand_name" className="text-muted-foreground text-xs font-medium">Brand / Entity Name</Label>
+                                <Input id="brand_name" placeholder="e.g., Tech Accessories Inc" value={formData.brand_name} onChange={handleChange} required className="h-10 rounded-xl" />
                             </div>
-                            <div className="space-y-3">
-                                <Label htmlFor="poc_name" className="text-foreground/60 uppercase tracking-widest text-[10px]">Liaison (POC) Name</Label>
-                                <Input id="poc_name" placeholder="John Doe" value={formData.poc_name} onChange={handleChange} required className="h-12 bg-white/5 border-border/10 text-foreground placeholder:text-foreground/20 focus:border-primary/50 font-sans" />
+                            <div className="space-y-2">
+                                <Label htmlFor="poc_name" className="text-muted-foreground text-xs font-medium">Liaison (POC) Name</Label>
+                                <Input id="poc_name" placeholder="John Doe" value={formData.poc_name} onChange={handleChange} required className="h-10 rounded-xl" />
                             </div>
                             <div className="space-y-3">
                                 <Label htmlFor="mobile" className="text-foreground/60 uppercase tracking-widest text-[10px]">Direct Line</Label>
@@ -478,24 +478,24 @@ export default function AdminBrands() {
                                 </form>
                             </Card>
                         ) : walletBrand?.id === v.id ? (
-                            <Card key={`wallet-${v.id}`} className="p-6 glass-panel border-[#8a7322]/50 shadow-[0_0_30px_rgba(138,115,34,0.1)]">
-                                <div className="flex items-center justify-between mb-6 border-b border-border/5 pb-4">
-                                    <h3 className="font-sans font-bold text-xl text-primary uppercase tracking-widest">Treasury: {v.name}</h3>
-                                    <Button variant="ghost" size="sm" className="text-foreground/40 hover:text-foreground font-sans tracking-widest uppercase text-[10px]" onClick={() => { setWalletBrand(null); setError(""); }}>Abort</Button>
+                            <Card key={`wallet-${v.id}`} className="p-6 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
+                                <div className="flex items-center justify-between mb-6 border-b border-border/40 pb-4">
+                                    <h3 className="font-sans font-bold text-lg text-foreground tracking-tight">Treasury: {v.name}</h3>
+                                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground text-xs" onClick={() => { setWalletBrand(null); setError(""); }}>Cancel</Button>
                                 </div>
-                                <div className="mb-6 bg-foreground/40 border border-border/5 p-5 rounded-sm flex justify-between items-center">
-                                    <span className="text-foreground/50 font-sans tracking-widest text-[10px] uppercase">Current Reserves:</span>
-                                    <span className="text-2xl text-primary font-mono tracking-wider">₹{v.wallet_balance?.toLocaleString() || 0}</span>
+                                <div className="mb-6 bg-muted/40 border border-border/60 p-4 rounded-xl flex justify-between items-center">
+                                    <span className="text-muted-foreground font-sans text-xs uppercase tracking-wider">Current Reserves:</span>
+                                    <span className="text-2xl text-foreground font-mono font-bold tracking-tight">₹{v.wallet_balance?.toLocaleString() || 0}</span>
                                 </div>
                                 {error && walletBrand?.id === v.id && (
-                                    <div className="mb-6 p-3 rounded bg-red-900/20 text-red-400 text-xs border border-red-500/50 font-sans tracking-wider uppercase text-center">{error}</div>
+                                    <div className="mb-6 p-3 rounded-xl bg-rose-500/10 text-rose-500 text-xs border border-rose-500/20 font-sans tracking-wide text-center">{error}</div>
                                 )}
-                                <form onSubmit={handleWalletUpdate} className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                    <div className="space-y-3">
-                                        <Label htmlFor="action" className="text-foreground/60 uppercase tracking-widest text-[10px]">Operation</Label>
+                                <form onSubmit={handleWalletUpdate} className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                    <div className="space-y-2">
+                                        <Label htmlFor="action" className="text-muted-foreground text-xs font-medium">Operation</Label>
                                         <select
                                             id="action"
-                                            className="h-12 w-full rounded-sm border border-border/10 bg-foreground/40 px-3 text-foreground text-xs outline-none focus:border-primary/50"
+                                            className="h-10 w-full rounded-xl border border-border bg-background px-3 text-foreground text-xs outline-none focus:border-zinc-400"
                                             value={walletData.action}
                                             onChange={(e) => setWalletData({ ...walletData, action: e.target.value })}
                                         >
@@ -503,8 +503,8 @@ export default function AdminBrands() {
                                             <option value="remove">Withdraw Funds (-)</option>
                                         </select>
                                     </div>
-                                    <div className="space-y-3">
-                                        <Label htmlFor="amount" className="text-foreground/60 uppercase tracking-widest text-[10px]">Capital (₹)</Label>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="amount" className="text-muted-foreground text-xs font-medium">Capital (₹)</Label>
                                         <Input
                                             id="amount"
                                             type="number"
@@ -513,45 +513,45 @@ export default function AdminBrands() {
                                             value={walletData.amount}
                                             onChange={(e) => setWalletData({ ...walletData, amount: e.target.value })}
                                             required
-                                            className="h-12 bg-white/5 border-border/10 text-foreground focus:border-primary/50"
+                                            className="h-10 rounded-xl"
                                         />
                                     </div>
                                     <div className="flex items-end">
-                                        <Button type="submit" className={`w-full h-12 font-sans tracking-widest uppercase text-[10px] rounded-sm transition-all ${walletData.action === 'add' ? 'bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20' : 'bg-red-900/20 text-red-400 border border-red-500/50 hover:bg-red-900/40'}`} disabled={isSubmitting || !walletData.amount}>
+                                        <Button type="submit" className={`w-full h-10 font-medium text-xs rounded-xl shadow-xs transition-all ${walletData.action === 'add' ? 'bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950' : 'bg-zinc-800 hover:bg-zinc-700 text-white'}`} disabled={isSubmitting || !walletData.amount}>
                                             {isSubmitting ? "Executing..." : walletData.action === 'add' ? "Execute Deposit" : "Execute Withdrawal"}
                                         </Button>
                                     </div>
                                 </form>
                             </Card>
                         ) : (
-                            <Card key={v.id} className="p-6 glass-panel border-border/5 hover:border-primary/20 transition-colors flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                            <Card key={v.id} className="p-5 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs hover:border-zinc-400/40 transition-colors flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                                 <div>
-                                    <h3 className="font-sans font-bold text-xl text-foreground tracking-wide">{v.name}</h3>
-                                    <p className="text-xs font-sans tracking-widest text-foreground/40 uppercase mt-2">{v.email || "No email"} • {v.mobile} • {v.products} Campaigns{v.category ? ` • ${v.category}` : ""}</p>
-                                    <div className="mt-3 px-3 py-1.5 max-w-fit rounded-sm bg-primary/5 border border-primary/20 text-primary text-[10px] uppercase tracking-widest flex items-center gap-2">
-                                        <span>Treasury:</span>
-                                        <span className="font-mono font-bold tracking-wider">₹{v.wallet_balance?.toLocaleString() || 0}</span>
-                                        <span className="ml-3 pl-3 border-l border-primary/20">Tax:</span>
-                                        <span className="font-mono font-bold tracking-wider">{v.commission || 0}%</span>
+                                    <h3 className="font-sans font-bold text-lg text-foreground tracking-tight">{v.name}</h3>
+                                    <p className="text-xs font-sans tracking-wide text-muted-foreground mt-1">{v.email || "No email"} • {v.mobile} • {v.products} Campaigns{v.category ? ` • ${v.category}` : ""}</p>
+                                    <div className="mt-3 px-3 py-1 max-w-fit rounded-lg bg-muted/60 border border-border text-foreground text-xs flex items-center gap-2">
+                                        <span className="text-muted-foreground">Treasury:</span>
+                                        <span className="font-mono font-bold">₹{v.wallet_balance?.toLocaleString() || 0}</span>
+                                        <span className="ml-2 pl-2 border-l border-border text-muted-foreground">Commission:</span>
+                                        <span className="font-mono font-bold">{v.commission || 0}%</span>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-3">
-                                    <span className={`px-3 py-1 text-[9px] uppercase tracking-widest rounded-sm ${v.status === 'active' ? 'bg-white/10 text-foreground' : 'bg-red-900/20 text-red-400'}`}>
+                                <div className="flex items-center gap-2.5">
+                                    <span className={`px-2.5 py-0.5 text-[10px] font-mono uppercase tracking-wider rounded-full border ${v.status === 'active' ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700'}`}>
                                         {v.status || "Active"}
                                     </span>
-                                    <Button variant="outline" className="h-9 px-4 border-border/10 text-foreground/70 hover:text-foreground hover:bg-white/5 font-sans tracking-widest uppercase text-[9px] rounded-sm" onClick={() => handleEditClick(v)}>Modify</Button>
-                                    <Button variant="secondary" className="h-9 px-4 bg-primary/10 text-primary hover:bg-primary/20 border border-primary/30 font-sans tracking-widest uppercase text-[9px] rounded-sm" onClick={() => { setWalletBrand(v); setError(""); setWalletData({ action: 'add', amount: '' }); }}>Treasury</Button>
+                                    <Button variant="outline" className="h-9 px-3.5 border-border text-foreground/80 hover:text-foreground font-medium text-xs rounded-xl" onClick={() => handleEditClick(v)}>Modify</Button>
+                                    <Button variant="outline" className="h-9 px-3.5 border-border text-foreground/80 hover:text-foreground font-medium text-xs rounded-xl" onClick={() => { setWalletBrand(v); setError(""); setWalletData({ action: 'add', amount: '' }); }}>Treasury</Button>
                                 </div>
                             </Card>
                         )
                                 ))}
                             </div>
-                            <div className="mt-10 p-6 glass-panel border-primary/30 bg-primary/5 rounded-sm flex flex-col md:flex-row items-center justify-between shadow-[0_0_30px_rgba(212,175,55,0.1)]">
+                            <div className="mt-8 p-6 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl flex flex-col md:flex-row items-center justify-between shadow-xs">
                                 <div>
-                                    <h3 className="font-sans font-bold text-lg text-primary uppercase tracking-widest">Global Treasury Reserves</h3>
-                                    <p className="text-foreground/50 font-sans tracking-wide text-xs mt-1">Aggregated capital across all active brand wallets.</p>
+                                    <h3 className="font-sans font-bold text-lg text-foreground tracking-tight">Global Treasury Reserves</h3>
+                                    <p className="text-muted-foreground font-sans text-xs mt-0.5">Aggregated capital across all active brand wallets.</p>
                                 </div>
-                                <div className="mt-4 md:mt-0 text-3xl text-primary font-mono font-bold tracking-wider">
+                                <div className="mt-4 md:mt-0 text-3xl text-foreground font-mono font-bold tracking-tight">
                                     ₹{brands.reduce((sum, b) => sum + (b.wallet_balance || 0), 0).toLocaleString()}
                                 </div>
                             </div>

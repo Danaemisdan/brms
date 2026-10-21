@@ -313,9 +313,9 @@ export default function AdminActivitiesPage() {
                                                                                     href={app.reel_link} 
                                                                                     target="_blank" 
                                                                                     rel="noopener noreferrer" 
-                                                                                    className="text-xs text-blue-400 hover:text-blue-300 font-bold inline-flex items-center gap-1 underline"
+                                                                                    className="text-xs text-blue-400 hover:text-blue-300 font-bold inline-flex items-center gap-1.5 underline"
                                                                                 >
-                                                                                    <Video className="w-3.5 h-3.5" /> View Submitted Reel 🔗
+                                                                                    <Video className="w-3.5 h-3.5" /> View Submitted Reel <ExternalLink className="w-3 h-3" />
                                                                                 </a>
                                                                             )}
                                                                         </div>

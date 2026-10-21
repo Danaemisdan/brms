@@ -299,50 +299,50 @@ export default function AdminRefunds() {
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-white/5 pb-8">
                 <div>
                     <div className="flex items-center gap-3">
-                        <h1 className="text-3xl lg:text-4xl font-sans font-extrabold text-primary tracking-wider uppercase">
+                        <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
                             Refund Operations
                         </h1>
-                        <span className="px-3 py-1 bg-primary/10 border border-primary/20 text-primary text-xs font-mono font-semibold rounded-full">
+                        <span className="px-2.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 text-zinc-700 dark:text-zinc-300 text-xs font-mono font-semibold rounded-full">
                             10–15d Payout Engine
                         </span>
                     </div>
-                    <p className="text-foreground/60 mt-2 font-sans tracking-wide text-sm max-w-2xl leading-relaxed">
+                    <p className="text-muted-foreground mt-1.5 font-sans tracking-wide text-xs sm:text-sm max-w-2xl leading-relaxed">
                         10–15 day maturity verification, UPI QR direct camera scanning & 1-click settlement lifecycle.
                     </p>
                 </div>
                 <div className="flex items-center gap-3 flex-wrap">
                     <Button 
                         onClick={() => { setPayoutIndex(0); setIsPayoutDeckOpen(true); }}
-                        className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs tracking-wider uppercase h-11 px-5 rounded-lg transition-all shadow-[0_0_20px_rgba(16,185,129,0.25)] flex items-center gap-2"
+                        className="bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-medium text-xs tracking-wider uppercase h-11 px-5 rounded-xl transition-all shadow-sm border border-zinc-800 dark:border-zinc-200 flex items-center gap-2 group"
                     >
-                        <Zap className="w-4 h-4 fill-black" />
-                        ⚡ Speed Payout Deck ({payoutQueue.length})
+                        <Zap className="w-4 h-4 text-emerald-400 fill-emerald-400 group-hover:scale-110 transition-transform" />
+                        Speed Payout Deck ({payoutQueue.length})
                     </Button>
                 </div>
             </div>
 
             {/* Maturity Attention Banner */}
             {maturedCount > 0 && (
-                <div className="bg-gradient-to-r from-emerald-500/15 via-emerald-500/10 to-transparent border border-emerald-500/30 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+                <div className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-emerald-500/30 p-5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
                     <div className="flex items-center gap-3.5">
-                        <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center shrink-0">
-                            <Clock className="w-5 h-5 text-emerald-400 animate-pulse" />
+                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                            <Clock className="w-5 h-5 text-emerald-500 animate-pulse" />
                         </div>
                         <div>
-                            <h3 className="font-bold text-emerald-400 text-sm tracking-wide flex items-center gap-2">
+                            <h3 className="font-bold text-foreground text-sm tracking-tight flex items-center gap-2">
                                 {maturedCount} Refund{maturedCount > 1 ? "s" : ""} Eligible for Immediate Payout (10+ Days Matured)
-                                <Badge variant="outline" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-[10px] font-mono">
+                                <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px] font-mono">
                                     Ready to Pay
                                 </Badge>
                             </h3>
-                            <p className="text-foreground/70 text-xs mt-0.5">
+                            <p className="text-muted-foreground text-xs mt-0.5">
                                 These customer orders have passed the 10–15 day maturity window. Launch the Speed Payout Deck to scan UPI QR codes directly with your phone.
                             </p>
                         </div>
                     </div>
                     <Button 
                         onClick={() => { setPayoutIndex(0); setIsPayoutDeckOpen(true); }}
-                        className="bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs tracking-wider uppercase h-10 px-5 rounded-lg shrink-0 shadow-md flex items-center gap-2"
+                        className="bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs tracking-wider uppercase h-10 px-5 rounded-xl shrink-0 shadow-sm flex items-center gap-2"
                     >
                         <Sparkles className="w-4 h-4" />
                         Pay Matured Queue
@@ -353,78 +353,78 @@ export default function AdminRefunds() {
             {/* Quick Metrics Bar */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <Card 
-                    className="p-4 glass-panel border-emerald-500/20 bg-gradient-to-br from-emerald-500/5 to-transparent cursor-pointer hover:border-emerald-500/40 transition-all"
+                    className="p-4 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 cursor-pointer hover:border-emerald-500/40 transition-all rounded-2xl shadow-xs"
                     onClick={() => { setMaturityFilter("MATURED_10"); setStatusFilter("ALL"); }}
                 >
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">Eligible (10+ Days)</span>
-                        <Zap className="w-4 h-4 text-emerald-400" />
+                        <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Eligible (10+ Days)</span>
+                        <Zap className="w-4 h-4 text-emerald-500" />
                     </div>
-                    <div className="text-2xl font-bold font-mono text-emerald-300 mt-2">{maturedCount}</div>
-                    <div className="text-[11px] text-foreground/50 mt-1">Ready for phone QR scan / payout</div>
+                    <div className="text-2xl font-bold font-mono text-foreground mt-2">{maturedCount}</div>
+                    <div className="text-[11px] text-muted-foreground mt-1">Ready for phone QR scan / payout</div>
                 </Card>
 
                 <Card 
-                    className="p-4 glass-panel border-amber-500/20 bg-gradient-to-br from-amber-500/5 to-transparent cursor-pointer hover:border-amber-500/40 transition-all"
+                    className="p-4 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 cursor-pointer hover:border-amber-500/40 transition-all rounded-2xl shadow-xs"
                     onClick={() => { setMaturityFilter("MATURING"); setStatusFilter("ALL"); }}
                 >
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-amber-500 uppercase tracking-wider">Maturing (&lt; 10 Days)</span>
+                        <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Maturing (&lt; 10 Days)</span>
                         <Clock className="w-4 h-4 text-amber-500" />
                     </div>
-                    <div className="text-2xl font-bold font-mono text-amber-400 mt-2">{maturingCount}</div>
-                    <div className="text-[11px] text-foreground/50 mt-1">Under review / 15-day cycle</div>
+                    <div className="text-2xl font-bold font-mono text-foreground mt-2">{maturingCount}</div>
+                    <div className="text-[11px] text-muted-foreground mt-1">Under review / 15-day cycle</div>
                 </Card>
 
                 <Card 
-                    className="p-4 glass-panel border-teal-500/20 bg-gradient-to-br from-teal-500/5 to-transparent cursor-pointer hover:border-teal-500/40 transition-all"
+                    className="p-4 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 cursor-pointer hover:border-teal-500/40 transition-all rounded-2xl shadow-xs"
                     onClick={() => { setStatusFilter("REFUNDED"); setMaturityFilter("ALL"); }}
                 >
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-teal-400 uppercase tracking-wider">Paid Out ({paidCount})</span>
-                        <CheckCircle2 className="w-4 h-4 text-teal-400" />
+                        <span className="text-xs font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-wider">Paid Out ({paidCount})</span>
+                        <CheckCircle2 className="w-4 h-4 text-teal-500" />
                     </div>
-                    <div className="text-2xl font-bold font-mono text-teal-300 mt-2">₹{totalPaidAmount.toLocaleString()}</div>
-                    <div className="text-[11px] text-foreground/50 mt-1">Completed settlements</div>
+                    <div className="text-2xl font-bold font-mono text-foreground mt-2">₹{totalPaidAmount.toLocaleString()}</div>
+                    <div className="text-[11px] text-muted-foreground mt-1">Completed settlements</div>
                 </Card>
 
                 <Card 
-                    className="p-4 glass-panel border-red-500/20 bg-gradient-to-br from-red-500/5 to-transparent cursor-pointer hover:border-red-500/40 transition-all"
+                    className="p-4 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 cursor-pointer hover:border-zinc-400 transition-all rounded-2xl shadow-xs"
                     onClick={() => { setStatusFilter("FAILED"); setMaturityFilter("ALL"); }}
                 >
                     <div className="flex items-center justify-between">
-                        <span className="text-xs font-semibold text-red-400 uppercase tracking-wider">Rejected / Failed</span>
-                        <XCircle className="w-4 h-4 text-red-400" />
+                        <span className="text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">Rejected / Failed</span>
+                        <XCircle className="w-4 h-4 text-zinc-500" />
                     </div>
-                    <div className="text-2xl font-bold font-mono text-red-300 mt-2">{failedCount}</div>
-                    <div className="text-[11px] text-foreground/50 mt-1">Wrong written / invalid payment</div>
+                    <div className="text-2xl font-bold font-mono text-foreground mt-2">{failedCount}</div>
+                    <div className="text-[11px] text-muted-foreground mt-1">Wrong written / invalid payment</div>
                 </Card>
             </div>
 
             {/* Filter and Search Bar */}
-            <Card className="p-5 glass-panel border-white/5 space-y-4">
+            <Card className="p-5 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs space-y-4">
                 <div className="flex flex-col md:flex-row gap-4 items-center">
                     <div className="flex-1 relative w-full">
-                        <Search className="w-4 h-4 text-foreground/40 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                        <Search className="w-4 h-4 text-muted-foreground absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                         <Input
                             placeholder="Search customer, mobile, Order ID, UPI ID, or product..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="h-11 pl-10 bg-white/5 border-white/10 text-foreground placeholder:text-foreground/40 rounded-lg focus:border-primary/50 text-sm font-sans"
+                            className="h-11 pl-10 bg-background/50 border-zinc-200 dark:border-zinc-800 text-foreground placeholder:text-muted-foreground rounded-xl focus:border-zinc-400 text-sm font-sans"
                         />
                     </div>
                     <div className="flex gap-3 w-full md:w-auto">
                         <select
-                            className="h-11 rounded-lg border border-white/10 bg-black/60 px-3 text-foreground text-xs font-sans outline-none focus:border-primary/50 tracking-wider uppercase flex-1 md:w-[200px]"
+                            className="h-11 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-background/80 px-3 text-foreground text-xs font-sans outline-none focus:border-zinc-400 tracking-wider uppercase flex-1 md:w-[200px]"
                             value={maturityFilter}
                             onChange={(e) => setMaturityFilter(e.target.value as any)}
                         >
                             <option value="ALL">All Maturity ({refundRequests.length})</option>
-                            <option value="MATURED_10">⚡ 10+ Days Matured ({maturedCount})</option>
-                            <option value="MATURING">⏳ Maturing &lt; 10 Days ({maturingCount})</option>
+                            <option value="MATURED_10">10+ Days Matured ({maturedCount})</option>
+                            <option value="MATURING">Maturing (&lt; 10 Days) ({maturingCount})</option>
                         </select>
                         <select
-                            className="h-11 rounded-lg border border-white/10 bg-black/60 px-3 text-foreground text-xs font-sans outline-none focus:border-primary/50 tracking-wider uppercase flex-1 md:w-[180px]"
+                            className="h-11 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-background/80 px-3 text-foreground text-xs font-sans outline-none focus:border-zinc-400 tracking-wider uppercase flex-1 md:w-[180px]"
                             value={statusFilter}
                             onChange={(e) => setStatusFilter(e.target.value)}
                         >
@@ -435,7 +435,7 @@ export default function AdminRefunds() {
                             <option value="FAILED">Rejected / Not Sent</option>
                         </select>
                         <select
-                            className="h-11 rounded-lg border border-white/10 bg-black/60 px-3 text-foreground text-xs font-sans outline-none focus:border-primary/50 tracking-wider uppercase flex-1 md:w-[150px]"
+                            className="h-11 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-background/80 px-3 text-foreground text-xs font-sans outline-none focus:border-zinc-400 tracking-wider uppercase flex-1 md:w-[150px]"
                             value={dateFilter}
                             onChange={(e) => setDateFilter(e.target.value as DateFilterType)}
                         >
@@ -450,36 +450,37 @@ export default function AdminRefunds() {
 
                 {/* Quick filter pills */}
                 <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-                    <span className="text-foreground/40 text-[11px] uppercase tracking-wider flex items-center gap-1 mr-1">
+                    <span className="text-muted-foreground text-[11px] uppercase tracking-wider flex items-center gap-1 mr-1">
                         <Filter className="w-3 h-3" /> Quick Filter:
                     </span>
                     <button 
                         onClick={() => { setStatusFilter("ALL"); setMaturityFilter("ALL"); }}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === 'ALL' && maturityFilter === 'ALL' ? 'bg-primary text-black font-semibold' : 'bg-white/5 text-foreground/60 hover:bg-white/10'}`}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === 'ALL' && maturityFilter === 'ALL' ? 'bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 font-semibold' : 'bg-muted/60 text-muted-foreground hover:bg-muted'}`}
                     >
                         All ({refundRequests.length})
                     </button>
                     <button 
                         onClick={() => { setMaturityFilter("MATURED_10"); setStatusFilter("ALL"); }}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${maturityFilter === 'MATURED_10' ? 'bg-emerald-500 text-black font-semibold' : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'}`}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap flex items-center gap-1.5 ${maturityFilter === 'MATURED_10' ? 'bg-emerald-600 text-white font-semibold' : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20'}`}
                     >
-                        ⚡ 10+ Days Matured ({maturedCount})
+                        <Zap className="w-3 h-3 text-emerald-500 fill-emerald-500" />
+                        10+ Days Matured ({maturedCount})
                     </button>
                     <button 
                         onClick={() => { setStatusFilter("PENDING"); setMaturityFilter("ALL"); }}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === 'PENDING' ? 'bg-amber-500 text-black font-semibold' : 'bg-amber-500/10 text-amber-400 hover:bg-amber-500/20'}`}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === 'PENDING' ? 'bg-amber-500 text-white font-semibold' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 hover:bg-amber-500/20'}`}
                     >
                         Pending Payout
                     </button>
                     <button 
                         onClick={() => { setStatusFilter("REFUNDED"); setMaturityFilter("ALL"); }}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === 'REFUNDED' ? 'bg-teal-500 text-black font-semibold' : 'bg-teal-500/10 text-teal-400 hover:bg-teal-500/20'}`}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === 'REFUNDED' ? 'bg-teal-600 text-white font-semibold' : 'bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20'}`}
                     >
                         Paid ({paidCount})
                     </button>
                     <button 
                         onClick={() => { setStatusFilter("FAILED"); setMaturityFilter("ALL"); }}
-                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === 'FAILED' ? 'bg-red-500 text-black font-semibold' : 'bg-red-500/10 text-red-400 hover:bg-red-500/20'}`}
+                        className={`px-3 py-1 rounded-full text-xs font-medium transition-colors whitespace-nowrap ${statusFilter === 'FAILED' ? 'bg-zinc-800 text-white font-semibold' : 'bg-zinc-200/60 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-300 dark:hover:bg-zinc-700'}`}
                     >
                         Rejected ({failedCount})
                     </button>
@@ -489,9 +490,9 @@ export default function AdminRefunds() {
             {/* Refund Table View */}
             <div className="space-y-4">
                 {isLoading ? (
-                    <Card className="p-16 text-center glass-panel border-white/5">
-                        <Clock className="w-8 h-8 text-primary/60 mx-auto animate-spin mb-3" />
-                        <p className="text-primary/70 font-sans tracking-widest text-xs uppercase">Loading refund records...</p>
+                    <Card className="p-16 text-center bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
+                        <Clock className="w-8 h-8 text-foreground/40 mx-auto animate-spin mb-3" />
+                        <p className="text-muted-foreground font-sans tracking-widest text-xs uppercase">Loading refund records...</p>
                     </Card>
                 ) : (() => {
                     const filteredRefunds = refundRequests.filter(req => {
@@ -525,70 +526,70 @@ export default function AdminRefunds() {
 
                     if (filteredRefunds.length === 0) {
                         return (
-                            <Card className="p-16 text-center glass-panel border-white/5">
-                                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3 text-foreground/40">
+                            <Card className="p-16 text-center bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
+                                <div className="w-12 h-12 rounded-full bg-muted/60 flex items-center justify-center mx-auto mb-3 text-muted-foreground">
                                     <Search className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-base font-semibold text-foreground/80">No refund requests found</h3>
-                                <p className="text-foreground/40 font-sans text-xs mt-1">Try adjusting your search criteria, maturity, or status filter.</p>
+                                <h3 className="text-base font-semibold text-foreground">No refund requests found</h3>
+                                <p className="text-muted-foreground font-sans text-xs mt-1">Try adjusting your search criteria, maturity, or status filter.</p>
                             </Card>
                         );
                     }
 
                     return (
-                        <div className="rounded-xl border border-white/10 glass-panel overflow-hidden shadow-xl">
+                        <div className="rounded-2xl border border-zinc-200/80 dark:border-zinc-800/80 bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl overflow-hidden shadow-xs">
                             <div className="overflow-x-auto">
                                 <Table>
-                                    <TableHeader className="bg-black/40 border-b border-white/10">
-                                        <TableRow className="border-white/10 hover:bg-transparent">
-                                            <TableHead className="w-[180px] font-sans font-bold text-xs uppercase tracking-wider text-primary">Customer</TableHead>
-                                            <TableHead className="w-[200px] font-sans font-bold text-xs uppercase tracking-wider text-primary">Product</TableHead>
-                                            <TableHead className="text-right font-sans font-bold text-xs uppercase tracking-wider text-primary">Refund (₹)</TableHead>
-                                            <TableHead className="font-sans font-bold text-xs uppercase tracking-wider text-primary">Maturity Window</TableHead>
-                                            <TableHead className="font-sans font-bold text-xs uppercase tracking-wider text-primary">Payment Details</TableHead>
-                                            <TableHead className="font-sans font-bold text-xs uppercase tracking-wider text-primary">Order ID</TableHead>
-                                            <TableHead className="font-sans font-bold text-xs uppercase tracking-wider text-primary">Status</TableHead>
-                                            <TableHead className="text-right font-sans font-bold text-xs uppercase tracking-wider text-primary">Action</TableHead>
+                                    <TableHeader className="bg-muted/40 border-b border-zinc-200/80 dark:border-zinc-800/80">
+                                        <TableRow className="border-zinc-200/80 dark:border-zinc-800/80 hover:bg-transparent">
+                                            <TableHead className="w-[180px] font-sans font-semibold text-xs uppercase tracking-wider text-muted-foreground">Customer</TableHead>
+                                            <TableHead className="w-[200px] font-sans font-semibold text-xs uppercase tracking-wider text-muted-foreground">Product</TableHead>
+                                            <TableHead className="text-right font-sans font-semibold text-xs uppercase tracking-wider text-muted-foreground">Refund (₹)</TableHead>
+                                            <TableHead className="font-sans font-semibold text-xs uppercase tracking-wider text-muted-foreground">Maturity Window</TableHead>
+                                            <TableHead className="font-sans font-semibold text-xs uppercase tracking-wider text-muted-foreground">Payment Details</TableHead>
+                                            <TableHead className="font-sans font-semibold text-xs uppercase tracking-wider text-muted-foreground">Order ID</TableHead>
+                                            <TableHead className="font-sans font-semibold text-xs uppercase tracking-wider text-muted-foreground">Status</TableHead>
+                                            <TableHead className="text-right font-sans font-semibold text-xs uppercase tracking-wider text-muted-foreground">Action</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {filteredRefunds.map((req) => {
-                                            const { qrUrl, upiId, bankObj } = extractPaymentInfo(req);
+                                             const { qrUrl, upiId, bankObj } = extractPaymentInfo(req);
                                             const daysElapsed = getDaysElapsed(req);
                                             const isMatured = daysElapsed >= 10;
                                             const isPaid = req.refund?.status === "REFUNDED";
                                             const isRejected = req.refund?.status === "FAILED" || req.status === "Refund Reject, Wrong Written";
 
                                             return (
-                                                <TableRow key={req.id} className="hover:bg-white/5 border-white/5 transition-colors">
+                                                <TableRow key={req.id} className="hover:bg-muted/30 border-zinc-200/60 dark:border-zinc-800/60 transition-colors">
                                                     <TableCell>
                                                         <div className="font-medium text-foreground text-sm">{req.user?.name || "Customer"}</div>
-                                                        <div className="text-xs font-mono text-foreground/50">{req.user?.mobile}</div>
+                                                        <div className="text-xs font-mono text-muted-foreground">{req.user?.mobile}</div>
                                                     </TableCell>
                                                     <TableCell>
                                                         <div className="line-clamp-2 text-xs text-foreground/80 font-medium" title={req.product?.product_name}>
                                                             {req.product?.product_name || "Unknown Product"}
                                                         </div>
                                                         {req.product?.platform && (
-                                                            <span className="text-[10px] font-mono text-foreground/40 uppercase">
+                                                            <span className="text-[10px] font-mono text-muted-foreground uppercase">
                                                                 {req.product.platform}
                                                             </span>
                                                         )}
                                                     </TableCell>
-                                                    <TableCell className="text-right font-mono font-bold text-emerald-400 text-sm">
+                                                    <TableCell className="text-right font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm">
                                                         ₹{req.refund?.amount || req.product?.refund_amount || req.amount}
                                                     </TableCell>
                                                     <TableCell>
                                                         {daysElapsed >= 15 ? (
-                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                                                                <Zap className="w-3 h-3 fill-emerald-300" /> 15+ Days (Matured)
+                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">
+                                                                <Zap className="w-3 h-3 fill-emerald-500" /> 15+ Days (Matured)
                                                             </span>
                                                         ) : daysElapsed >= 10 ? (
-                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                                                                 <CheckCircle2 className="w-3 h-3" /> {daysElapsed}d (Eligible)
                                                             </span>
                                                         ) : (
-                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
                                                                 <Clock className="w-3 h-3" /> {daysElapsed}d ({10 - daysElapsed}d left)
                                                             </span>
                                                         )}
@@ -597,42 +598,42 @@ export default function AdminRefunds() {
                                                         {qrUrl ? (
                                                             <button 
                                                                 onClick={() => setSelectedImage(qrUrl)}
-                                                                className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-white bg-primary/10 hover:bg-primary/20 border border-primary/30 px-2.5 py-1 rounded-md transition-colors"
+                                                                className="inline-flex items-center gap-1.5 text-xs font-medium text-foreground bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-zinc-700 px-2.5 py-1 rounded-lg transition-colors"
                                                             >
                                                                 <QrCode className="w-3.5 h-3.5" /> Scan QR Code
                                                             </button>
                                                         ) : upiId ? (
-                                                            <div className="flex items-center gap-1.5 font-mono text-xs text-foreground/90 bg-white/5 border border-white/10 px-2 py-1 rounded max-w-[180px] truncate">
+                                                            <div className="flex items-center gap-1.5 font-mono text-xs text-foreground bg-muted/40 border border-border px-2 py-1 rounded-lg max-w-[180px] truncate">
                                                                 <span className="truncate">{upiId}</span>
                                                                 <button 
                                                                     onClick={() => copyToClipboard(upiId, req.id)}
-                                                                    className="text-foreground/40 hover:text-primary shrink-0"
+                                                                    className="text-muted-foreground hover:text-foreground shrink-0"
                                                                 >
-                                                                    {copiedField === req.id ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
+                                                                    {copiedField === req.id ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
                                                                 </button>
                                                             </div>
                                                         ) : bankObj?.accountNumber ? (
-                                                            <div className="text-[11px] font-mono text-foreground/70 bg-white/5 p-1 rounded">
+                                                            <div className="text-[11px] font-mono text-muted-foreground bg-muted/40 p-1.5 rounded-lg border border-border">
                                                                 A/C: {bankObj.accountNumber} ({bankObj.ifsc})
                                                             </div>
                                                         ) : (
-                                                            <span className="text-xs text-foreground/40 italic">No details submitted</span>
+                                                            <span className="text-xs text-muted-foreground italic">No details submitted</span>
                                                         )}
                                                     </TableCell>
                                                     <TableCell>
-                                                        <div className="font-mono text-xs text-foreground/70">{req.order_id}</div>
+                                                        <div className="font-mono text-xs text-muted-foreground">{req.order_id}</div>
                                                     </TableCell>
                                                     <TableCell>
                                                         {isPaid ? (
-                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
                                                                 <CheckCircle2 className="w-3 h-3" /> REFUNDED
                                                             </span>
                                                         ) : isRejected ? (
-                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-red-500/10 text-red-400 border border-red-500/30">
+                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-zinc-200/60 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-700">
                                                                 <XCircle className="w-3 h-3" /> NOT SENT
                                                             </span>
                                                         ) : (
-                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/30">
+                                                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/30">
                                                                 <Clock className="w-3 h-3" /> {req.refund?.status || "PENDING"}
                                                             </span>
                                                         )}
@@ -644,7 +645,7 @@ export default function AdminRefunds() {
                                                                     <Button 
                                                                         size="sm" 
                                                                         variant="outline" 
-                                                                        className="h-8 text-xs font-semibold border-red-500/30 text-red-400 hover:bg-red-500/10" 
+                                                                        className="h-8 text-xs font-medium border-zinc-300 dark:border-zinc-700 text-muted-foreground hover:text-rose-600 hover:border-rose-500/40 hover:bg-rose-500/10 rounded-lg" 
                                                                         disabled={isUpdating === req.id}
                                                                         onClick={() => {
                                                                             setPayoutRejectReason("Refund Reject, Wrong Written");
@@ -655,7 +656,7 @@ export default function AdminRefunds() {
                                                                     </Button>
                                                                     <Button 
                                                                         size="sm" 
-                                                                        className="h-8 text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white shadow-md flex items-center gap-1" 
+                                                                        className="h-8 text-xs font-medium bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-xs flex items-center gap-1" 
                                                                         disabled={isUpdating === req.id}
                                                                         onClick={() => handlePayoutMarkPaid(req.id)}
                                                                     >
@@ -664,12 +665,12 @@ export default function AdminRefunds() {
                                                                 </>
                                                             )}
                                                             {isPaid && (
-                                                                <span className="text-[11px] font-mono text-emerald-400 font-semibold">
+                                                                <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
                                                                     Paid {req.refund?.processed_date ? new Date(req.refund.processed_date).toLocaleDateString() : ""}
                                                                 </span>
                                                             )}
                                                             {isRejected && (
-                                                                <span className="text-[11px] font-mono text-red-400 truncate max-w-[140px]" title={req.remarks || "Rejected"}>
+                                                                <span className="text-[11px] font-mono text-muted-foreground truncate max-w-[140px]" title={req.remarks || "Rejected"}>
                                                                     {req.remarks || "Not Sent"}
                                                                 </span>
                                                             )}
@@ -688,23 +689,23 @@ export default function AdminRefunds() {
 
             {/* SPEED PAYOUT DECK ("DATING MODE FOR REFUNDS") FULLSCREEN DIALOG */}
             <Dialog open={isPayoutDeckOpen} onOpenChange={setIsPayoutDeckOpen}>
-                <DialogContent className="max-w-5xl w-[95vw] max-h-[92vh] flex flex-col bg-neutral-950/98 border border-white/10 p-0 rounded-2xl shadow-2xl overflow-hidden text-foreground">
+                <DialogContent className="max-w-5xl w-[95vw] max-h-[92vh] flex flex-col bg-zinc-950/98 border border-zinc-800 p-0 rounded-3xl shadow-2xl overflow-hidden text-zinc-100">
                     {/* Header */}
-                    <div className="px-6 py-4 border-b border-white/10 flex items-center justify-between bg-black/40">
+                    <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/50 backdrop-blur-md">
                         <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
                                 <Zap className="w-4 h-4 fill-emerald-400" />
                             </div>
                             <div>
-                                <DialogTitle className="text-sm font-sans font-extrabold text-primary tracking-wider uppercase flex items-center gap-2">
-                                    Speed Payout Deck (Dating Mode)
+                                <DialogTitle className="text-sm font-sans font-bold text-white tracking-tight flex items-center gap-2">
+                                    Speed Payout Deck
                                     {payoutQueue.length > 0 && (
-                                        <Badge variant="outline" className="bg-emerald-500/20 text-emerald-300 border-emerald-500/40 text-[10px] font-mono">
+                                        <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 text-[10px] font-mono">
                                             Card {payoutIndex + 1} of {payoutQueue.length}
                                         </Badge>
                                     )}
                                 </DialogTitle>
-                                <p className="text-[11px] text-foreground/50">
+                                <p className="text-[11px] text-zinc-400">
                                     Point Phone Camera to Scan UPI QR Code & Mark Paid Instantly
                                 </p>
                             </div>
@@ -713,10 +714,10 @@ export default function AdminRefunds() {
                         {payoutQueue.length > 0 && (
                             <div className="flex items-center gap-3">
                                 <div className="hidden sm:flex flex-col items-end gap-1">
-                                    <span className="text-[10px] font-mono text-foreground/50">
+                                    <span className="text-[10px] font-mono text-zinc-400">
                                         {Math.round(((payoutIndex + 1) / payoutQueue.length) * 100)}% Settled
                                     </span>
-                                    <div className="w-32 bg-white/10 rounded-full h-1.5 overflow-hidden">
+                                    <div className="w-32 bg-zinc-800 rounded-full h-1.5 overflow-hidden">
                                         <div 
                                             className="bg-emerald-500 h-full transition-all duration-300"
                                             style={{ width: `${((payoutIndex + 1) / payoutQueue.length) * 100}%` }}
@@ -730,15 +731,15 @@ export default function AdminRefunds() {
                     {/* Modal Body */}
                     {payoutQueue.length === 0 ? (
                         <div className="p-16 flex flex-col items-center justify-center text-center space-y-4 my-auto">
-                            <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+                            <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-sm">
                                 <CheckCircle2 className="w-8 h-8" />
                             </div>
-                            <h3 className="text-2xl font-bold font-sans text-primary">All Eligible Payouts Completed!</h3>
-                            <p className="text-foreground/60 text-sm max-w-md">
+                            <h3 className="text-2xl font-bold font-sans text-white">All Eligible Payouts Completed!</h3>
+                            <p className="text-zinc-400 text-sm max-w-md">
                                 The payout queue is completely clear. All matured refund claims have been settled or reviewed.
                             </p>
                             <Button 
-                                className="bg-primary/20 hover:bg-primary/30 text-primary border border-primary/40 font-semibold text-xs tracking-wider uppercase h-10 px-6 rounded-lg mt-2"
+                                className="bg-white text-zinc-950 hover:bg-zinc-200 font-medium text-xs tracking-wider uppercase h-10 px-6 rounded-xl mt-2"
                                 onClick={() => setIsPayoutDeckOpen(false)}
                             >
                                 Return to Refunds Table
@@ -755,11 +756,11 @@ export default function AdminRefunds() {
                             <div className="flex flex-col flex-1 overflow-hidden">
                                 <div className="p-6 grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-y-auto max-h-[60vh]">
                                     {/* Left Column: QR Code & Payment Destination (Front & Center) */}
-                                    <div className="space-y-4 flex flex-col items-center justify-center bg-black/50 p-6 rounded-2xl border border-white/10 text-center">
+                                    <div className="space-y-4 flex flex-col items-center justify-center bg-zinc-900/40 p-6 rounded-2xl border border-zinc-800 text-center">
                                         {/* Large Scan Target */}
                                         {qrUrl ? (
                                             <div className="space-y-3 flex flex-col items-center">
-                                                <div className="relative group p-3 bg-white rounded-2xl shadow-[0_0_40px_rgba(255,255,255,0.15)] border-4 border-emerald-500/40">
+                                                <div className="relative group p-3 bg-white rounded-2xl shadow-xl border-2 border-emerald-500/40">
                                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                                     <img 
                                                         src={qrUrl} 
@@ -769,7 +770,7 @@ export default function AdminRefunds() {
                                                     />
                                                     <button 
                                                         onClick={() => setSelectedImage(qrUrl)}
-                                                        className="absolute top-4 right-4 bg-black/80 hover:bg-black text-white p-2 rounded-lg border border-white/20 transition-all opacity-0 group-hover:opacity-100"
+                                                        className="absolute top-4 right-4 bg-zinc-950/80 hover:bg-zinc-950 text-white p-2 rounded-lg border border-white/20 transition-all opacity-0 group-hover:opacity-100"
                                                         title="Zoom Full Size"
                                                     >
                                                         <Maximize2 className="w-4 h-4" />
@@ -782,18 +783,18 @@ export default function AdminRefunds() {
                                             </div>
                                         ) : upiId ? (
                                             <div className="space-y-4 w-full py-8">
-                                                <div className="w-16 h-16 rounded-2xl bg-primary/10 border border-primary/30 flex items-center justify-center mx-auto text-primary">
+                                                <div className="w-16 h-16 rounded-2xl bg-zinc-800 border border-zinc-700 flex items-center justify-center mx-auto text-zinc-300">
                                                     <QrCode className="w-8 h-8" />
                                                 </div>
                                                 <div>
-                                                    <span className="text-[11px] font-mono text-foreground/50 uppercase tracking-wider block">Customer UPI ID</span>
+                                                    <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">Customer UPI ID</span>
                                                     <div className="flex items-center justify-center gap-2 mt-2">
-                                                        <span className="font-mono text-lg font-bold text-white bg-white/5 border border-white/15 px-4 py-2 rounded-xl">
+                                                        <span className="font-mono text-lg font-bold text-white bg-zinc-800/80 border border-zinc-700 px-4 py-2 rounded-xl">
                                                             {upiId}
                                                         </span>
                                                         <Button 
                                                             size="sm"
-                                                            className="h-10 bg-primary/20 hover:bg-primary/30 text-primary border border-primary/40 font-mono text-xs flex items-center gap-1.5"
+                                                            className="h-10 bg-zinc-800 hover:bg-zinc-700 text-white border border-zinc-700 font-mono text-xs flex items-center gap-1.5 rounded-xl"
                                                             onClick={() => copyToClipboard(upiId, 'deck-upi')}
                                                         >
                                                             {copiedField === 'deck-upi' ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
@@ -804,36 +805,36 @@ export default function AdminRefunds() {
                                             </div>
                                         ) : bankObj?.accountNumber ? (
                                             <div className="space-y-3 w-full text-left py-4">
-                                                <span className="text-[11px] font-mono text-foreground/50 uppercase tracking-wider block text-center">Bank Account Transfer</span>
-                                                <div className="space-y-2 bg-white/5 p-4 rounded-xl border border-white/10 text-xs font-mono">
+                                                <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block text-center">Bank Account Transfer</span>
+                                                <div className="space-y-2 bg-zinc-900/80 p-4 rounded-xl border border-zinc-800 text-xs font-mono">
                                                     <div className="flex justify-between items-center">
-                                                        <span className="text-foreground/50">A/C Number:</span>
+                                                        <span className="text-zinc-400">A/C Number:</span>
                                                         <div className="flex items-center gap-1.5">
                                                             <strong className="text-white">{bankObj.accountNumber}</strong>
-                                                            <button onClick={() => copyToClipboard(bankObj.accountNumber!, 'ac')} className="text-primary hover:text-white">
+                                                            <button onClick={() => copyToClipboard(bankObj.accountNumber!, 'ac')} className="text-zinc-400 hover:text-white">
                                                                 <Copy className="w-3.5 h-3.5" />
                                                             </button>
                                                         </div>
                                                     </div>
                                                     <div className="flex justify-between items-center">
-                                                        <span className="text-foreground/50">IFSC Code:</span>
+                                                        <span className="text-zinc-400">IFSC Code:</span>
                                                         <div className="flex items-center gap-1.5">
                                                             <strong className="text-white">{bankObj.ifsc}</strong>
-                                                            <button onClick={() => copyToClipboard(bankObj.ifsc!, 'ifsc')} className="text-primary hover:text-white">
+                                                            <button onClick={() => copyToClipboard(bankObj.ifsc!, 'ifsc')} className="text-zinc-400 hover:text-white">
                                                                 <Copy className="w-3.5 h-3.5" />
                                                             </button>
                                                         </div>
                                                     </div>
                                                     {bankObj.name && (
                                                         <div className="flex justify-between items-center">
-                                                            <span className="text-foreground/50">Beneficiary:</span>
+                                                            <span className="text-zinc-400">Beneficiary:</span>
                                                             <span className="text-white">{bankObj.name}</span>
                                                         </div>
                                                     )}
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div className="py-12 text-center text-foreground/40 space-y-2">
+                                            <div className="py-12 text-center text-zinc-500 space-y-2">
                                                 <AlertTriangle className="w-10 h-10 text-amber-500/60 mx-auto" />
                                                 <p className="text-xs">No UPI QR Code or Bank Account submitted yet.</p>
                                             </div>
@@ -845,11 +846,11 @@ export default function AdminRefunds() {
                                         {/* Maturity Badge */}
                                         <div className="flex items-center justify-between">
                                             {daysElapsed >= 15 ? (
-                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse">
-                                                    <Zap className="w-3.5 h-3.5 fill-emerald-300" /> 15+ Days Fully Matured (Immediate Payout)
+                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/30">
+                                                    <Zap className="w-3.5 h-3.5 fill-emerald-400 text-emerald-400" /> 15+ Days Fully Matured (Immediate Payout)
                                                 </span>
                                             ) : daysElapsed >= 10 ? (
-                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                                                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                                                     <CheckCircle2 className="w-3.5 h-3.5" /> {daysElapsed} Days Elapsed (Eligible for Payout)
                                                 </span>
                                             ) : (
@@ -857,14 +858,14 @@ export default function AdminRefunds() {
                                                     <Clock className="w-3.5 h-3.5" /> Maturing: {daysElapsed} Days ({10 - daysElapsed}d to 10-day mark)
                                                 </span>
                                             )}
-                                            <span className="text-[11px] font-mono text-foreground/40">
+                                            <span className="text-[11px] font-mono text-zinc-500">
                                                 Order #{currentOrder.order_id}
                                             </span>
                                         </div>
 
                                         {/* Giant Refund Amount Display */}
-                                        <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-center">
-                                            <span className="text-[11px] font-mono text-emerald-300 uppercase tracking-widest block font-semibold">
+                                        <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20 text-center">
+                                            <span className="text-[11px] font-mono text-emerald-400 uppercase tracking-widest block font-semibold">
                                                 Payout Settlement Amount
                                             </span>
                                             <div className="text-4xl sm:text-5xl font-mono font-extrabold text-emerald-400 tracking-tight mt-1">
@@ -873,44 +874,44 @@ export default function AdminRefunds() {
                                         </div>
 
                                         {/* Product & Order Details */}
-                                        <div className="space-y-2 p-3.5 rounded-xl bg-white/5 border border-white/10 text-xs">
+                                        <div className="space-y-2 p-4 rounded-2xl bg-zinc-900/60 border border-zinc-800 text-xs">
                                             <div className="flex items-center gap-2 mb-1">
                                                 {currentOrder.product?.platform && (
-                                                    <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30 text-[10px] font-mono uppercase">
+                                                    <Badge variant="outline" className="bg-zinc-800 text-zinc-300 border-zinc-700 text-[10px] font-mono uppercase">
                                                         {currentOrder.product.platform}
                                                     </Badge>
                                                 )}
-                                                <span className="font-bold text-foreground truncate">{currentOrder.product?.product_name}</span>
+                                                <span className="font-bold text-white truncate">{currentOrder.product?.product_name}</span>
                                             </div>
-                                            <div className="flex justify-between items-center text-foreground/70">
+                                            <div className="flex justify-between items-center text-zinc-400">
                                                 <span>Customer:</span>
                                                 <strong className="text-white font-medium">{currentOrder.user?.name || "Customer"}</strong>
                                             </div>
-                                            <div className="flex justify-between items-center text-foreground/70">
+                                            <div className="flex justify-between items-center text-zinc-400">
                                                 <span>Mobile:</span>
                                                 <span className="font-mono text-white">{currentOrder.user?.mobile}</span>
                                             </div>
                                             {currentOrder.user?.email && (
-                                                <div className="flex justify-between items-center text-foreground/70">
+                                                <div className="flex justify-between items-center text-zinc-400">
                                                     <span>Email:</span>
-                                                    <span className="font-mono text-primary text-[11px]">{currentOrder.user.email}</span>
+                                                    <span className="font-mono text-zinc-300 text-[11px]">{currentOrder.user.email}</span>
                                                 </div>
                                             )}
-                                            <div className="flex justify-between items-center text-foreground/70">
+                                            <div className="flex justify-between items-center text-zinc-400">
                                                 <span>Confirmed On:</span>
-                                                <span className="font-mono text-foreground/80">{new Date(currentOrder.created_at).toLocaleDateString()}</span>
+                                                <span className="font-mono text-zinc-400">{new Date(currentOrder.created_at).toLocaleDateString()}</span>
                                             </div>
                                         </div>
 
                                         {/* Review Proof Preview (if present) */}
                                         {currentOrder.review?.screenshot_url && (
-                                            <div className="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/10 text-xs">
-                                                <span className="text-foreground/70 flex items-center gap-1.5">
-                                                    <ShieldCheck className="w-4 h-4 text-primary" /> Verified Review Proof
+                                            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-zinc-900/60 border border-zinc-800 text-xs">
+                                                <span className="text-zinc-400 flex items-center gap-1.5">
+                                                    <ShieldCheck className="w-4 h-4 text-emerald-400" /> Verified Review Proof
                                                 </span>
                                                 <button 
                                                     onClick={() => setSelectedImage(currentOrder.review.screenshot_url)}
-                                                    className="text-primary hover:text-white font-mono flex items-center gap-1 text-[11px] underline"
+                                                    className="text-zinc-300 hover:text-white font-mono flex items-center gap-1 text-[11px] underline"
                                                 >
                                                     <ExternalLink className="w-3 h-3" /> View Screenshot
                                                 </button>
@@ -918,7 +919,7 @@ export default function AdminRefunds() {
                                         )}
 
                                         {currentOrder.remarks && currentOrder.remarks !== currentOrder.status && (
-                                            <div className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-lg">
+                                            <div className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1.5 rounded-xl">
                                                 <strong>Order Remark:</strong> {currentOrder.remarks}
                                             </div>
                                         )}
@@ -927,14 +928,14 @@ export default function AdminRefunds() {
 
                                 {/* Bottom Action Area */}
                                 {isRejectingInDeck ? (
-                                    <div className="p-4 bg-neutral-900 border-t border-white/10 space-y-3">
+                                    <div className="p-4 bg-zinc-900 border-t border-zinc-800 space-y-3">
                                         <div className="flex items-center justify-between">
-                                            <span className="text-xs font-semibold text-red-400 uppercase tracking-wider flex items-center gap-1.5">
-                                                <AlertTriangle className="w-4 h-4" /> Specify Why Payment Was Not Sent (Visible to Customer)
+                                            <span className="text-xs font-semibold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
+                                                <AlertTriangle className="w-4 h-4 text-amber-400" /> Specify Why Payment Was Not Sent (Visible to Customer)
                                             </span>
                                             <button 
                                                 onClick={() => setIsRejectingInDeck(false)} 
-                                                className="text-foreground/40 hover:text-white text-xs"
+                                                className="text-zinc-400 hover:text-white text-xs"
                                             >
                                                 Cancel [Esc]
                                             </button>
@@ -950,7 +951,7 @@ export default function AdminRefunds() {
                                                 <Badge 
                                                     key={idx} 
                                                     variant="outline" 
-                                                    className="cursor-pointer hover:bg-red-500/20 hover:text-red-300 text-[11px] py-1 px-2.5 border-white/10"
+                                                    className="cursor-pointer hover:bg-white/10 hover:text-white text-[11px] py-1 px-2.5 border-zinc-700 text-zinc-300 rounded-lg"
                                                     onClick={() => setPayoutRejectReason(preset)}
                                                 >
                                                     {preset}
@@ -963,7 +964,7 @@ export default function AdminRefunds() {
                                                 placeholder="Type rejection remark visible to customer... (Press Enter to submit)"
                                                 value={payoutRejectReason}
                                                 onChange={(e) => setPayoutRejectReason(e.target.value)}
-                                                className="bg-white/5 border-white/15 text-foreground h-11 text-xs rounded-lg flex-1"
+                                                className="bg-zinc-800/80 border-zinc-700 text-white h-11 text-xs rounded-xl flex-1 placeholder:text-zinc-500"
                                                 onKeyDown={(e) => {
                                                     if (e.key === 'Enter' && payoutRejectReason.trim()) {
                                                         e.preventDefault();
@@ -972,7 +973,7 @@ export default function AdminRefunds() {
                                                 }}
                                             />
                                             <Button 
-                                                className="bg-red-600 hover:bg-red-500 text-white font-semibold text-xs h-11 px-5 rounded-lg uppercase tracking-wider"
+                                                className="bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs h-11 px-5 rounded-xl uppercase tracking-wider"
                                                 disabled={!payoutRejectReason.trim() || isUpdating === currentOrder.id}
                                                 onClick={() => handlePayoutReject(currentOrder.id)}
                                             >
@@ -981,13 +982,13 @@ export default function AdminRefunds() {
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="p-4 bg-neutral-900/90 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                    <div className="p-4 bg-zinc-900/90 border-t border-zinc-800 flex flex-col sm:flex-row items-center justify-between gap-4">
                                         <Button 
                                             variant="outline"
                                             size="sm"
                                             disabled={payoutIndex === 0}
                                             onClick={() => setPayoutIndex(prev => Math.max(0, prev - 1))}
-                                            className="border-white/10 text-foreground/70 hover:text-white h-11 px-4 rounded-xl flex items-center gap-1.5 text-xs font-mono w-full sm:w-auto justify-center"
+                                            className="border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 h-11 px-4 rounded-xl flex items-center gap-1.5 text-xs font-mono w-full sm:w-auto justify-center"
                                         >
                                             <ChevronLeft className="w-4 h-4" /> Previous
                                         </Button>
@@ -997,7 +998,7 @@ export default function AdminRefunds() {
                                             <Button 
                                                 disabled={isUpdating === currentOrder.id}
                                                 onClick={() => handlePayoutMarkPaid(currentOrder.id)}
-                                                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs tracking-wide h-12 rounded-xl shadow-[0_0_20px_rgba(16,185,129,0.25)] flex flex-col items-center justify-center transition-all group"
+                                                className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs tracking-wide h-12 rounded-xl shadow-xs flex flex-col items-center justify-center transition-all group"
                                             >
                                                 <div className="flex items-center gap-1.5 font-bold">
                                                     <CheckCircle2 className="w-4 h-4" />
@@ -1015,14 +1016,14 @@ export default function AdminRefunds() {
                                                     setPayoutRejectReason("Refund Reject, Wrong Written");
                                                     setIsRejectingInDeck(true);
                                                 }}
-                                                className="border-red-500/40 text-red-400 hover:bg-red-500/10 font-semibold text-xs tracking-wide h-12 px-5 rounded-xl flex flex-col items-center justify-center transition-all"
+                                                className="border-zinc-700 text-zinc-300 hover:text-rose-400 hover:bg-rose-500/10 font-semibold text-xs tracking-wide h-12 px-5 rounded-xl flex flex-col items-center justify-center transition-all"
                                             >
                                                 <div className="flex items-center gap-1.5 font-bold">
-                                                    <XCircle className="w-3.5 h-3.5 text-red-400" />
+                                                    <XCircle className="w-3.5 h-3.5 text-zinc-400" />
                                                     <span>Not Sent / Reject</span>
-                                                    <kbd className="text-[10px] font-mono bg-red-500/20 px-1.5 py-0.5 rounded ml-1">R</kbd>
+                                                    <kbd className="text-[10px] font-mono bg-zinc-800 px-1.5 py-0.5 rounded ml-1">R</kbd>
                                                 </div>
-                                                <span className="text-[10px] text-red-400/60 font-normal">Type custom reason</span>
+                                                <span className="text-[10px] text-zinc-400 font-normal">Type custom reason</span>
                                             </Button>
                                         </div>
 
@@ -1031,7 +1032,7 @@ export default function AdminRefunds() {
                                             size="sm"
                                             disabled={payoutIndex >= payoutQueue.length - 1}
                                             onClick={() => setPayoutIndex(prev => Math.min(prev + 1, payoutQueue.length - 1))}
-                                            className="border-white/10 text-foreground/70 hover:text-white h-11 px-4 rounded-xl flex items-center gap-1.5 text-xs font-mono w-full sm:w-auto justify-center"
+                                            className="border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800 h-11 px-4 rounded-xl flex items-center gap-1.5 text-xs font-mono w-full sm:w-auto justify-center"
                                         >
                                             Next <ChevronRight className="w-4 h-4" />
                                         </Button>
@@ -1039,14 +1040,14 @@ export default function AdminRefunds() {
                                 )}
 
                                 {/* Footer Shortcut Legend */}
-                                <div className="bg-black/80 px-4 py-2 border-t border-white/5 flex flex-wrap items-center justify-center gap-3 text-[11px] font-mono text-foreground/50">
-                                    <span><kbd className="bg-white/10 px-1.5 py-0.5 rounded text-white font-bold">P / Enter</kbd> Mark Paid & Sent</span>
+                                <div className="bg-zinc-950 px-4 py-2.5 border-t border-zinc-800 flex flex-wrap items-center justify-center gap-3 text-[11px] font-mono text-zinc-400">
+                                    <span><kbd className="bg-zinc-800 px-1.5 py-0.5 rounded text-white font-bold">P / Enter</kbd> Mark Paid & Sent</span>
                                     <span>•</span>
-                                    <span><kbd className="bg-white/10 px-1.5 py-0.5 rounded text-white font-bold">R</kbd> Reject / Not Sent</span>
+                                    <span><kbd className="bg-zinc-800 px-1.5 py-0.5 rounded text-white font-bold">R</kbd> Reject / Not Sent</span>
                                     <span>•</span>
-                                    <span><kbd className="bg-white/10 px-1.5 py-0.5 rounded text-white font-bold">←</kbd> <kbd className="bg-white/10 px-1.5 py-0.5 rounded text-white font-bold">→</kbd> Navigate</span>
+                                    <span><kbd className="bg-zinc-800 px-1.5 py-0.5 rounded text-white font-bold">←</kbd> <kbd className="bg-zinc-800 px-1.5 py-0.5 rounded text-white font-bold">→</kbd> Navigate</span>
                                     <span>•</span>
-                                    <span><kbd className="bg-white/10 px-1.5 py-0.5 rounded text-white font-bold">Esc</kbd> Close</span>
+                                    <span><kbd className="bg-zinc-800 px-1.5 py-0.5 rounded text-white font-bold">Esc</kbd> Close</span>
                                 </div>
                             </div>
                         );
@@ -1056,15 +1057,15 @@ export default function AdminRefunds() {
 
             {/* Lightbox Dialog for QR Code & Proof Images */}
             <Dialog open={!!selectedImage} onOpenChange={(open) => !open && setSelectedImage(null)}>
-                <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col items-center justify-center bg-black/95 border-border/10 p-6 rounded-2xl">
+                <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col items-center justify-center bg-zinc-950/98 border-zinc-800 p-6 rounded-3xl">
                     <DialogHeader className="w-full mb-3 flex flex-row items-center justify-between">
-                        <DialogTitle className="text-white/90 font-mono text-sm flex items-center gap-2">
-                            <ShieldCheck className="w-4 h-4 text-primary" />
+                        <DialogTitle className="text-white font-mono text-sm flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4 text-emerald-400" />
                             Preview Image / QR Code
                         </DialogTitle>
                     </DialogHeader>
                     {selectedImage && (
-                        <div className="relative w-full h-full flex items-center justify-center overflow-auto rounded-xl bg-white p-4">
+                        <div className="relative w-full h-full flex items-center justify-center overflow-auto rounded-2xl bg-white p-4">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img 
                                 src={selectedImage} 

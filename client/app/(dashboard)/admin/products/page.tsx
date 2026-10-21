@@ -50,7 +50,7 @@ export default function AdminProducts() {
         target_audience: "ALL",
         wa_target: ["all_customers"],
         wa_custom_phones: "",
-        wa_template: "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
+        wa_template: "*New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\nPlatform: {{platform}}\nRefund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\nClaim deal here: {{product_link}}",
         wa_start_date: "",
         wa_end_date: "",
         wa_times_per_day: "1",
@@ -64,7 +64,7 @@ export default function AdminProducts() {
     const [isWaModalOpen, setIsWaModalOpen] = useState(false);
     const [selectedWaProduct, setSelectedWaProduct] = useState<any>(null);
     const [waTemplate, setWaTemplate] = useState(
-        "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}"
+        "*New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\nPlatform: {{platform}}\nRefund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\nClaim deal here: {{product_link}}"
     );
     const [waTarget, setWaTarget] = useState<string[]>(["all_customers"]);
     const [customPhones, setCustomPhones] = useState("");
@@ -168,7 +168,7 @@ export default function AdminProducts() {
         setEditingId(null);
         setForm({
             brand: "", deal_type: [], product_name: "", product_link: "", platform: "AMAZON", real_price: "", offer_price: "", refund_amount: "", deadline: "", total_slots: "", is_public: true,
-            wa_target: ["all_customers"], wa_custom_phones: "", wa_template: "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
+            wa_target: ["all_customers"], wa_custom_phones: "", wa_template: "*New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\nPlatform: {{platform}}\nRefund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\nClaim deal here: {{product_link}}",
             wa_start_date: "", wa_end_date: "", wa_times_per_day: "1", wa_time_1: "09:00", wa_time_2: "", wa_time_3: "", service_id: ""
         });
         setExistingImages([]);
@@ -196,7 +196,7 @@ export default function AdminProducts() {
             target_audience: product.target_audience || "ALL",
             wa_target: product.wa_target ? product.wa_target.split(",") : ["all_customers"],
             wa_custom_phones: product.wa_custom_phones || "",
-            wa_template: product.wa_template || "🚀 *New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\n🛒 Platform: {{platform}}\n💰 Refund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\n👉 *Claim deal here:* {{product_link}}",
+            wa_template: product.wa_template || "*New Premium Freebie Alert!*\n\nGet the *{{product_name}}* absolutely FREE after cashback!\n\nPlatform: {{platform}}\nRefund Amount: ₹{{refund_amount}}\n\nHurry, only {{available_slots}} slots left!\n\nClaim deal here: {{product_link}}",
             wa_start_date: product.wa_start_date ? new Date(product.wa_start_date).toISOString().split('T')[0] : "",
             wa_end_date: product.wa_end_date ? new Date(product.wa_end_date).toISOString().split('T')[0] : "",
             wa_times_per_day: product.wa_times_per_day ? String(product.wa_times_per_day) : "1",
@@ -449,52 +449,52 @@ export default function AdminProducts() {
     };
 
     return (
-        <div className="space-y-10 relative z-10">
-            <div className="flex items-center justify-between border-b border-border/5 pb-6 mb-6">
+        <div className="space-y-8 relative z-10 pb-16">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border/60 pb-6 mb-6">
                 <div>
-                    <h1 className="text-4xl font-sans font-bold text-primary tracking-wider uppercase">Manage Campaigns</h1>
-                    <p className="text-foreground/40 mt-2 font-sans tracking-wide text-sm">Manage campaigns, allocate slots, and configure product listings.</p>
+                    <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">Manage Campaigns</h1>
+                    <p className="text-muted-foreground mt-1.5 font-sans tracking-wide text-xs sm:text-sm">Manage campaigns, allocate slots, and configure product listings.</p>
                 </div>
                 <Button onClick={() => {
                     if (showForm) resetForm();
                     else setShowForm(true);
-                }} className="bg-primary/10 text-primary border border-primary/50 hover:bg-primary/20 font-sans tracking-widest uppercase text-xs h-12 px-6 rounded-sm transition-all shadow-[0_0_15px_rgba(212,175,55,0.1)]">
+                }} className="bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-medium text-xs tracking-wider uppercase h-11 px-5 rounded-xl transition-all shadow-sm border border-zinc-800 dark:border-zinc-200">
                     {showForm ? "Cancel" : "Create New Campaign"}
                 </Button>
             </div>
 
             {/* Products Analytics */}
             <div className="grid gap-4 md:grid-cols-4 mb-8">
-                <Card className="bg-gradient-to-br from-blue-50 to-white shadow-sm border-blue-100">
+                <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-blue-800">Total Campaigns</CardTitle>
+                        <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Campaigns</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-gray-900">{products.length}</div>
+                        <div className="text-2xl font-bold font-mono text-foreground">{products.length}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-gradient-to-br from-emerald-50 to-white shadow-sm border-emerald-100">
+                <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-emerald-800">Active Campaigns</CardTitle>
+                        <CardTitle className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Active Campaigns</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-gray-900">{products.filter(p => p.status?.toUpperCase() === 'ACTIVE').length}</div>
+                        <div className="text-2xl font-bold font-mono text-foreground">{products.filter(p => p.status?.toUpperCase() === 'ACTIVE').length}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-gradient-to-br from-orange-50 to-white shadow-sm border-orange-100">
+                <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-orange-800">Pending Requests</CardTitle>
+                        <CardTitle className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Pending Requests</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-gray-900">{products.filter(p => p.status?.toUpperCase() === 'REQUESTED').length}</div>
+                        <div className="text-2xl font-bold font-mono text-foreground">{products.filter(p => p.status?.toUpperCase() === 'REQUESTED').length}</div>
                     </CardContent>
                 </Card>
-                <Card className="bg-gradient-to-br from-purple-50 to-white shadow-sm border-purple-100">
+                <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
                     <CardHeader className="pb-2">
-                        <CardTitle className="text-sm font-medium text-purple-800">Slots Filled</CardTitle>
+                        <CardTitle className="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Slots Filled</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold text-gray-900">{products.reduce((acc, p) => acc + (p.filled_slots || 0), 0)} / {products.reduce((acc, p) => acc + (p.total_slots || 0), 0)}</div>
+                        <div className="text-2xl font-bold font-mono text-foreground">{products.reduce((acc, p) => acc + (p.filled_slots || 0), 0)} / {products.reduce((acc, p) => acc + (p.total_slots || 0), 0)}</div>
                     </CardContent>
                 </Card>
             </div>
@@ -939,10 +939,10 @@ export default function AdminProducts() {
                                     </span>
                                     {p.status?.toUpperCase() === "REQUESTED" ? (
                                         <>
-                                            <Button variant="outline" size="sm" className="border-green-600 text-green-600 hover:bg-green-50" onClick={() => handleStatusUpdate(p.id, "ACTIVE")}>
+                                            <Button variant="outline" size="sm" className="border-emerald-600 text-emerald-600 hover:bg-emerald-50 rounded-lg" onClick={() => handleStatusUpdate(p.id, "ACTIVE")}>
                                                 Accept
                                             </Button>
-                                            <Button variant="outline" size="sm" className="border-red-500 text-red-500 hover:bg-red-50" onClick={() => handleStatusUpdate(p.id, "REJECTED")}>
+                                            <Button variant="outline" size="sm" className="border-zinc-300 dark:border-zinc-700 text-zinc-600 dark:text-zinc-400 hover:text-rose-600 hover:border-rose-500/30 hover:bg-rose-500/10 rounded-lg" onClick={() => handleStatusUpdate(p.id, "REJECTED")}>
                                                 Decline
                                             </Button>
                                         </>
