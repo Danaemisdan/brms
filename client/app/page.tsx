@@ -144,123 +144,151 @@ export default function Home() {
       </section>
 
       {/* Trust & Guarantee Banner */}
-      <section className="bg-gray-900 text-white py-4 border-y border-gray-800">
-        <div className="container mx-auto px-6 flex flex-wrap items-center justify-around gap-4 text-xs font-medium text-gray-300">
+      <section className="bg-gray-950 text-white py-5 border-y border-gray-800/80 relative">
+        <div className="container mx-auto px-4 sm:px-6 flex flex-wrap items-center justify-around gap-4 text-xs font-semibold text-gray-300">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span>100% Genuine Brands (Amazon, Flipkart, Myntra)</span>
+            <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>100% Genuine Marketplace Brands (Amazon, Flipkart, Nykaa)</span>
           </div>
           <div className="flex items-center gap-2">
-            <Zap className="w-4 h-4 text-amber-400" />
-            <span>Automated Slot Validation & Confirmation</span>
+            <Zap className="w-4 h-4 text-amber-400 shrink-0" />
+            <span>Real-time Slot Allocation & Verification</span>
           </div>
           <div className="flex items-center gap-2">
-            <Wallet className="w-4 h-4 text-blue-400" />
+            <Wallet className="w-4 h-4 text-blue-400 shrink-0" />
             <span>Instant UPI & Bank Wallet Settlements</span>
           </div>
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4 text-red-400" />
-            <span>Zero Processing Fees for Reviewers</span>
+            <CheckCircle2 className="w-4 h-4 text-red-400 shrink-0" />
+            <span>Zero Fees for Reviewers • Keep Every Product</span>
           </div>
         </div>
       </section>
 
       {/* Velocity Scroll Section */}
-      <section className="py-10 bg-[#1a1a24] text-white overflow-hidden">
+      <section className="py-10 bg-[#161622] text-white overflow-hidden">
         <VelocityScroll 
           text="FREE SAMPLES • TOP BRANDS • DAILY DROPS •" 
           defaultVelocity={3} 
-          className="text-[3.5rem] md:text-[5rem] font-black opacity-90"
+          className="text-[3rem] sm:text-[4rem] md:text-[5rem] font-black opacity-90"
         />
         <VelocityScroll 
           text="DISCOVER REWARDS • INSTANT REFUNDS • SHOP PREMIUM •" 
           defaultVelocity={-3} 
-          className="text-[3.5rem] md:text-[5rem] font-black opacity-40 mt-1"
+          className="text-[3rem] sm:text-[4rem] md:text-[5rem] font-black opacity-40 mt-1"
         />
       </section>
 
       {/* Process Section: Clear 4-Step Verified Workflow */}
-      <section className="py-20 bg-gray-50/60 border-b border-gray-100" id="how-it-works">
-        <div className="container mx-auto px-6">
+      <section className="py-20 md:py-28 bg-[#fbfbfe] border-b border-gray-100" id="how-it-works">
+        <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-bold text-red-600 uppercase tracking-widest bg-red-50 border border-red-100 px-3 py-1 rounded-full">
+            <span className="text-xs font-bold text-red-600 uppercase tracking-widest bg-red-50 border border-red-100 px-3.5 py-1.5 rounded-full inline-block mb-3">
               Automated Verification Engine
             </span>
-            <h2 className="text-3xl md:text-4xl font-extrabold mt-3 tracking-tight text-gray-900">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-gray-900 leading-tight">
               How Sample Lelo Works
             </h2>
-            <p className="text-gray-500 text-sm mt-2">
-              Our 4-stage transparent lifecycle ensures you get verified free samples with guaranteed, automated financial settlement.
+            <p className="text-gray-500 text-sm sm:text-base mt-3 leading-relaxed">
+              Our 4-stage transparent lifecycle ensures you get genuine free products with guaranteed, automated financial settlement.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto relative">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
             {/* Step 1 */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm relative group hover:shadow-md transition-all">
-              <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg mb-4">
-                01
+            <div className="bg-white p-6 rounded-3xl border border-gray-200/90 shadow-sm hover:shadow-xl hover:border-amber-200 transition-all duration-300 flex flex-col justify-between group">
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-black text-lg border border-amber-100">
+                    01
+                  </div>
+                  <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    Initial Step
+                  </span>
+                </div>
+                <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-amber-600 transition-colors">
+                  Order Validating
+                </h3>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Select an active drop, purchase it on Amazon, Flipkart, or Nykaa, and upload your order screenshot to your dashboard.
+                </p>
               </div>
-              <h3 className="font-bold text-base text-gray-900 mb-1.5 flex items-center gap-1.5">
-                Order Validating
-              </h3>
-              <p className="text-xs text-gray-500 leading-relaxed">
-                Choose an active campaign, place the order on Amazon or Flipkart, and upload your order screenshot.
-              </p>
-              <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-amber-700 font-medium flex items-center gap-1">
-                <Clock className="w-3 h-3" /> Initial Review Status
+              <div className="mt-6 pt-4 border-t border-gray-100 text-[11px] text-amber-700 font-semibold flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5" /> Slot Check in Progress
               </div>
             </div>
 
             {/* Step 2 */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm relative group hover:shadow-md transition-all">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg mb-4">
-                02
+            <div className="bg-white p-6 rounded-3xl border border-gray-200/90 shadow-sm hover:shadow-xl hover:border-emerald-200 transition-all duration-300 flex flex-col justify-between group">
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-black text-lg border border-emerald-100">
+                    02
+                  </div>
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    Automated Signal
+                  </span>
+                </div>
+                <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-emerald-600 transition-colors">
+                  Order Confirmed
+                </h3>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Our admin team verifies your proof and confirms available slots. You instantly receive an official confirmation email.
+                </p>
               </div>
-              <h3 className="font-bold text-base text-gray-900 mb-1.5 flex items-center gap-1.5">
-                Order Confirmed
-              </h3>
-              <p className="text-xs text-gray-500 leading-relaxed">
-                Our admin team reviews the order proof and validates campaign slots. An automated email confirmation is dispatched!
-              </p>
-              <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-emerald-700 font-medium flex items-center gap-1">
-                <CheckCircle2 className="w-3 h-3" /> Confirmation Email Sent
+              <div className="mt-6 pt-4 border-t border-gray-100 text-[11px] text-emerald-700 font-semibold flex items-center gap-1.5">
+                <CheckCircle2 className="w-3.5 h-3.5" /> Confirmation Email Sent
               </div>
             </div>
 
             {/* Step 3 */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm relative group hover:shadow-md transition-all">
-              <div className="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-lg mb-4">
-                03
+            <div className="bg-white p-6 rounded-3xl border border-gray-200/90 shadow-sm hover:shadow-xl hover:border-teal-200 transition-all duration-300 flex flex-col justify-between group">
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-12 h-12 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center font-black text-lg border border-teal-100">
+                    03
+                  </div>
+                  <span className="text-[10px] font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    Proof Review
+                  </span>
+                </div>
+                <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-teal-600 transition-colors">
+                  Review & Return SS
+                </h3>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  Once delivered, post your genuine 5-star review. Upload the review proof and return window screenshot for approval.
+                </p>
               </div>
-              <h3 className="font-bold text-base text-gray-900 mb-1.5 flex items-center gap-1.5">
-                Review & Return SS
-              </h3>
-              <p className="text-xs text-gray-500 leading-relaxed">
-                Once the package is delivered, publish your genuine 5-star review and submit the Review & Return Window screenshots.
-              </p>
-              <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-teal-700 font-medium flex items-center gap-1">
-                <Sparkles className="w-3 h-3" /> Order Approved
+              <div className="mt-6 pt-4 border-t border-gray-100 text-[11px] text-teal-700 font-semibold flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5" /> Order Approved
               </div>
             </div>
 
             {/* Step 4 */}
-            <div className="bg-white p-6 rounded-2xl border border-gray-200/80 shadow-sm relative group hover:shadow-md transition-all">
-              <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-lg mb-4">
-                04
+            <div className="bg-white p-6 rounded-3xl border border-gray-200/90 shadow-sm hover:shadow-xl hover:border-purple-200 transition-all duration-300 flex flex-col justify-between group">
+              <div>
+                <div className="flex items-center justify-between mb-5">
+                  <div className="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-black text-lg border border-purple-100">
+                    04
+                  </div>
+                  <span className="text-[10px] font-bold text-purple-700 bg-purple-50 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    Instant Payout
+                  </span>
+                </div>
+                <h3 className="font-bold text-lg text-gray-900 mb-2 group-hover:text-purple-600 transition-colors">
+                  Wallet & UPI Payout
+                </h3>
+                <p className="text-xs text-gray-500 leading-relaxed">
+                  The 100% refund is credited to your internal wallet. Click withdraw to send funds straight to your UPI or bank account!
+                </p>
               </div>
-              <h3 className="font-bold text-base text-gray-900 mb-1.5 flex items-center gap-1.5">
-                Wallet & UPI Payout
-              </h3>
-              <p className="text-xs text-gray-500 leading-relaxed">
-                The 100% refund is collected into your internal wallet. Click withdraw to redeem instantly to your UPI ID or bank account!
-              </p>
-              <div className="mt-4 pt-3 border-t border-gray-100 text-[11px] text-purple-700 font-medium flex items-center gap-1">
-                <Wallet className="w-3 h-3" /> Instant UPI Withdrawal
+              <div className="mt-6 pt-4 border-t border-gray-100 text-[11px] text-purple-700 font-semibold flex items-center gap-1.5">
+                <Wallet className="w-3.5 h-3.5" /> Instant UPI Withdrawal
               </div>
             </div>
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-14">
             <Link href="/register">
               <Button className="bg-[#eb5757] hover:bg-[#d64c4c] text-white rounded-full px-8 py-6 text-sm font-bold shadow-lg gap-2">
                 Start Sampling for Free Today <ArrowRight className="w-4 h-4" />
@@ -278,6 +306,34 @@ export default function Home() {
       <HotSamples />
       <TrustedPartners />
       <FaqSection />
+
+      {/* Luxury 21st.dev Bottom Call-To-Action Banner */}
+      <section className="py-20 bg-gray-950 text-white relative overflow-hidden">
+        <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-red-600/15 rounded-full blur-[120px] pointer-events-none" />
+        <div className="container mx-auto px-4 sm:px-6 max-w-4xl relative z-10 text-center">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-red-400 text-xs font-semibold mb-6">
+            <Sparkles className="w-3.5 h-3.5" /> Join Over 18,000+ Active Reviewers
+          </div>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight leading-tight mb-4">
+            Ready to Experience <span className="text-red-500">100% Free Sampling?</span>
+          </h2>
+          <p className="text-gray-400 text-sm sm:text-base max-w-xl mx-auto mb-8 leading-relaxed">
+            Create your reviewer account in 30 seconds. Discover daily drops from top brands, sample authentic products, and receive guaranteed UPI refunds.
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Link href="/register" className="w-full sm:w-auto">
+              <Button className="w-full sm:w-auto bg-[#eb5757] hover:bg-[#d64c4c] text-white font-bold rounded-full px-8 py-6 text-sm shadow-xl gap-2">
+                Create Free Account <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+            <Link href="/browse" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full sm:w-auto border-gray-700 bg-white/5 hover:bg-white/10 text-white font-bold rounded-full px-8 py-6 text-sm">
+                Explore Sample Directory
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

@@ -135,6 +135,13 @@
   .text-classy {
     @apply font-bold tracking-tight text-foreground;
   }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 
 /* Force-hide all Next.js Development Indicators from the UI */

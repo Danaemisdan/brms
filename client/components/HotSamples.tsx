@@ -1,35 +1,99 @@
+"use client";
+
 import { useEffect, useState } from "react";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { MagicCard } from "./ui/MagicCard";
+import { ArrowRight, Sparkles, ShieldCheck, CheckCircle2, Star, Zap } from "lucide-react";
 import { ShinyText } from "./ui/ShinyText";
-import { api } from "@/lib/api";
+import { Button } from "./ui/button";
 
 interface Product {
   id: string;
   brand: string;
   product_name: string;
   product_image: string;
+  platform?: string;
   real_price: number;
   offer_price: number;
   refund_amount: number;
-  deal_type: string;
+  deal_type?: string;
+  total_slots?: number;
+  filled_slots?: number;
 }
 
+const FALLBACK_BENTO: Product[] = [
+  {
+    id: "bento-1",
+    brand: "AromaBliss Home",
+    product_name: "Ultrasonic Essential Oil Aromatherapy Diffuser & Humidifier",
+    product_image: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?q=80&w=800&auto=format&fit=crop",
+    platform: "Amazon",
+    real_price: 1299,
+    offer_price: 0,
+    refund_amount: 1299,
+    deal_type: "Featured Spotlight",
+    total_slots: 40,
+    filled_slots: 37
+  },
+  {
+    id: "bento-2",
+    brand: "SkinGlow Labs",
+    product_name: "Deep Hydration Hyaluronic Acid Face Moisturizer Gel (50g)",
+    product_image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=800&auto=format&fit=crop",
+    platform: "Nykaa",
+    real_price: 699,
+    offer_price: 0,
+    refund_amount: 699,
+    deal_type: "Top Rated",
+    total_slots: 50,
+    filled_slots: 45
+  },
+  {
+    id: "bento-3",
+    brand: "RoasterCraft",
+    product_name: "Single-Origin Dark Roast Artisan Coffee Beans (250g)",
+    product_image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=800&auto=format&fit=crop",
+    platform: "Amazon",
+    real_price: 599,
+    offer_price: 0,
+    refund_amount: 599,
+    deal_type: "Gourmet Drop",
+    total_slots: 45,
+    filled_slots: 39
+  },
+  {
+    id: "bento-4",
+    brand: "HydroTitan",
+    product_name: "Double-Wall Vacuum Insulated Stainless Bottle (750ml)",
+    product_image: "https://images.unsplash.com/photo-1602143407151-7111542de6e8?q=80&w=800&auto=format&fit=crop",
+    platform: "Flipkart",
+    real_price: 849,
+    offer_price: 0,
+    refund_amount: 849,
+    deal_type: "Lifestyle",
+    total_slots: 80,
+    filled_slots: 71
+  }
+];
+
 export function HotSamples() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(FALLBACK_BENTO);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await api.get("/products/public", { requiresAuth: false });
-        if (res.data) {
-          // Take products index 3 to 6 (so they differ from trending deals)
-          setProducts(res.data.slice(3, 7));
+        const res = await fetch("/api/products/public");
+        if (res.ok) {
+          const json = await res.json();
+          const items = Array.isArray(json) ? json : json.data || json.products || [];
+          if (items && items.length >= 4) {
+            setProducts(items.slice(3, 7));
+          } else if (items && items.length > 0) {
+            setProducts([...items, ...FALLBACK_BENTO].slice(0, 4));
+          }
         }
       } catch (err) {
-        console.error("Failed to load hot samples", err);
+        console.error("Failed to load hot bento samples:", err);
       } finally {
         setLoading(false);
       }
@@ -37,150 +101,176 @@ export function HotSamples() {
     fetchProducts();
   }, []);
 
-  if (!loading && products.length === 0) return null;
+  const p0 = products[0] || FALLBACK_BENTO[0];
+  const p1 = products[1] || FALLBACK_BENTO[1];
+  const p2 = products[2] || FALLBACK_BENTO[2];
+  const p3 = products[3] || FALLBACK_BENTO[3];
 
   return (
-    <section className="py-24 bg-[#fcfcfc] relative overflow-hidden">
+    <section className="py-20 md:py-28 bg-[#fbfbfe] relative overflow-hidden border-t border-gray-100">
       {/* Decorative gradient orb */}
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-red-100/50 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/3 pointer-events-none"></div>
+      <div className="absolute top-1/2 right-0 w-[450px] h-[450px] bg-red-100/40 rounded-full blur-[130px] -translate-y-1/2 pointer-events-none" />
 
-      <div className="container mx-auto px-6 max-w-6xl relative z-10">
-        <div className="flex justify-between items-end mb-12">
-          <h2 className="text-[40px] font-black tracking-tighter text-gray-900 leading-none">
-            Curated <ShinyText text="For You" />
-          </h2>
-          <Link href="/browse" className="text-[14px] font-semibold text-gray-500 hover:text-black transition-colors flex items-center group bg-white border border-gray-200/50 rounded-full px-5 py-2.5 shadow-sm hover:shadow-md">
-            Explore Collection <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
+        {/* Section Header */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 sm:mb-16 gap-4">
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-50 border border-red-100 text-red-600 text-xs font-semibold uppercase tracking-wider mb-3">
+              <Sparkles className="w-3.5 h-3.5" /> Handpicked For Reviewers
+            </div>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-gray-900 leading-none">
+              Curated <ShinyText text="Spotlight" />
+            </h2>
+            <p className="text-gray-500 text-sm sm:text-base max-w-md mt-3 leading-relaxed">
+              Explore premium products reserved for verified community members. Complete the quick review step and keep the item 100% free.
+            </p>
+          </div>
+
+          <Link href="/browse" className="inline-flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-900 font-bold text-sm px-6 py-3.5 rounded-full border border-gray-200/90 shadow-sm transition-all group">
+            Explore All 200+ Samples <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
-        {/* Bento Grid Layout using MagicCards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 md:grid-rows-2 gap-6 h-auto md:h-[600px]">
-          
-          {loading ? (
-             <>
-               <div className="md:col-span-2 md:row-span-2 p-3 bg-white rounded-3xl border animate-pulse flex flex-col">
-                 <div className="flex-1 w-full bg-gray-100 rounded-[20px] mb-8" />
-                 <div className="px-5 pb-5 space-y-4">
-                   <div className="h-8 bg-gray-100 rounded w-1/2" />
-                   <div className="h-4 bg-gray-100 rounded w-3/4" />
-                   <div className="h-6 bg-gray-100 rounded w-1/4" />
-                 </div>
-               </div>
-               <div className="md:col-span-2 md:row-span-1 p-8 bg-white rounded-3xl border animate-pulse flex items-center gap-8">
-                  <div className="flex-1 space-y-4">
-                    <div className="h-6 bg-gray-100 rounded w-1/2" />
-                    <div className="h-4 bg-gray-100 rounded w-full" />
-                  </div>
-                  <div className="w-40 h-40 bg-gray-100 rounded-2xl shrink-0" />
-               </div>
-               <div className="md:col-span-1 md:row-span-1 bg-gray-900 rounded-[24px] p-8 animate-pulse flex flex-col">
-                  <div className="h-6 bg-gray-800 rounded w-1/2 mb-4" />
-                  <div className="h-4 bg-gray-800 rounded w-3/4 mt-auto mb-4" />
-                  <div className="h-8 bg-gray-800 rounded w-1/2" />
-               </div>
-               <div className="md:col-span-1 md:row-span-1 p-4 bg-white rounded-[24px] border animate-pulse flex flex-col">
-                  <div className="w-full flex-1 bg-gray-100 rounded-xl mb-4" />
-                  <div className="px-2 pb-2 space-y-2">
-                    <div className="h-5 bg-gray-100 rounded w-3/4" />
-                    <div className="h-5 bg-gray-100 rounded w-1/4" />
-                  </div>
-               </div>
-             </>
-          ) : (
-            <>
-              {/* Main Large Card (Spans 2 columns, 2 rows) */}
-              {products[0] && (
-                <MagicCard className="md:col-span-2 md:row-span-2 p-3 flex flex-col group cursor-pointer">
-                  <div className="absolute top-8 right-8 z-10 bg-white/90 backdrop-blur-md text-xs font-bold px-4 py-2 rounded-full text-[#eb5757] shadow-sm">
-                    Earn {products[0].refund_amount ? `₹${products[0].refund_amount}` : "100%"} Refund
-                  </div>
-                  <div className="flex-1 w-full bg-[#f3f0e9] rounded-[20px] mb-8 overflow-hidden relative">
-                    <img 
-                      src={products[0].product_image || "https://placehold.co/800x800/f3f0e9/a1a1aa?text=Sample+Lelo"} 
-                      alt={products[0].product_name} 
-                      className="w-full h-full object-cover opacity-90 group-hover:scale-105 transition-transform duration-700 ease-out" 
-                      onError={(e) => { 
-                        e.currentTarget.onerror = null;
-                        e.currentTarget.src = "https://placehold.co/800x800/f3f0e9/a1a1aa?text=Sample+Lelo"; 
-                      }}
-                    />
-                  </div>
-                  <div className="px-5 pb-5">
-                    <h3 className="text-3xl font-black tracking-tighter mb-3">{products[0].product_name}</h3>
-                    <p className="text-gray-500 text-[15px] mb-6 leading-relaxed max-w-md">Experience immersive quality with cashbacks on your first review. Limited time exclusive drop from {products[0].brand}.</p>
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl font-black tracking-tighter">₹{products[0].offer_price || 0}</span>
-                      <span className="text-sm text-gray-400 line-through font-medium">₹{products[0].real_price || 0}</span>
-                    </div>
-                  </div>
-                </MagicCard>
-              )}
+        {/* 21st.dev Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {/* Card 1: Large Primary Bento Card (Spans 2 cols, 2 rows on large screens) */}
+          <div className="md:col-span-2 md:row-span-2 bg-white rounded-3xl border border-gray-200/90 hover:border-gray-300 shadow-sm hover:shadow-xl transition-all duration-300 p-6 sm:p-8 flex flex-col justify-between group">
+            <div>
+              <div className="flex items-center justify-between mb-6">
+                <span className="bg-red-50 text-red-600 border border-red-100 text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+                  {p0.platform || "Amazon"} Exclusive
+                </span>
+                <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5" /> 100% UPI Settlement
+                </span>
+              </div>
 
-              {/* Top Right Card (Spans 2 cols, 1 row) */}
-              {products[1] && (
-                <MagicCard className="md:col-span-2 md:row-span-1 p-8 flex items-center gap-8 group cursor-pointer">
-                  <div className="flex-1">
-                      <div className="bg-[#eb5757]/10 text-[#eb5757] text-[10px] font-bold px-3 py-1.5 rounded-full inline-block mb-4 tracking-wider uppercase">{products[1].deal_type || "EXCLUSIVE"}</div>
-                      <h3 className="text-2xl font-black tracking-tighter mb-2 line-clamp-1">{products[1].product_name}</h3>
-                      <p className="text-gray-500 text-sm mb-6 line-clamp-2 leading-relaxed">Claim your exclusive sample from {products[1].brand} today before stock runs out.</p>
-                      <div className="flex items-center gap-3">
-                        <span className="text-xl font-black tracking-tighter">₹{products[1].offer_price || 0}</span>
-                        <span className="text-sm text-gray-400 line-through font-medium">₹{products[1].real_price || 0}</span>
-                      </div>
-                  </div>
-                  <div className="w-40 h-40 bg-[#fdf5f7] rounded-2xl flex-shrink-0 overflow-hidden">
-                      <img 
-                        src={products[1].product_image || "https://placehold.co/400x400/fdf5f7/a1a1aa?text=Sample+Lelo"} 
-                        alt={products[1].product_name} 
-                        className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out" 
-                        onError={(e) => { 
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = "https://placehold.co/400x400/fdf5f7/a1a1aa?text=Sample+Lelo"; 
-                        }}
-                      />
-                  </div>
-                </MagicCard>
-              )}
+              <div className="w-full aspect-[16/10] bg-gray-50 rounded-2xl overflow-hidden mb-6 relative">
+                <img
+                  src={p0.product_image}
+                  alt={p0.product_name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?q=80&w=800&auto=format&fit=crop";
+                  }}
+                />
+              </div>
 
-              {/* Bottom Right Card 1 */}
-              {products[2] && (
-                <div className="md:col-span-1 md:row-span-1 bg-[#0a0a0f] text-white rounded-[24px] p-8 flex flex-col relative overflow-hidden group cursor-pointer hover:-translate-y-1 transition-transform duration-500 shadow-2xl">
-                  <h3 className="text-xl font-bold tracking-tight mb-2 z-10">{products[2].brand}</h3>
-                  <p className="text-gray-400 text-[13px] mb-auto z-10 line-clamp-2">{products[2].product_name}</p>
-                  <div className="mt-8 z-10">
-                    <span className="text-3xl font-black tracking-tighter">₹{products[2].offer_price || 0}</span>
-                  </div>
-                  {/* Decorative glow */}
-                  <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-green-500/20 blur-[50px] rounded-full pointer-events-none group-hover:bg-green-500/30 transition-colors duration-500"></div>
+              <div className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                {p0.brand}
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight leading-snug mb-3 group-hover:text-red-600 transition-colors">
+                {p0.product_name}
+              </h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-6">
+                Test and review this premium aromatherapy unit. Once your Amazon review and return window screenshot are verified, receive ₹{p0.refund_amount} direct to your UPI.
+              </p>
+            </div>
+
+            <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
+              <div>
+                <div className="text-2xl font-black text-gray-900">₹0 <span className="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Free Drop</span></div>
+                <div className="text-xs text-gray-400">Regular MRP: ₹{p0.real_price}</div>
+              </div>
+              <Link href={`/browse?q=${encodeURIComponent(p0.brand)}`}>
+                <Button className="bg-red-500 hover:bg-red-600 text-white font-bold rounded-2xl px-6 py-5 text-sm shadow-md gap-2">
+                  Claim Sample <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 2: Wide Horizontal Card (Spans 2 cols, 1 row) */}
+          <div className="md:col-span-2 bg-white rounded-3xl border border-gray-200/90 hover:border-gray-300 shadow-sm hover:shadow-xl transition-all duration-300 p-6 flex flex-col sm:flex-row items-center gap-6 group">
+            <div className="w-full sm:w-44 h-40 bg-gray-50 rounded-2xl overflow-hidden shrink-0 relative">
+              <img
+                src={p1.product_image}
+                alt={p1.product_name}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=800&auto=format&fit=crop";
+                }}
+              />
+            </div>
+            <div className="flex-1 w-full">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full uppercase">
+                  {p1.platform || "Nykaa"}
+                </span>
+                <span className="text-[11px] font-semibold text-gray-400">{p1.brand}</span>
+              </div>
+              <h4 className="font-bold text-lg text-gray-900 tracking-tight line-clamp-2 mb-2 group-hover:text-red-600 transition-colors">
+                {p1.product_name}
+              </h4>
+              <div className="flex items-center justify-between mt-4">
+                <div>
+                  <span className="text-xl font-black text-gray-900">₹0</span>
+                  <span className="text-xs text-gray-400 line-through ml-2">₹{p1.real_price}</span>
                 </div>
-              )}
+                <Link href={`/browse?q=${encodeURIComponent(p1.brand)}`}>
+                  <Button size="sm" variant="outline" className="rounded-xl text-xs font-bold border-gray-200 hover:bg-gray-900 hover:text-white transition-all">
+                    Apply Now
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
 
-              {/* Bottom Right Card 2 */}
-              {products[3] && (
-                <MagicCard className="md:col-span-1 md:row-span-1 p-4 flex flex-col group cursor-pointer">
-                  <div className="w-full flex-1 bg-[#f4f2f9] rounded-xl mb-4 overflow-hidden relative">
-                      <img 
-                        src={products[3].product_image || "https://placehold.co/400x400/f4f2f9/a1a1aa?text=Sample+Lelo"} 
-                        alt={products[3].product_name} 
-                        className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-700 ease-out absolute inset-0" 
-                        onError={(e) => { 
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = "https://placehold.co/400x400/f4f2f9/a1a1aa?text=Sample+Lelo"; 
-                        }}
-                      />
-                  </div>
-                  <div className="px-2 pb-2">
-                    <h3 className="text-lg font-bold tracking-tight mb-1 line-clamp-1">{products[3].product_name}</h3>
-                    <div className="mt-2 flex items-center justify-between">
-                      <span className="text-xl font-black tracking-tighter">₹{products[3].offer_price || 0}</span>
-                      <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded font-bold">{products[3].brand}</span>
-                    </div>
-                  </div>
-                </MagicCard>
-              )}
-            </>
-          )}
+          {/* Card 3: Sleek Dark Tech Card */}
+          <div className="md:col-span-1 bg-gray-900 text-white rounded-3xl p-6 flex flex-col justify-between relative overflow-hidden shadow-lg group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/20 rounded-full blur-2xl pointer-events-none" />
+            <div>
+              <div className="text-[11px] font-bold text-red-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Zap className="w-3.5 h-3.5" /> High Reward
+              </div>
+              <h4 className="text-xl font-bold tracking-tight text-white mb-2 line-clamp-2">
+                {p2.product_name}
+              </h4>
+              <p className="text-xs text-gray-400 line-clamp-2 mb-4">
+                {p2.brand} artisan roast. Complete the 5-star review step for full ₹{p2.refund_amount} refund.
+              </p>
+            </div>
+            <div className="pt-4 border-t border-gray-800 flex items-center justify-between">
+              <div>
+                <span className="text-2xl font-black text-white">₹0</span>
+                <span className="text-[11px] text-gray-400 block">₹{p2.refund_amount} UPI Return</span>
+              </div>
+              <Link href={`/browse?q=${encodeURIComponent(p2.brand)}`}>
+                <div className="w-10 h-10 rounded-xl bg-white/10 hover:bg-red-500 flex items-center justify-center transition-colors">
+                  <ArrowRight className="w-4 h-4 text-white" />
+                </div>
+              </Link>
+            </div>
+          </div>
+
+          {/* Card 4: Compact Glass Card */}
+          <div className="md:col-span-1 bg-white rounded-3xl border border-gray-200/90 hover:border-gray-300 shadow-sm hover:shadow-xl transition-all duration-300 p-6 flex flex-col justify-between group">
+            <div>
+              <div className="w-full aspect-square bg-gray-50 rounded-2xl overflow-hidden mb-4 relative">
+                <img
+                  src={p3.product_image}
+                  alt={p3.product_name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1602143407151-7111542de6e8?q=80&w=800&auto=format&fit=crop";
+                  }}
+                />
+              </div>
+              <div className="text-[11px] font-semibold text-gray-400 uppercase">{p3.brand}</div>
+              <h4 className="font-bold text-gray-900 text-sm line-clamp-2 group-hover:text-red-600 transition-colors mt-0.5">
+                {p3.product_name}
+              </h4>
+            </div>
+            <div className="pt-4 border-t border-gray-100 flex items-center justify-between mt-4">
+              <span className="text-lg font-black text-gray-900">₹0 <span className="text-xs line-through text-gray-400 font-normal">₹{p3.real_price}</span></span>
+              <Link href={`/browse?q=${encodeURIComponent(p3.brand)}`}>
+                <span className="text-xs font-bold text-red-600 hover:underline">Claim &rarr;</span>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     </section>

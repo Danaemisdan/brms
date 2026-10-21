@@ -343,7 +343,7 @@ export default function AdminDashboard() {
                                 </div>
                             </div>
                             <Button 
-                                className="bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-medium text-xs tracking-wider uppercase h-10 px-5 rounded-xl shrink-0 shadow-xs flex items-center gap-2"
+                                className="w-full sm:w-auto bg-zinc-950 hover:bg-zinc-800 text-white dark:bg-white dark:hover:bg-zinc-100 dark:text-zinc-950 font-medium text-xs tracking-wider uppercase h-10 px-5 rounded-xl shrink-0 shadow-xs flex items-center justify-center gap-2"
                                 onClick={() => window.location.href = '/admin/orders?mode=dating'}
                             >
                                 <Zap className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
@@ -386,7 +386,7 @@ export default function AdminDashboard() {
                     <div className="grid gap-6 md:grid-cols-2 pt-2">
                         {/* 30-Day Growth & Order Volume Chart */}
                         <Card className="bg-card/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/80 dark:border-zinc-800/80 rounded-2xl shadow-xs">
-                            <CardHeader className="pb-3 flex flex-row items-center justify-between">
+                            <CardHeader className="pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                 <div>
                                     <CardTitle className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
                                         <TrendingUp className="w-4 h-4 text-emerald-500" />

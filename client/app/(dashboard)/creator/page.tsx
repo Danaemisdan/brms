@@ -746,7 +746,7 @@ export default function CreatorDashboardPage() {
             </div>
 
             {/* Navigation Tabs */}
-            <div className="flex items-center gap-2 border-b border-border pb-1 overflow-x-auto text-xs">
+            <div className="flex items-center gap-2 border-b border-border pb-2 overflow-x-auto text-xs hide-scrollbar touch-pan-x">
                 <button
                     onClick={() => setActiveTab("available")}
                     className={`px-4 py-2 rounded-xl font-medium transition-all whitespace-nowrap ${

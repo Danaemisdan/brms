@@ -1,46 +1,128 @@
-import { Droplet, Sparkles, Croissant, ShoppingCart, Gem, Gift } from "lucide-react";
+"use client";
+
+import { Sparkles, Headphones, Activity, Coffee, Home, Heart, ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-const COLLECTIONS = [
-  { icon: Droplet, title: "Skincare", color: "from-blue-100 to-cyan-50", iconColor: "text-blue-500" },
-  { icon: Sparkles, title: "Fragrance", color: "from-purple-100 to-pink-50", iconColor: "text-purple-500" },
-  { icon: Croissant, title: "Snacks", color: "from-orange-100 to-amber-50", iconColor: "text-orange-500" },
-  { icon: ShoppingCart, title: "Ecodomas", color: "from-green-100 to-emerald-50", iconColor: "text-green-500" },
-  { icon: Gem, title: "Jewelry", color: "from-rose-100 to-red-50", iconColor: "text-rose-500" },
-  { icon: Gift, title: "Bundles", color: "from-indigo-100 to-blue-50", iconColor: "text-indigo-500" },
+const CATEGORIES = [
+  {
+    id: "beauty",
+    title: "Skincare & Beauty",
+    count: "120+ Drops",
+    badge: "Most Popular",
+    icon: Sparkles,
+    color: "from-pink-500/10 to-rose-500/5",
+    iconColor: "text-rose-500",
+    borderHover: "hover:border-rose-400/50"
+  },
+  {
+    id: "tech",
+    title: "Tech & Audio",
+    count: "45+ Drops",
+    badge: "Trending",
+    icon: Headphones,
+    color: "from-blue-500/10 to-indigo-500/5",
+    iconColor: "text-blue-500",
+    borderHover: "hover:border-blue-400/50"
+  },
+  {
+    id: "health",
+    title: "Health & Nutrition",
+    count: "70+ Drops",
+    badge: "High Reward",
+    icon: Activity,
+    color: "from-emerald-500/10 to-teal-500/5",
+    iconColor: "text-emerald-500",
+    borderHover: "hover:border-emerald-400/50"
+  },
+  {
+    id: "gourmet",
+    title: "Gourmet & Snacks",
+    count: "55+ Drops",
+    badge: "Daily Drops",
+    icon: Coffee,
+    color: "from-amber-500/10 to-orange-500/5",
+    iconColor: "text-amber-500",
+    borderHover: "hover:border-amber-400/50"
+  },
+  {
+    id: "home",
+    title: "Home & Lifestyle",
+    count: "35+ Drops",
+    badge: "Premium",
+    icon: Home,
+    color: "from-purple-500/10 to-violet-500/5",
+    iconColor: "text-purple-500",
+    borderHover: "hover:border-purple-400/50"
+  },
+  {
+    id: "personal",
+    title: "Personal Grooming",
+    count: "60+ Drops",
+    badge: "Fast Refund",
+    icon: Heart,
+    color: "from-red-500/10 to-orange-500/5",
+    iconColor: "text-red-500",
+    borderHover: "hover:border-red-400/50"
+  },
 ];
 
 export function SampleCollections() {
   return (
-    <section className="py-24 bg-white relative overflow-hidden">
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent"></div>
-      <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
-          <h2 className="text-[32px] md:text-[40px] font-black mb-4 text-[#111827] tracking-tighter">
-            Explore Categories
-          </h2>
-          <p className="text-gray-500 max-w-md mx-auto font-medium">Discover tailored selections of premium samples.</p>
+    <section className="py-20 bg-gray-50/50 relative overflow-hidden border-t border-gray-100">
+      <div className="container mx-auto px-6 max-w-6xl">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
+          <div>
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest block mb-2">
+              Curated Collections
+            </span>
+            <h2 className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
+              Explore by Category
+            </h2>
+          </div>
+          <Link 
+            href="/browse" 
+            className="text-xs font-bold text-red-600 hover:text-red-700 flex items-center gap-1 transition-colors self-start sm:self-auto"
+          >
+            Browse All 350+ Live Samples <ArrowUpRight className="w-3.5 h-3.5" />
+          </Link>
         </div>
         
-        <div className="flex flex-wrap justify-center gap-6 md:gap-8 max-w-5xl mx-auto">
-          {COLLECTIONS.map((c, i) => (
-            <Link key={i} href={`/browse?category=${c.title}`}>
-              <motion.div 
-                whileHover={{ scale: 1.05, y: -5 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex flex-col items-center gap-4 cursor-pointer group"
-              >
-                 <div className={`w-20 h-20 md:w-24 md:h-24 rounded-[28px] bg-gradient-to-br ${c.color} flex items-center justify-center shadow-sm group-hover:shadow-xl group-hover:shadow-black/5 transition-all duration-300 relative overflow-hidden`}>
-                   <div className="absolute inset-0 bg-white/40 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                   <c.icon className={`w-8 h-8 md:w-10 md:h-10 ${c.iconColor} stroke-[1.5px] relative z-10 group-hover:scale-110 transition-transform duration-300`} />
-                 </div>
-                 <span className="text-[14px] md:text-[15px] font-bold text-gray-700 tracking-tight group-hover:text-black transition-colors">
-                   {c.title}
-                 </span>
-              </motion.div>
-            </Link>
-          ))}
+        {/* Responsive 21st.dev category grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 sm:gap-4">
+          {CATEGORIES.map((c, i) => {
+            const IconComponent = c.icon;
+            return (
+              <Link key={i} href={`/browse?category=${encodeURIComponent(c.id)}`} className="group">
+                <motion.div 
+                  whileHover={{ y: -4 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`bg-white rounded-2xl p-4 sm:p-5 border border-gray-200/80 shadow-xs hover:shadow-md ${c.borderHover} transition-all duration-300 flex flex-col justify-between h-full relative overflow-hidden`}
+                >
+                  <div className={`absolute -right-4 -top-4 w-16 h-16 bg-gradient-to-br ${c.color} rounded-full blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-500`} />
+                  
+                  <div>
+                    <div className="w-10 h-10 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                      <IconComponent className={`w-5 h-5 ${c.iconColor}`} />
+                    </div>
+                    <span className="text-[10px] font-mono font-semibold text-gray-400 block mb-1">
+                      {c.count}
+                    </span>
+                    <h3 className="text-xs sm:text-sm font-bold text-gray-900 leading-snug group-hover:text-red-600 transition-colors">
+                      {c.title}
+                    </h3>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+                    <span className="text-[10px] font-medium text-gray-500">
+                      {c.badge}
+                    </span>
+                    <ArrowUpRight className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-900 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  </div>
+                </motion.div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

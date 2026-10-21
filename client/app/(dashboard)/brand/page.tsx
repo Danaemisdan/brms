@@ -118,7 +118,7 @@ export default function BrandDashboard() {
                     </CardHeader>
                     <CardContent>
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="brand">Brand Name</Label>
                                     <Input id="brand" placeholder="e.g., Apple" required value={form.brand} onChange={e => setForm({ ...form, brand: e.target.value })} />
@@ -128,7 +128,7 @@ export default function BrandDashboard() {
                                     <Input id="productName" placeholder="e.g., Wireless Mouse" required value={form.productName} onChange={e => setForm({ ...form, productName: e.target.value })} />
                                 </div>
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="platform">Platform</Label>
                                     <select id="platform" value={form.platform} onChange={e => setForm({ ...form, platform: e.target.value })} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
@@ -146,7 +146,7 @@ export default function BrandDashboard() {
                                 <Label htmlFor="productLink">Product Link</Label>
                                 <Input id="productLink" type="url" placeholder="https://amazon.in/dp/..." required value={form.productLink} onChange={e => setForm({ ...form, productLink: e.target.value })} />
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="productImage">Main Product Image URL</Label>
                                     <Input id="productImage" type="url" placeholder="Optional image link" value={form.productImage} onChange={e => setForm({ ...form, productImage: e.target.value })} />
@@ -181,7 +181,7 @@ export default function BrandDashboard() {
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label>Vendor Delivery Type</Label>
                                     <select

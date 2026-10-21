@@ -106,15 +106,23 @@ export function HeroSpotlight() {
   useEffect(() => {
     async function loadProducts() {
       try {
+        let items: Product[] = [];
         const response = await fetch("/api/products/public");
         if (response.ok) {
           const json = await response.json();
-          const items = Array.isArray(json) ? json : json.data || [];
-          if (items && items.length > 0) {
-            setProducts(items);
-          } else {
-            setProducts(FALLBACK_PRODUCTS);
-          }
+          items = Array.isArray(json) ? json : json.data || json.products || [];
+        }
+        if (!items || items.length === 0) {
+          try {
+            const res2 = await fetch("/api/products");
+            if (res2.ok) {
+              const json2 = await res2.json();
+              items = Array.isArray(json2) ? json2 : json2.data || json2.products || [];
+            }
+          } catch {}
+        }
+        if (items && items.length > 0) {
+          setProducts(items);
         } else {
           setProducts(FALLBACK_PRODUCTS);
         }

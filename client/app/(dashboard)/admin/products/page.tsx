@@ -750,7 +750,7 @@ export default function AdminProducts() {
                                     </div>
                                     <div className="space-y-2 mt-auto">
                                         <Label className="text-foreground/60 uppercase tracking-widest text-[10px]">Attachment Image</Label>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex flex-wrap items-center gap-2">
                                             <Input
                                                 type="file"
                                                 accept="image/*"
@@ -933,7 +933,7 @@ export default function AdminProducts() {
                                         <p className="text-sm text-foreground/50 mt-1">Slots: {p.filled_slots}/{p.total_slots} filled</p>
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-2">
+                                <div className="flex flex-wrap items-center gap-2">
                                     <span className={`px-2 py-1 text-xs font-semibold rounded-full ${p.status?.toUpperCase() === "ACTIVE" ? "bg-green-100 text-green-800" : "bg-gray-100 text-foreground/50"}`}>
                                         {p.status}
                                     </span>

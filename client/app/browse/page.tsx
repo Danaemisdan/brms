@@ -69,15 +69,15 @@ function BrowsePageContent() {
                 </div>
               </div>
               <div className="flex justify-between mt-3 text-[11px] font-bold text-gray-600">
-                <span>₹000</span>
-                <span>₹1300</span>
+                <span>₹0</span>
+                <span>₹1,500</span>
               </div>
             </div>
 
             <div>
               <h3 className="font-bold text-sm mb-4 text-gray-900">Category</h3>
               <div className="space-y-3">
-                {['Minis', 'Full-Size', 'Tester Kits', 'Tester Kits', 'Categories', 'Others'].map((cat, i) => (
+                {['Minis', 'Full-Size', 'Tester Kits', 'Beauty', 'Tech & Audio', 'Health & Protein'].map((cat, i) => (
                   <label key={i} className="flex items-center gap-3 text-[13px] font-medium text-gray-600 cursor-pointer hover:text-gray-900 transition-colors">
                     <input type="checkbox" className="w-[14px] h-[14px] rounded-sm border-gray-300 text-[#eb5757] focus:ring-[#eb5757] accent-[#eb5757]" />
                     {cat}
@@ -94,7 +94,7 @@ function BrowsePageContent() {
             ) : products.length === 0 ? (
                <div className="text-center py-20 text-gray-400 font-semibold tracking-widest uppercase">No samples available at the moment.</div>
             ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {products.map((sample) => (
                   <ProductCard key={sample.id} {...sample} />
                 ))}

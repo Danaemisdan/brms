@@ -500,7 +500,7 @@ export default function AdminOrders() {
                 </div>
 
                 {/* Filter pills */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+                <div className="flex items-center gap-2 overflow-x-auto pb-2 text-xs hide-scrollbar touch-pan-x">
                     <span className="text-muted-foreground text-[11px] uppercase tracking-wider flex items-center gap-1 mr-1">
                         <Filter className="w-3 h-3" /> Quick Filter:
                     </span>
@@ -645,7 +645,7 @@ export default function AdminOrders() {
                                 </div>
 
                                 {/* Actions & Status Controllers */}
-                                <div className="flex flex-col gap-3 min-w-[280px] lg:items-end border-t lg:border-t-0 pt-4 lg:pt-0 border-border/50">
+                                <div className="flex flex-col gap-3 w-full lg:w-auto lg:min-w-[280px] lg:items-end border-t lg:border-t-0 pt-4 lg:pt-0 border-border/50">
                                     {/* Fast Action Buttons for Order Validating */}
                                     {isPendingValidation && (
                                         <div className="flex flex-col sm:flex-row gap-2 w-full">

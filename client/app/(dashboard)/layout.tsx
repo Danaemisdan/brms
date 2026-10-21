@@ -29,7 +29,9 @@ import {
     Tag,
     HelpCircle,
     FileCheck,
-    LifeBuoy
+    LifeBuoy,
+    Menu,
+    X
 } from "lucide-react";
 
 const brandNav = [
@@ -88,11 +90,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const { theme, setTheme } = useTheme();
     const [mounted, setMounted] = useState(false);
     const [services, setServices] = useState<any[]>([]);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     useEffect(() => {
         setMounted(true);
         fetchServices();
     }, []);
+
+    useEffect(() => {
+        setMobileMenuOpen(false);
+    }, [pathname]);
 
     const fetchServices = async () => {
         try {
@@ -160,7 +167,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     return (
         <div className="flex min-h-screen bg-background text-foreground font-sans selection:bg-foreground/10 antialiased">
-            {/* 21st.dev Luxurious Glass Sidebar */}
+            {/* Desktop 21st.dev Luxurious Glass Sidebar */}
             <aside className="fixed inset-y-0 left-0 z-50 w-64 bg-card/70 dark:bg-zinc-950/70 backdrop-blur-2xl border-r border-border/80 shadow-[1px_0_15px_rgba(0,0,0,0.02)] hidden md:flex flex-col">
                 {/* Logo Area */}
                 <div className="flex items-center justify-between h-20 px-6 border-b border-border/60 shrink-0">
@@ -267,12 +274,162 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </div>
             </aside>
 
+            {/* Mobile Header Bar */}
+            <header className="md:hidden fixed top-0 inset-x-0 z-40 h-16 bg-card/85 dark:bg-zinc-950/85 backdrop-blur-xl border-b border-border/80 px-4 flex items-center justify-between shadow-xs">
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                        className="p-2 -ml-2 text-foreground/80 hover:text-foreground rounded-xl hover:bg-muted transition-colors"
+                        aria-label="Open Navigation Menu"
+                    >
+                        {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+                    </button>
+                    <Link href="/" className="flex items-center gap-2">
+                        <span className="text-base font-black tracking-tight text-foreground">sample lelo</span>
+                        <span className="px-1.5 py-0.5 text-[8px] font-mono font-bold tracking-widest uppercase bg-muted text-muted-foreground rounded-full border border-border">
+                            {userProfile.role === "ADMIN" ? "Admin" : "Console"}
+                        </span>
+                    </Link>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    {mounted && (
+                        <button 
+                            onClick={() => setTheme(theme === "dark" ? "light" : "dark")} 
+                            className="p-2 text-muted-foreground hover:text-foreground rounded-xl hover:bg-muted transition-colors"
+                            aria-label="Toggle Theme"
+                        >
+                            {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
+                        </button>
+                    )}
+                    <div className="h-8 w-8 rounded-lg bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 flex items-center justify-center font-bold text-xs">
+                        {userProfile.name.charAt(0).toUpperCase()}
+                    </div>
+                </div>
+            </header>
+
+            {/* Mobile Drawer Backdrop & Menu */}
+            <AnimatePresence>
+                {mobileMenuOpen && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs"
+                        />
+                        <motion.div
+                            initial={{ x: "-100%" }}
+                            animate={{ x: 0 }}
+                            exit={{ x: "-100%" }}
+                            transition={{ type: "spring", damping: 25, stiffness: 250 }}
+                            className="md:hidden fixed inset-y-0 left-0 z-50 w-[280px] bg-card dark:bg-zinc-950 border-r border-border shadow-2xl flex flex-col"
+                        >
+                            {/* Drawer Header */}
+                            <div className="flex items-center justify-between h-16 px-5 border-b border-border/80">
+                                <Link href="/" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-2">
+                                    <span className="text-base font-black tracking-tight text-foreground">sample lelo</span>
+                                    <span className="px-1.5 py-0.5 text-[9px] font-mono font-bold uppercase bg-muted text-muted-foreground rounded-full border border-border">
+                                        {userProfile.role === "ADMIN" ? "Admin" : "Console"}
+                                    </span>
+                                </Link>
+                                <button
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            {/* Drawer Nav Items */}
+                            <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+                                <div className="px-3 mb-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                                    {title}
+                                </div>
+                                {nav.map((item) => {
+                                    const IconComponent = item.icon || Layers;
+                                    const isActive = pathname === item.href;
+                                    return (
+                                        <Link
+                                            key={item.href}
+                                            href={item.href}
+                                            onClick={() => setMobileMenuOpen(false)}
+                                            className={`flex items-center gap-3 px-3.5 py-2.5 text-xs font-medium rounded-xl transition-all ${
+                                                isActive
+                                                    ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-semibold shadow-xs"
+                                                    : "text-zinc-600 dark:text-zinc-400 hover:text-foreground hover:bg-muted"
+                                            }`}
+                                        >
+                                            <IconComponent className="w-4 h-4 shrink-0" />
+                                            <span className="truncate">{item.label}</span>
+                                        </Link>
+                                    );
+                                })}
+
+                                {services.length > 0 && (
+                                    <div className="pt-4 space-y-1">
+                                        <div className="px-3 mb-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+                                            Custom Services
+                                        </div>
+                                        {services.map((service) => {
+                                            const href = userProfile.role === "ADMIN" 
+                                                ? `/admin/services/${service.id}` 
+                                                : userProfile.role === "CUSTOMER" 
+                                                    ? `/customer/services/${service.id}` 
+                                                    : `/services/${service.id}`;
+                                            const isActive = pathname.includes(service.id);
+                                            return (
+                                                <Link
+                                                    key={service.id}
+                                                    href={href}
+                                                    onClick={() => setMobileMenuOpen(false)}
+                                                    className={`flex items-center gap-3 px-3.5 py-2.5 text-xs font-medium rounded-xl transition-all ${
+                                                        isActive
+                                                            ? "bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 font-semibold shadow-xs"
+                                                            : "text-zinc-600 dark:text-zinc-400 hover:text-foreground hover:bg-muted"
+                                                    }`}
+                                                >
+                                                    <Layers className="w-4 h-4 shrink-0" />
+                                                    <span className="truncate">{service.name}</span>
+                                                </Link>
+                                            );
+                                        })}
+                                    </div>
+                                )}
+                            </nav>
+
+                            {/* Drawer Footer */}
+                            <div className="p-3 border-t border-border/80 bg-card/50 space-y-2">
+                                <div className="flex items-center justify-between p-2 rounded-xl bg-muted/50 border border-border">
+                                    <div className="flex items-center gap-2.5 truncate">
+                                        <div className="h-8 w-8 rounded-lg bg-zinc-900 text-white dark:bg-white dark:text-zinc-900 flex items-center justify-center font-bold text-xs shrink-0">
+                                            {userProfile.name.charAt(0).toUpperCase()}
+                                        </div>
+                                        <div className="truncate">
+                                            <p className="text-xs font-semibold text-foreground truncate">{userProfile.name}</p>
+                                            <p className="text-[10px] font-mono text-muted-foreground uppercase">{userProfile.role}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={handleLogout}
+                                    className="w-full flex justify-center items-center px-3 py-2 text-xs font-medium text-rose-500 hover:bg-rose-500/10 rounded-xl border border-transparent transition-all"
+                                >
+                                    Sign Out
+                                </button>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
             {/* Main Content Area with 21st.dev Ambient Lighting */}
-            <main className="flex-1 md:pl-64 relative min-h-screen">
+            <main className="flex-1 md:pl-64 relative min-h-screen pt-16 md:pt-0">
                 {/* Subtle luxury ambient mesh glow */}
                 <div className="fixed top-0 inset-x-0 h-[400px] bg-gradient-to-b from-zinc-200/40 dark:from-zinc-900/30 via-transparent to-transparent pointer-events-none opacity-40 z-0"></div>
 
-                <div className="py-8 px-4 sm:px-8 md:px-10 mx-auto max-w-[1600px] relative z-10 w-full min-h-screen">
+                <div className="py-6 sm:py-8 px-3 sm:px-6 md:px-10 mx-auto max-w-[1600px] relative z-10 w-full min-h-[calc(100vh-4rem)] md:min-h-screen">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={pathname}
